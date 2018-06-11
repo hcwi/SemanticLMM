@@ -62,41 +62,17 @@ getFixedTerms <- function(mod) {
     fixedTerms = append(fixedTerms, fixTer)
   }
   
-  getEffects2(mod)
+  getFixedEffects(mod)
   
   fixedTerms
 }
 
-# add effects
-getEffects <- function(mod) {
-  
-  fixefs <- fixef(mod, add.dropped=TRUE) # get estimated effects
-  feLabs <- names(fixefs)
-  
-  lab <- attr(terms(mod), "term.labels")
-  varLabs <- unique(unlist(strsplit(lab,":"))) # get variable names
-  
-  for (varLab in varLabs) {
-    feLabs <- sub(feLabs, pattern = varLab, rep="") # remove variable names from effect labels
-  }
-  feLabs
-  
-  for (i in 1:length(feLabs)) {
-    eff <- getEntity("Effect", feLabs[i]) # find effects for labels
-    if (is.null(eff)) {
-      print(paste("PARSE ERROR. No Effect found for: ", feLabs[i]))
-    } else {
-      #print(eff$asTTL())
-      est <- Estimate(feLabs[i], value = fixefs[i], parameter = eff)
-      eff$estimate <- append(eff$estimate, est) # add estimate to the effect
-    }
-  }
-}
 # calculating multiple contrasts (other then relevel, allowing only one reference level) :
 # http://mindingthebrain.blogspot.com/2013/04/multiple-pairwise-comparisons-for.html
 
-# 2nd approach, this time from summary(m) rather then m itself
-getEffects2 <- function(mod) {
+# get fixed effects 
+# this time from summary(m) rather then m itself
+getFixedEffects <- function(mod) {
   
   fixefs <- summary(mod)$coefficients # get estimated effects
   feLabs <- row.names(fixefs)

@@ -71,9 +71,10 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                   ids = "" # concatenated IDs from the 'oo' list
                                   for (o in oo) {
                                     ids <- paste(ids, ident(o$id), sep=", ") # add ID to the string
-                                    if (!is.null(queue)) {
-                                      queue[o$id] <<- TRUE # add to the queue and / or set printing (if already exists)
+                                    if (!exists("queue") || is.null(queue)) {
+                                      queue <<- list()
                                     }
+                                    queue[o$id] <<- TRUE # add to the queue and / or set printing (if already exists)
                                   }
                                   substring(ids,3) # return concatenated without initial separators ', '
                                 }
@@ -342,7 +343,7 @@ CovarianceStructure <- {
                         ";\n", TYPE, COVIDENTITY,
                         ";\n", LABEL, lit(label),
                         ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n "),
-                        ";\n", paste(TMP, listAsTTL(estimate), collapse = " ;\n "),
+                        ";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "),
                         ".\n")
                 }
               )
@@ -365,7 +366,7 @@ RandomModelTerm <- {
                         ";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "),
                         ";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n "),
                         ";\n", paste(HASPART, listAsTTL(covarianceStructure), collapse = " ;\n "),
-                        ";\n", paste(TMP, listAsTTL(estimate), collapse = " ;\n "), #TODO move from term to effects
+                        ";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "), #TODO move from term to effects
                         ".\n")
                 }
               )
