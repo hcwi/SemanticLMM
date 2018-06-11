@@ -1,0 +1,39 @@
+Robject;LMM;STATO_SIMPLE;STATO;comment
+LMM;LinearMixedModel;stato:mixed_model;http://purl.obolibrary.org/obo/STATO_0000189#MixedModel;not only linear!
+Variable;variable;stato:variable;http://purl.obolibrary.org/obo/STATO_0000258#Variable;
+CategoricalVariable;categoricalVariable;stato:categorical_variable;http://purl.obolibrary.org/obo/STATO_0000252#CategoricalVariable;
+ModelTerm;modelTerm;xxx:model_term;xxx:model_term;
+FixedModelTerm;fixedModelTerm;xxx:model_fixed_effect_term;xxx:model_fixed_effect_term;
+RandomModelTerm;RandomModelTerm;xxx:model_random_effect_term;xxx:model_random_effect_term;
+ErrorModelTerm;ErrorModelTerm;xxx:model_error_effect_term;xxx:model_error_effect_term;?
+ModelParameter;ModelParameter;stato:model_parameter;http://purl.obolibrary.org/obo/STATO_0000034#ModelParameter;
+Effect;effect;xxx:effect;xxx:effect;
+Formula;formula;xxx:formula;xxx:formula;
+Estimate;estimate;stato:model_parameter_estimate;http://purl.obolibrary.org/obo/STATO_0000144#ModelParameterEstimate;
+Value;value;rdf:value;rdf:value;
+se;se;xxx:standard_error;xxx:standardError;standard error of the mean
+type;rdf:type;a;rdf:type;
+label;rdfs:label;rdfs:label;rdfs:label;
+hasLevel;hasLevel;stato:has_part;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
+isLevelOf;isLevelOf;stato:is_part_of;Êhttp://purl.obolibrary.org/obo/BFO_0000050#isPartOf;
+hasOrder;hasOrder;xxx:has_order;xxx:has_order;
+hasEffect;defines;stato:declares;http://purl.obolibrary.org/obo/STATO_0000001#declares;
+isAbout;isAbout;ro:is_about;http://purl.obolibrary.org/obo/IAO_0000136#isAbout;
+hasPart;hasPart;stato:has_part;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
+hasTerm;hasPart;stato:has_part;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
+isModelFor;isModelFor;stato:is_model_for;xxx:http://purl.obolibrary.org/obo/stato.owl#is_model_for;
+VariableLevel;VariableLevel;stato:factor_level;http://purl.obolibrary.org/obo/STATO_0000265#FactorLevel;
+isEstimateOf;isEstiamateOf;stato:estimator_of;http://purl.obolibrary.org/obo/STATO_0000403#estimatorOf;
+hypothesis;hypothesis;stato:hypothesis;http://purl.obolibrary.org/obo/STATO_0000065#hypothesis;
+Pvalue;p-value;stato:p-value;http://purl.obolibrary.org/obo/OBI_0000175#p-value;
+Qvalue;q-value;stato:q-value;http://purl.obolibrary.org/obo/OBI_0001442#q-value;
+statiticalHypothesisTest;;stato:statistical_hypothesis_test;http://purl.obolibrary.org/obo/OBI_0000673#statistical hypothesis test;
+nullHypothesis;nullHypothesis;stato:null_hypothesis;http://purl.obolibrary.org/obo/STATO_0000057#null hypothesis;
+describesValueOf;isValueOf;stato:specifies_value_of;http://purl.obolibrary.org/obo/OBI_0001927#specifiesValueOf;
+CovarianceStructure;CovarianceStructure;stato:covariance_structure;http://purl.obolibrary.org/obo/STATO_0000346#CovarianceStructure;
+CovIdentity;CovarianceStructureIdentity;xxx:identity_covariance_structure;xxx:identity_covariance_structure;
+critREML;;;;
+critAIC;;;;
+tmp_est;tmp_est;xxx:tmp_est;xxx:tmp_est;
+df;df;xxx:df;xxx:df;
+TestStatistic;test_statistic;stato:Statistic;stato:Statistic;???
