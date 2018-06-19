@@ -24,6 +24,13 @@ m4_basic <- lmer(tDlugosc ~ fInfection + (1|cInfraname:cBlock),
                  data = dataFus, REML = TRUE)
 
 
+m5_basic <- lmer(tDlugosc ~ fInfection + (fInfection|cInfraname) + (1|cBlock), 
+                 data = dataFus, REML = TRUE)
+
+m6_basic <- lmer(tDlugosc ~ fInfection + (1|cInfraname) + (fInfection|cBlock), 
+                 data = dataFus, REML = TRUE)
+
+
 runPreview <- function(m1_basic) {
   summary(m1_basic)
   anova(m1_basic)
