@@ -37,3 +37,11 @@ critAIC;;;;
 tmp_est;tmp_est;xxx:tmp_est;xxx:tmp_est;
 df;df;xxx:df;xxx:df;
 TestStatistic;test_statistic;stato:Statistic;stato:Statistic;???
+ModelFitting;;stato:model_fitting;stato:STATO_0000218#model fitting;
+ModelParameterEstimation;;stato:model_parameter_estimation;stato:STATO_0000119#Model parameter estimation;
+ContrastEstimation;;stato:contrast_estimation;stato:STATO_0000383#contrast estimation;
+DfApproximation;;stato:df_approximation;stato:STATO_0000472# degree of freedom approximation;
+Testing;;xxx:testing;xxx:testing;
+DrawingConclusions;;stato:drawing_conclusions;stato:STATO_0000673 ;
+hasInput;;stato:has_specified_input ;stato:has_specified_input ;
+hasOutput;;stato:has_specified_output ;stato:has_specified_output ;
