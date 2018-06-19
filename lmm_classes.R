@@ -65,9 +65,11 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                   paste0("\"", literal, "\"")
                                 },
                                 asTTL = function() {
+                                  paste(getTTL(), ".\n")
+                                },
+                                getTTL = function() {
                                   paste(ident(id), TYPE, "OntologyEntity",
-                                        ";\n", LABEL, lit(label),
-                                        ".\n")
+                                        ";\n", LABEL, lit(label))
                                 },
                                 listAsTTL = function(oo) {
                                   ids = "" # concatenated IDs from the 'oo' list
@@ -151,10 +153,10 @@ ModelParameter <- {setRefClass("ModelParameter",
                                   callSuper(...)
                                   .self$type <- type
                                 },
-                                asTTL = function() {
-                                  paste(ident(id), TYPE, MODELPARAMETER,
-                                        ";\n", "xxx:TMP_TYPE", lit(type),
-                                        ".\n"
+                                getTTL = function() {
+                                  paste(callSuper(),
+                                        ";\n", TYPE, MODELPARAMETER,
+                                        ";\n", "xxx:TMP_TYPE", lit(type)
                                   )
                                 }
                               )
@@ -174,12 +176,12 @@ Hypothesis <- {setRefClass("Hypothesis",
                                .self$pvalue <- pvalue
                                .self$modelParams <- modelParams
                              },
-                             asTTL = function() {
-                               paste(ident(id), TYPE, HYPOTHESIS,
+                             getTTL = function() {
+                               paste(callSuper(),
+                                     ";\n", TYPE, HYPOTHESIS,
                                      ";\n", PVALUE, lit(pvalue),
                                      ";\n", QVALUE, lit(qvalue),
-                                     ";\n", ISABOUT, listAsTTL(modelParams),
-                                     ".\n"
+                                     ";\n", ISABOUT, listAsTTL(modelParams)
                                )
                              }
                            )
@@ -201,14 +203,13 @@ Hypothesis <- {setRefClass("Hypothesis",
 #                                .self$testStatistic <- testStatistic
 #                                .self$hypothesis <- hypothesis
 #                              },
-#                              asTTL = function() {
-#                                paste(ident(id), TYPE, STATITICALHYPOTHESISTEST,
+#                              getTTL = function() {
+#                                paste(callSuper(),
+#                                      ";\n", TYPE, STATITICALHYPOTHESISTEST,
 #                                      ";\n", PVALUE, lit(pvalue),
 #                                      ";\n", DF, lit(df),
 #                                      ";\n", "xxx:_has_input_", listAsTTL(testStatistic),
-#                                      ";\n", ISABOUT, listAsTTL(hypothesis),
-#                                      ".\n"
-#                                )
+#                                      ";\n", ISABOUT, listAsTTL(hypothesis))
 #                              }
 #                            )
 # )}
@@ -225,12 +226,11 @@ Statistic <- {setRefClass("Statistic",
                               .self$value <- value
                               .self$type <- type
                             },
-                            asTTL = function() {
-                              paste(ident(id), TYPE, TESTSTATISTIC,
+                            getTTL = function() {
+                              paste(callSuper(),
+                                    ";\n", TYPE, TESTSTATISTIC,
                                     ";\n", VALUE, lit(value),
-                                    ";\n", TYPE, lit(type),
-                                    ".\n"
-                              )
+                                    ";\n", TYPE, lit(type))
                             }
                           )
 )}
@@ -256,13 +256,12 @@ Estimate <- {setRefClass("Estimate",
                             .self$value <- value
                             .self$isEstimateOf <- parameter
                           },
-                          asTTL = function() {
-                            paste(ident(id), TYPE, ESTIMATE,
+                          getTTL = function() {
+                            paste(callSuper(),
+                                  ";\n", TYPE, ESTIMATE,
                                   ";\n", VALUE, lit(value),
                                   ";\n", SE, lit(se),
-                                  ";\n", ISESTIMATEOF, listAsTTL(list(isEstimateOf)),
-                                  ".\n"
-                            )
+                                  ";\n", ISESTIMATEOF, listAsTTL(list(isEstimateOf)))
                           }
                         )
 )}
@@ -278,10 +277,9 @@ Variable <- {setRefClass("Variable",
                            initialize = function(...) {
                              callSuper(...)
                            },
-                           asTTL = function() {
-                             paste(ident(id), TYPE, VARIABLE,
-                                   ";\n", LABEL, lit(label),
-                                   ".\n"
+                           getTTL = function() {
+                             paste(callSuper(),
+                                   ";\n", TYPE, VARIABLE
                              )
                            }
                          )
@@ -297,12 +295,10 @@ VariableLevel <- {setRefClass("VariableLevel",
                                   callSuper(...)
                                   .self$variable <- variable
                                 },
-                                asTTL = function() {
-                                  paste(ident(id), TYPE, VARIABLELEVEL,
-                                        ";\n", LABEL, lit(label),
-                                        ";\n", ISLEVELOF, listAsTTL(list(variable)),
-                                        ".\n"
-                                  )
+                                getTTL = function() {
+                                  paste(callSuper(),
+                                        ";\n", TYPE, VARIABLELEVEL,
+                                        ";\n", ISLEVELOF, listAsTTL(list(variable)))
                                 }
                               )
 )
@@ -322,12 +318,10 @@ CategoricalVariable <- {setRefClass("CategoricalVariable",
                                                      VariableLevel(label=l, variable=.self))
                              }
                            },
-                           asTTL = function() {
-                             paste(ident(id), TYPE, CATEGORICALVARIABLE,
-                                   ";\n", LABEL, lit(label),
-                                   ";\n", HASLEVEL, listAsTTL(levels),
-                                   ".\n"
-                             )
+                           getTTL = function() {
+                             paste(callSuper(),
+                                   ";\n", TYPE, CATEGORICALVARIABLE,
+                                   ";\n", HASLEVEL, listAsTTL(levels))
                            }
                          )
 )}
@@ -352,14 +346,13 @@ ModelTerm <- {
                   .self$order <- order
                   .self$variable <- variable
                 },
-                asTTL = function() {
-                  paste(ident(id), TYPE, MODELTERM,
-                        ";\n", LABEL, lit(label),
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, MODELTERM,
                         ";\n", HASORDER, lit(order),
                         ";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "),
                         ";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n "),
-                        ";\n", paste(TMP, listAsTTL(estimate), collapse = " ;\n "),
-                        ".\n")
+                        ";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n ")) #TODO move from term to effects
                 }
               )
   )}
@@ -383,16 +376,14 @@ CovarianceStructure <- {
                   }
                   .self$params <- tmp
                 },
-                asTTL = function() {
-                  paste(ident(id), TYPE, COVARIANCESTRUCTURE,
-                        #TODO correct choosing cov model
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, COVARIANCESTRUCTURE, #TODO correct choosing cov model
                         ";\n", TYPE, COVIDENTITY,
-                        ";\n", LABEL, lit(label),
                         ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n "),
                         if (length(estimate) > 0) {
                           paste(";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "))
-                        },
-                        ".\n")
+                        })
                 }
               )
               )
@@ -407,15 +398,11 @@ RandomModelTerm <- {
                 covarianceStructure = "list" #of CovarianceStructure #TODO change to "ANY" and remove lists
                 ),
               methods = list(
-                asTTL = function() {
-                  paste(ident(id),TYPE, RANDOMMODELTERM,
-                        ";\n", LABEL, lit(label),
-                        ";\n", HASORDER, lit(order),
-                        ";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "),
-                        ";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n "),
-                        ";\n", paste(HASPART, listAsTTL(covarianceStructure), collapse = " ;\n "),
-                        ";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "), #TODO move from term to effects
-                        ".\n")
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, RANDOMMODELTERM,
+                        ";\n", paste(HASPART, listAsTTL(covarianceStructure), collapse = " ;\n ")
+                        )
                 }
               )
   )}
@@ -424,15 +411,10 @@ ErrorModelTerm <- {
   setRefClass("ErrorModelTerm",
               contains = "RandomModelTerm",
               methods = list(
-                asTTL = function() {
-                  paste(ident(id),TYPE, ERRORMODELTERM,
-                        ";\n", LABEL, lit(label),
-                        #";\n", HASORDER, lit(order),
-                        #";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "),
-                        #";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n "),
-                        ";\n", paste(HASPART, listAsTTL(covarianceStructure), collapse = " ;\n "),
-                        ";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "), #TODO move from term to effects
-                        ".\n")
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, ERRORMODELTERM
+                        )
                 }
               )
   )}
@@ -441,14 +423,10 @@ FixedModelTerm <- {
   setRefClass("FixedModelTerm",
               contains = "ModelTerm",
               methods = list(
-                asTTL = function() {
-                  paste(ident(id),TYPE, FIXEDMODELTERM, 
-                        ";\n", LABEL, lit(label),
-                        ";\n", HASORDER, lit(order),
-                        ";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "),
-                        ";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n "),
-                        #";\n", paste("ESTIMATOR_TO_MOVE", listAsTTL(estimate), collapse = " ;\n "),
-                        ".\n")
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, FIXEDMODELTERM
+                        )
                 }
               )
   )}
@@ -467,7 +445,7 @@ FixedModelTerm <- {
 
 Effect <- {
   setRefClass("Effect",
-              contains = "OntologyEntity",
+              contains = "ModelParameter",
               fields= list(
                 correspondingVarLevels = "list", #of Levels (for now)
                 describesValueOf = "ANY", #dependent variable
@@ -475,23 +453,23 @@ Effect <- {
               ),
               methods = list(
                 initialize = function(..., levels, describesValueOf) {
-                  callSuper(...)
+                  callSuper(type="Effect", ...)
                   tmp <- listOfStringsToObjects("VariableLevel", levels)
                   .self$correspondingVarLevels <- tmp
                   .self$describesValueOf <- describesValueOf
                 },
-                asTTL = function() {
-                  paste(ident(id), TYPE, EFFECT,
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, EFFECT,
                         ";\n", TYPE, MODELPARAMETER,
-                        ";\n", LABEL, lit(label),
                         if (length(correspondingVarLevels) > 0) {
                           paste(";\n", paste(ISABOUT, listAsTTL(correspondingVarLevels), collapse = " ;\n "))
                         },
                         if (length(estimate) > 0) {
                           paste(";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "))
-                        },
+                        }
                         #";\n", DESCRIBESVALUEOF, describesValueOf, # remove or generate automatically
-                        ".\n")
+                      )
                 }
               )
   )}
@@ -516,18 +494,18 @@ Lmm <- {
                   .self$formula <- formula
                   #.self$residual <- resid
                 },
-                asTTL = function() {
-                  paste(ident(id), TYPE, LMM,
-                        ";\n", LABEL, lit(label),
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, LMM,
                         ";\n", FORMULA, lit(deparse(formula)),
                         #";\n", CRITREML, criterionREML,
                         #";\n", CRITAIC, criterionAIC,
                         ";\n", ISMODELFOR, listAsTTL(dependentVariable),
                         ";\n", paste(HASTERM, listAsTTL(independentFixedTerm), collapse = " ;\n "),
                         ";\n", paste(HASTERM, listAsTTL(independentRandomTerm), collapse = " ;\n "),
-                        ";\n", paste(HASTERM, listAsTTL(errorTerm), collapse = " ;\n "),
-                        #";\n", HASTERM, lit("??? residual ???"),
-                        ".\n")
+                        ";\n", paste(HASTERM, listAsTTL(errorTerm), collapse = " ;\n ")
+                        #";\n", HASTERM, lit("??? residual ???")
+                        )
                 }
               )
   )}
@@ -551,9 +529,10 @@ Process <- {
                   callSuper(...)
                   .self$processType <- processType
                 },
-                asTTL = function() {
+                getTTL = function() {
                   gsub(pattern=" +", rep=" ",
-                    paste(ident(id), TYPE, get(processType),
+                    paste(callSuper(),
+                          ";\n", TYPE, get(processType),
                         if (length(hasInput) > 0) {
                           paste(";\n", paste(HASINPUT, listAsTTL(hasInput), collapse = " ;\n "))
                         },
@@ -562,8 +541,8 @@ Process <- {
                         },
                         if (length(hasPart) > 0) {
                           paste(";\n", paste(HASPART, listAsTTL(hasPart), collapse = " ;\n "))
-                        },
-                        ".\n")
+                        }
+                        )
                   )}
               )
   )}
