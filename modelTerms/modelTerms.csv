@@ -45,3 +45,5 @@ Testing;;xxx:testing;xxx:testing;
 DrawingConclusions;;stato:drawing_conclusions;stato:STATO_0000673 ;
 hasInput;;stato:has_specified_input ;stato:has_specified_input ;
 hasOutput;;stato:has_specified_output ;stato:has_specified_output ;
+dependentVariable;;stato:study_design_dependent_variable;http://purl.obolibrary.org/obo/OBI_0000751#studyDesignDependentVariable;
+independentVariable;;stato:study_design_independent_variable;http://purl.obolibrary.org/obo/OBI_0000750#studyDesignDependentVariable;

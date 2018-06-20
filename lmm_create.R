@@ -25,7 +25,7 @@ getFixedTerms <- function(mod) {
     interact <- 0 # a matrix with all combinations of levels for the term, to be used for Effects in the next paragraph
     for (v in varLabs) {
       levels <- levels(ref_grid(mod))[[v]]
-      var <- CategoricalVariable(label = v, levels = levels)
+      var <- CategoricalVariable(label = v, levels = levels, type="IndependentVariable")
       fixTer$variable <- append(fixTer$variable, var)
       
       # add new column with levels (constructing a cartesian product of levels of variables)
@@ -75,8 +75,8 @@ getFixedTerms <- function(mod) {
 # this time from summary(m) rather then m itself
 getFixedEstimation <- function(mod) {
   
-  procEst <- Process("paramEstimation", processType="MODELPARAMETERESTIMATION")
-  procDfAppr <- Process("dfApproximation", processType="DFAPPROXIMATION")
+  procEst <- Process("paramEstimation", processType="ModelParameterEstimation")
+  procDfAppr <- Process("dfApproximation", processType="DfApproximation")
   procTest <- Process("testing", processType="TESTING")
   
   fixefs <- summary(mod)$coefficients # get estimated effects
@@ -135,11 +135,13 @@ getVariables <- function(mod) {
   for (i in 1:length(mod@frame)) {
     varName <- names(mod@frame[i])
     varLevels <- levels(mod@frame[[i]])
-    variable <- NULL
-    if (is.null(varLevels)) {
-      variable <- Variable(varName)
-    } else {
-      variable <- CategoricalVariable(varName, levels = varLevels)
+    variable <- getEntity("Variable", varName)
+    if (is.null(variable)) {
+      if (is.null(varLevels)) {
+        variable <- Variable(varName, type="UNKNOWN YET")
+      } else {
+        variable <- CategoricalVariable(varName, levels = varLevels, type="UNKNOWN YET")
+      }
     }
     #print(variable$asTTL())
     variables <- append(variables, variable)
@@ -158,6 +160,8 @@ getRandomTerms2 <- function(mod) {
     termName <- names(mod@flist[i]) # get variable names
     termVarNames <- unlist(strsplit(termName,":"))
     termVariables <- listOfStringsToObjects("Variable", termVarNames)
+    sapply(termVariables, function(x) { x$type <- "IndependentVariable"})
+    
     assert_that(length(termVarNames) == length(termVariables))
     randomTerm <- RandomModelTerm(termName, variable = termVariables)
     #cat(randomTerm$asTTL())
@@ -184,7 +188,7 @@ getRandomTerms2 <- function(mod) {
 
 getRandomPrediction <- function(mod) {
   
-  procPred <- Process("paramPrediction", processType="MODELPARAMETERESTIMATION")
+  procPred <- Process("paramPrediction", processType="ModelParameterEstimation")
   
   estimates <- list()
   ranefs <- ranef(mod)
@@ -210,7 +214,7 @@ getRandomPrediction <- function(mod) {
 
 getVarCorrEstimation <- function(mod) {
   
-  procEst <- Process("varCompEstimation", processType="MODELPARAMETERESTIMATION")
+  procEst <- Process("varCompEstimation", processType="ModelParameterEstimation")
   
   estimates <- list()
   
@@ -241,59 +245,6 @@ getVarCorrEstimation <- function(mod) {
   list(procEst)
 }
 
-getRandomTerms <- function(mod) {
-  
-  randomTerms <- list()
-  
-  for (r in names(ranef(mod))) {
-    
-    randTerm <- RandomModelTerm(label = r)
-    
-    varLabs <- unlist(strsplit(r,":")) #variable labels
-    ranef <- ranef(mod)[[r]] #effects
-    effLevLab <- row.names(ranef) #effectLevs
-    effLevs <- strsplit(effLevLab, ":")
-    
-    # get levels and create variables
-    vars <- list()
-    for (i in 1:length(varLabs)){
-      tmp <- character()
-      lapply(effLevs, function(x) tmp<<-c(tmp,x[i]))
-      levs <- unique(tmp)
-      var <- CategoricalVariable(varLabs[i], levels=levs)
-      vars <- append(vars, var)
-    }
-    randTerm$variable <- vars
-    
-    # get effects
-    effects <- list()
-    estimates <- list()
-    for (i in 1:length(effLevLab)) {
-      effLab <- effLevLab[i]
-      levs <- effLevs[[i]]
-      ef <- Effect(effLab, levels=levs, describesValueOf = "???") #TODO dependent variable (or other things in multidimensional model)
-      effects <- append(effects, ef)
-      value <- ranef[i,]
-      est <- Estimate(label = effLab, value = value, parameter = ef)
-      estimates <- append(estimates, est)
-    }
-    randTerm$effect <- effects;
-    randTerm$estimate <- estimates;
-    
-    # get covariance structure for term
-    paramName <- "sigma"
-    covStr <- CovarianceStructure(label=r, params=paramName)
-    param <- getEntity("ModelParameter", paramName)
-    value <- summary(mod)$varcor[[r]][1]
-    est <- Estimate(label = paramName, value = value, parameter = param)
-    covStr$estimate <- list(est)
-    
-    randTerm$covarianceStructure <- list(covStr)
-      
-    randomTerms <- append(randomTerms, randTerm)
-  }
-  randomTerms
-}
 # a three-dimensional array with symmetric faces; each face contains the variance-covariance matrix for a particular level of the grouping factor
 #r_condVar <- ranef(m1_basic, condVar=TRUE)
 #attr(r_condVar[[1]], "postVar")
@@ -330,7 +281,7 @@ getErrorTerm <- function(mod) {
 
 getDependentVariables <- function(m) {
   depVar <- list()
-  var <- Variable(label = as.character(formula(m))[2])
+  var <- Variable(label = as.character(formula(m))[2], type="DependentVariable")
   depVar <- append(depVar$dependentVariable, var)
   depVar
 }
@@ -339,11 +290,11 @@ getDependentVariables <- function(m) {
 ############################ run ################################
 
 
-modelName <- deparse(quote(m6_basic)) # m0_basic
+modelName <- deparse(quote(m3_basic)) # m0_basic
 mod <- get(modelName)
 #summary(m)$vcov # TODO
 
-modelFitting <- Process("modelFitting0", processType="MODELFITTING")
+modelFitting <- Process("modelFitting0", processType="ModelFitting")
 #modelFitting$hasPart <- append(modelFitting$hasPart, c(
                                #Process("varCompEstimation", processType="MODELPARAMETERESTIMATION"),
                                #Process("paramPrediction", processType="MODELPARAMETERESTIMATION")

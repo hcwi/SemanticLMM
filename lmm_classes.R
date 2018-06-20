@@ -1,3 +1,5 @@
+########################## aux functions ########################## 
+
 init <- function() {
   
   source("term_mappings_reader.R")
@@ -23,71 +25,6 @@ init <- function() {
   
 }
 init()
-
-OntologyEntity <- {setRefClass("OntologyEntity",
-                              fields = list(
-                                id = "character",
-                                label ="character"
-                              ),
-                              methods = list(
-                                initialize = function(label) {
-                                  .self$label <- label
-                                  register(.self)
-                                },
-                                show = function() {
-                                  queue <<- list()
-                                  queue[.self$id] <<- FALSE
-                                  cat(asTTL())
-                                  i <- 1
-                                  while (TRUE) {
-                                    if (i <= length(queue)) {
-                                      key <- names(queue)[i]
-                                      #print(paste("Checking", key, "==", queue[key], "(", i, "/", length(queue), ")"))
-                                      if (queue[key] == TRUE) {
-                                        queue[key] <<- FALSE # sets a key to be printed (if still ahead); 
-                                        # if the object has been put in the queue before the current one (and thus already printed), 
-                                        # the change to 'FALSE' doesn't make any difference, as the loop doesn't go back
-                                        obj <- reg[[key]]
-                                        assert_that(is(obj, "OntologyEntity"))
-                                        cat(obj$asTTL())
-                                      }
-                                      i <- i + 1
-                                    } else {
-                                      break
-                                    }
-                                  }
-                                  queue <<- NULL
-                                },
-                                ident = function(identifier) {
-                                  paste0("<", gsub(identifier, patt=":", rep="."), ">")
-                                },
-                                lit = function(literal) {
-                                  paste0("\"", literal, "\"")
-                                },
-                                asTTL = function() {
-                                  paste(getTTL(), ".\n")
-                                },
-                                getTTL = function() {
-                                  paste(ident(id), TYPE, "OntologyEntity",
-                                        ";\n", LABEL, lit(label))
-                                },
-                                listAsTTL = function(oo) {
-                                  ids = "" # concatenated IDs from the 'oo' list
-                                  for (o in oo) {
-                                    assert_that(is(o, "OntologyEntity"))
-                                    ids <- paste(ids, ident(o$id), sep=", ") # add ID to the string
-                                    if (!exists("queue") || is.null(queue)) {
-                                      queue <<- list()
-                                    }
-                                    queue[o$id] <<- TRUE # add to the queue and / or set printing (if already exists)
-                                  }
-                                  substring(ids,3) # return concatenated without initial separators ', '
-                                }
-                              )
-)}
-#oe <- OntologyEntity(label = "eoLabel")
-#oe
-#str(oe)
 
 reg #list registered objects
 getEntity <- function(className, label) {
@@ -135,13 +72,83 @@ listOfStringsToObjects <- function(objClass = "Level", objNames) {
         }
       }
       stop(paste("objNames is a list of unknown type: ", class(objNames[[1]]),
-                   "Should be a list of OntologyEntities or a Vector of characters"))
+                 "Should be a list of OntologyEntities or a Vector of characters"))
     } 
-
+    
     stop("Unknown type of objNames")
   }
   
 }
+
+########################## LMM model classes ########################## 
+
+OntologyEntity <- {setRefClass("OntologyEntity",
+                              fields = list(
+                                id = "character",
+                                label ="character"
+                              ),
+                              methods = list(
+                                initialize = function(label) {
+                                  .self$label <- label
+                                  register(.self)
+                                },
+                                show = function() {
+                                  queue <<- list()
+                                  queue[.self$id] <<- FALSE
+                                  cat(asTTL())
+                                  i <- 1
+                                  while (TRUE) {
+                                    if (i <= length(queue)) {
+                                      key <- names(queue)[i]
+                                      #print(paste("Checking", key, "==", queue[key], "(", i, "/", length(queue), ")"))
+                                      if (queue[key] == TRUE) {
+                                        queue[key] <<- FALSE # sets a key to be printed (if still ahead); 
+                                        # if the object has been put in the queue before the current one (and thus already printed), 
+                                        # the change to 'FALSE' doesn't make any difference, as the loop doesn't go back
+                                        obj <- reg[[key]]
+                                        assert_that(is(obj, "OntologyEntity"))
+                                        cat(obj$asTTL())
+                                      }
+                                      i <- i + 1
+                                    } else {
+                                      break
+                                    }
+                                  }
+                                  queue <<- NULL
+                                },
+                                ident = function(identifier) {
+                                  paste0("<", gsub(identifier, patt=":", rep="."), ">")
+                                },
+                                lit = function(literal) {
+                                  paste0("\"", literal, "\"")
+                                },
+                                mapping = function(type) {
+                                  paste0(get(toupper(type)))
+                                },
+                                asTTL = function() {
+                                  paste(getTTL(), ".\n")
+                                },
+                                getTTL = function() {
+                                  paste(ident(id), TYPE, "OntologyEntity",
+                                        ";\n", LABEL, lit(label))
+                                },
+                                listAsTTL = function(oo) {
+                                  ids = "" # concatenated IDs from the 'oo' list
+                                  for (o in oo) {
+                                    assert_that(is(o, "OntologyEntity"))
+                                    ids <- paste(ids, ident(o$id), sep=", ") # add ID to the string
+                                    if (!exists("queue") || is.null(queue)) {
+                                      queue <<- list()
+                                    }
+                                    queue[o$id] <<- TRUE # add to the queue and / or set printing (if already exists)
+                                  }
+                                  substring(ids,3) # return concatenated without initial separators ', '
+                                }
+                              )
+)}
+#oe <- OntologyEntity(label = "eoLabel")
+#oe
+#str(oe)
 
 ModelParameter <- {setRefClass("ModelParameter",
                               contains = "OntologyEntity",
@@ -186,33 +193,6 @@ Hypothesis <- {setRefClass("Hypothesis",
                              }
                            )
 )}
-
-# StatisticalTest <- {setRefClass("StatisticalTest", 
-#                            contains = "OntologyEntity",
-#                            fields = list(
-#                              pvalue = "numeric",
-#                              df = "numeric",
-#                              testStatistic = "list", #Statistic
-#                              hypothesis = "list"
-#                            ),
-#                            methods = list(
-#                              initialize = function(... , pvalue, df, testStatistic, hypothesis) {
-#                                callSuper(...)
-#                                .self$pvalue <- pvalue
-#                                .self$df <- df
-#                                .self$testStatistic <- testStatistic
-#                                .self$hypothesis <- hypothesis
-#                              },
-#                              getTTL = function() {
-#                                paste(callSuper(),
-#                                      ";\n", TYPE, STATITICALHYPOTHESISTEST,
-#                                      ";\n", PVALUE, lit(pvalue),
-#                                      ";\n", DF, lit(df),
-#                                      ";\n", "xxx:_has_input_", listAsTTL(testStatistic),
-#                                      ";\n", ISABOUT, listAsTTL(hypothesis))
-#                              }
-#                            )
-# )}
 
 Statistic <- {setRefClass("Statistic", 
                           contains = "OntologyEntity",
@@ -269,22 +249,6 @@ Estimate <- {setRefClass("Estimate",
 #est
 #cat(est$asTTL())
 
-Variable <- {setRefClass("Variable",
-                         contains = "OntologyEntity",
-                         fields = list(
-                         ),
-                         methods = list(
-                           initialize = function(...) {
-                             callSuper(...)
-                           },
-                           getTTL = function() {
-                             paste(callSuper(),
-                                   ";\n", TYPE, VARIABLE
-                             )
-                           }
-                         )
-)}
-
 VariableLevel <- {setRefClass("VariableLevel",
                               contains = "OntologyEntity",
                               fields = list(
@@ -301,8 +265,26 @@ VariableLevel <- {setRefClass("VariableLevel",
                                         ";\n", ISLEVELOF, listAsTTL(list(variable)))
                                 }
                               )
-)
-}
+)}
+
+Variable <- {setRefClass("Variable",
+                         contains = "OntologyEntity",
+                         fields = list(
+                           type = "character"
+                         ),
+                         methods = list(
+                           initialize = function(..., type) {
+                             callSuper(...)
+                             .self$type <- type
+                           },
+                           getTTL = function() {
+                             paste(callSuper(),
+                                   ";\n", TYPE, VARIABLE,
+                                   ";\n", TYPE, mapping(type)
+                                   )
+                           }
+                         )
+)}
 
 CategoricalVariable <- {setRefClass("CategoricalVariable",
                          contains = "Variable",
@@ -325,11 +307,29 @@ CategoricalVariable <- {setRefClass("CategoricalVariable",
                            }
                          )
 )}
+
+#####
+# CategoricalIndependentVariable <- {setRefClass("CategoricalIndependentVariable",
+#                                               contains = "CategoricalVariable",
+#                                               methods = list(
+#                                                 initialize = function(... , levels=character()) {
+#                                                   callSuper(..., levels = levels)
+#                                                 },
+#                                                 getTTL = function() {
+#                                                   paste(callSuper(),
+#                                                         ";\n", TYPE, CATEGORICALINDEPENDENTVARIABLE
+#                                                   )
+#                                                 }
+#                                               )
+#                                               )}
+                                              
 #v1 <- CategoricalVariable(label="infection", levels = c("infected", "non-infected"))
 #v2 <- CategoricalVariable(label="infraname", levels = c("CamB1", "Maresi", "Soldo"))
 #t1 <- Variable(label="plantHeight")
 #camB1 <- VariableLevel(label="CamB1", variable=v2)
 #camB1
+#v3 <- CategoricalIndependentVariable(label="infraname", levels = c("CamB1", "Maresi", "Soldo")) 
+#####
 
 ModelTerm <- {
   setRefClass("ModelTerm",
@@ -356,40 +356,6 @@ ModelTerm <- {
                 }
               )
   )}
-
-CovarianceStructure <- {
-  setRefClass("CovarianceStructure",
-              contains = "OntologyEntity",
-              fields = list(
-                covarianceModel = "character",
-                params = "list", # of ModelParams
-                estimate = "list" # of Estimates of Params
-              ),
-              methods = list(
-                initialize = function(..., covarianceModel = "Identity", params = list("sigma2e")) {
-                  callSuper(...)
-                  #TODO correct choosing cov model
-                  .self$covarianceModel <- covarianceModel
-                  tmp <- list()
-                  for (i in params) {
-                    tmp <- append(tmp, ModelParameter(label=i, type="variance param"))
-                  }
-                  .self$params <- tmp
-                },
-                getTTL = function() {
-                  paste(callSuper(),
-                        ";\n", TYPE, COVARIANCESTRUCTURE, #TODO correct choosing cov model
-                        ";\n", TYPE, COVIDENTITY,
-                        ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n "),
-                        if (length(estimate) > 0) {
-                          paste(";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "))
-                        })
-                }
-              )
-              )
-}
-#cs <- CovarianceStructure(label = "blockTerm", params="sigma")
-#cs
 
 RandomModelTerm <- {
   setRefClass("RandomModelTerm",
@@ -442,6 +408,40 @@ FixedModelTerm <- {
 
 #rmt1 <- RandomModelTerm(label="blockTerm")
 #rmt1$variable <- list(CategoricalVariable(label="Block", levels=c("b1", "b2", "b3")), CategoricalVariable(label="Rep", levels=c("r1", "r2", "r3")))
+
+CovarianceStructure <- {
+  setRefClass("CovarianceStructure",
+              contains = "OntologyEntity",
+              fields = list(
+                covarianceModel = "character",
+                params = "list", # of ModelParams
+                estimate = "list" # of Estimates of Params
+              ),
+              methods = list(
+                initialize = function(..., covarianceModel = "Identity", params = list("sigma2e")) {
+                  callSuper(...)
+                  #TODO correct choosing cov model
+                  .self$covarianceModel <- covarianceModel
+                  tmp <- list()
+                  for (i in params) {
+                    tmp <- append(tmp, ModelParameter(label=i, type="variance param"))
+                  }
+                  .self$params <- tmp
+                },
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, COVARIANCESTRUCTURE, #TODO correct choosing cov model
+                        ";\n", TYPE, COVIDENTITY,
+                        ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n "),
+                        if (length(estimate) > 0) {
+                          paste(";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "))
+                        })
+                }
+              )
+  )
+}
+#cs <- CovarianceStructure(label = "blockTerm", params="sigma")
+#cs
 
 Effect <- {
   setRefClass("Effect",
@@ -532,7 +532,7 @@ Process <- {
                 getTTL = function() {
                   gsub(pattern=" +", rep=" ",
                     paste(callSuper(),
-                          ";\n", TYPE, get(processType),
+                          ";\n", TYPE, mapping(processType),
                         if (length(hasInput) > 0) {
                           paste(";\n", paste(HASINPUT, listAsTTL(hasInput), collapse = " ;\n "))
                         },
