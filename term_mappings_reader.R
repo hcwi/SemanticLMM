@@ -29,10 +29,11 @@ prefixes <- "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix iao: <http://purl.obolibrary.org/obo/iao.owl#> .
 @prefix bfo: <http://purl.obolibrary.org/obo/bfo.owl#> .
 @prefix ro: <http://purl.obolibrary.org/obo/ro.owl#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix xxx: <UNKNOWN_TO_BE_REPLACED#> .
 
 "
 
 
-RTermListFile <- prepareTermsFromOntology("STATO_SIMPLE") #STATO")
+RTermListFile <- prepareTermsFromOntology("STATO") #STATO_SIMPLE")
 source(RTermListFile)

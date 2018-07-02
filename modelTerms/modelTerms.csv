@@ -1,49 +1,56 @@
-Robject;LMM;STATO_SIMPLE;STATO;comment
-LMM;LinearMixedModel;stato:mixed_model;http://purl.obolibrary.org/obo/STATO_0000189#MixedModel;not only linear!
-Variable;variable;stato:variable;http://purl.obolibrary.org/obo/STATO_0000258#Variable;
-CategoricalVariable;categoricalVariable;stato:categorical_variable;http://purl.obolibrary.org/obo/STATO_0000252#CategoricalVariable;
-ModelTerm;modelTerm;xxx:model_term;xxx:model_term;
-FixedModelTerm;fixedModelTerm;xxx:model_fixed_effect_term;xxx:model_fixed_effect_term;
-RandomModelTerm;RandomModelTerm;xxx:model_random_effect_term;xxx:model_random_effect_term;
-ErrorModelTerm;ErrorModelTerm;xxx:model_error_effect_term;xxx:model_error_effect_term;?
-ModelParameter;ModelParameter;stato:model_parameter;http://purl.obolibrary.org/obo/STATO_0000034#ModelParameter;
-Effect;effect;xxx:effect;xxx:effect;
-Formula;formula;xxx:formula;xxx:formula;
-Estimate;estimate;stato:model_parameter_estimate;http://purl.obolibrary.org/obo/STATO_0000144#ModelParameterEstimate;
-Value;value;rdf:value;rdf:value;
-se;se;xxx:standard_error;xxx:standardError;standard error of the mean
-type;rdf:type;a;rdf:type;
-label;rdfs:label;rdfs:label;rdfs:label;
-hasLevel;hasLevel;stato:has_part;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
-isLevelOf;isLevelOf;stato:is_part_of;Êhttp://purl.obolibrary.org/obo/BFO_0000050#isPartOf;
-hasOrder;hasOrder;xxx:has_order;xxx:has_order;
-hasEffect;defines;stato:declares;http://purl.obolibrary.org/obo/STATO_0000001#declares;
-isAbout;isAbout;ro:is_about;http://purl.obolibrary.org/obo/IAO_0000136#isAbout;
-hasPart;hasPart;stato:has_part;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
-hasTerm;hasPart;stato:has_part;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
-isModelFor;isModelFor;stato:is_model_for;xxx:http://purl.obolibrary.org/obo/stato.owl#is_model_for;
-VariableLevel;VariableLevel;stato:factor_level;http://purl.obolibrary.org/obo/STATO_0000265#FactorLevel;
-isEstimateOf;isEstiamateOf;stato:estimator_of;http://purl.obolibrary.org/obo/STATO_0000403#estimatorOf;
-hypothesis;hypothesis;stato:hypothesis;http://purl.obolibrary.org/obo/STATO_0000065#hypothesis;
-Pvalue;p-value;stato:p-value;http://purl.obolibrary.org/obo/OBI_0000175#p-value;
-Qvalue;q-value;stato:q-value;http://purl.obolibrary.org/obo/OBI_0001442#q-value;
-statiticalHypothesisTest;;stato:statistical_hypothesis_test;http://purl.obolibrary.org/obo/OBI_0000673#statistical hypothesis test;
-nullHypothesis;nullHypothesis;stato:null_hypothesis;http://purl.obolibrary.org/obo/STATO_0000057#null hypothesis;
-describesValueOf;isValueOf;stato:specifies_value_of;http://purl.obolibrary.org/obo/OBI_0001927#specifiesValueOf;
-CovarianceStructure;CovarianceStructure;stato:covariance_structure;http://purl.obolibrary.org/obo/STATO_0000346#CovarianceStructure;
-CovIdentity;CovarianceStructureIdentity;xxx:identity_covariance_structure;xxx:identity_covariance_structure;
-critREML;;;;
-critAIC;;;;
-tmp_est;tmp_est;xxx:tmp_est;xxx:tmp_est;
-df;df;xxx:df;xxx:df;
-TestStatistic;test_statistic;stato:Statistic;stato:Statistic;???
-ModelFitting;;stato:model_fitting;stato:STATO_0000218#model fitting;
-ModelParameterEstimation;;stato:model_parameter_estimation;stato:STATO_0000119#Model parameter estimation;
-ContrastEstimation;;stato:contrast_estimation;stato:STATO_0000383#contrast estimation;
-DfApproximation;;stato:df_approximation;stato:STATO_0000472# degree of freedom approximation;
-Testing;;xxx:testing;xxx:testing;
-DrawingConclusions;;stato:drawing_conclusions;stato:STATO_0000673 ;
-hasInput;;stato:has_specified_input ;stato:has_specified_input ;
-hasOutput;;stato:has_specified_output ;stato:has_specified_output ;
-dependentVariable;;stato:study_design_dependent_variable;http://purl.obolibrary.org/obo/OBI_0000751#studyDesignDependentVariable;
-independentVariable;;stato:study_design_independent_variable;http://purl.obolibrary.org/obo/OBI_0000750#studyDesignDependentVariable;
+Robject;LMM;STATO_SIMPLE;STATO;STATO_full;comment
+LMM;LinearMixedModel;stato:linear_mixed_model;obo:STATO_0000189;http://purl.obolibrary.org/obo/STATO_0000464#LinearMixedModel;not only linear!
+Variable;variable;stato:variable;obo:STATO_0000258;http://purl.obolibrary.org/obo/STATO_0000258#Variable;
+CategoricalVariable;categoricalVariable;stato:categorical_variable;obo:STATO_0000252;http://purl.obolibrary.org/obo/STATO_0000252#CategoricalVariable;
+ModelTerm;modelTerm;xxx:model_term;obo:STATO_0000466;http://purl.obolibrary.org/obo/STATO_0000466#Model term;
+FixedModelTerm;fixedModelTerm;xxx:model_fixed_effect_term;obo:STATO_0000468;http://purl.obolibrary.org/obo/STATO_0000468#Fixed model term;
+RandomModelTerm;RandomModelTerm;xxx:model_random_effect_term;obo:STATO_0000467;http://purl.obolibrary.org/obo/STATO_0000467#Random model term;
+ErrorModelTerm;ErrorModelTerm;xxx:model_error_effect_term;obo:STATO_0000470;http://purl.obolibrary.org/obo/STATO_0000470#Error model term;?
+ModelParameter;ModelParameter;stato:model_parameter;obo:STATO_0000034;http://purl.obolibrary.org/obo/STATO_0000034#ModelParameter;
+Effect;effect;xxx:effect;xxx:effect;xxx:effect;
+Formula;formula;xxx:formula;xxx:formula;xxx:formula;
+Estimate;estimate;stato:model_parameter_estimate;obo:STATO_0000144;http://purl.obolibrary.org/obo/STATO_0000144#ModelParameterEstimate;
+Value;value;rdf:value;rdf:value;rdf:value;
+se;se;stato:standard_error;obo:OBI_0000235;http://purl.obolibrary.org/obo/OBI_0000235#standardError;standard error of the mean
+type;rdf:type;a;rdf:type;rdf:type;
+label;rdfs:label;rdfs:label;rdfs:label;rdfs:label;
+hasLevel;hasLevel;stato:has_part;obo:BFO_0000051;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;obo:BFO_0000051#hasPart
+isLevelOf;isLevelOf;stato:is_part_of;obo:BFO_0000050;http://purl.obolibrary.org/obo/BFO_0000050#isPartOf;
+hasEffect;defines;stato:declares;obo:STATO_0000001;http://purl.obolibrary.org/obo/STATO_0000001#declares;
+isAbout;isAbout;ro:is_about;obo:IAO_0000136;http://purl.obolibrary.org/obo/IAO_0000136#isAbout;
+hasPart;hasPart;stato:has_part;obo:BFO_0000051;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
+hasTerm;hasPart;stato:has_part;obo:BFO_0000051;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
+VariableLevel;VariableLevel;stato:factor_level;obo:STATO_0000265;http://purl.obolibrary.org/obo/STATO_0000265#FactorLevel;
+isEstimateOf;isEstiamateOf;stato:estimator_of;obo:STATO_0000403;http://purl.obolibrary.org/obo/STATO_0000403#estimatorOf;
+hypothesis;hypothesis;stato:hypothesis;obo:STATO_0000065;http://purl.obolibrary.org/obo/STATO_0000065#hypothesis;
+Pvalue;p-value;stato:p-value;obo:OBI_0000175;http://purl.obolibrary.org/obo/OBI_0000175#p-value;
+Qvalue;q-value;stato:q-value;obo:OBI_0001442;http://purl.obolibrary.org/obo/OBI_0001442#q-value;
+nullHypothesis;nullHypothesis;stato:null_hypothesis;obo:STATO_0000057;http://purl.obolibrary.org/obo/STATO_0000057#null hypothesis;
+describesValueOf;isValueOf;stato:specifies_value_of;obo:OBI_0001927;http://purl.obolibrary.org/obo/OBI_0001927#specifiesValueOf;
+CovarianceStructure;CovarianceStructure;stato:covariance_structure;obo:STATO_0000346;http://purl.obolibrary.org/obo/STATO_0000346#CovarianceStructure;
+CovIdentity;CovarianceStructureIdentity;xxx:identity_covariance_structure;xxx:identity_covariance_structure;xxx:identity_covariance_structure;
+critREML;;xxx:critREML;xxx:critREML;xxx:critREML;
+critAIC;;stato:AkaikeInformationCriterion;obo:STATO_0000325;http://purl.obolibrary.org/obo/STATO_0000325#CovarianceStructure;
+critAICdf;;xxx:critAIC_df;xxx:critAIC_df;xxx:critAIC_df;
+tmp_est;tmp_est;xxx:tmp_est;xxx:tmp_est;xxx:tmp_est;
+df;df;stato:df;obo:STATO_0000069;http://purl.obolibrary.org/obo/STATO_0000069#numbrOfDegreesOfFreedom;
+Statistic;statistic;stato:Statistic;obo:STATO_0000039;http://purl.obolibrary.org/obo/STATO_0000039#statistic;???
+FStatistic;f_statistic;stato:F_statistic;obo:STATO_0000282;http://purl.obolibrary.org/obo/STATO_0000282#Fstatistic;
+TStatistic;t_statistic;stato:T_statistic;obo:STATO_0000176;http://purl.obolibrary.org/obo/STATO_0000176#Tstatistic;
+ModelFitting;;stato:model_fitting;obo:STATO_0000218;http://purl.obolibrary.org/obo/STATO_0000218#model fitting;
+ModelParameterEstimation;;stato:model_parameter_estimation;obo:STATO_0000119;http://purl.obolibrary.org/obo/STATO_0000119#Model parameter estimation;
+ContrastEstimation;;stato:contrast_estimation;obo:STATO_0000383;http://purl.obolibrary.org/obo/STATO_0000383#contrast estimation;
+DfCalculation;;stato:df_approximation;obo:STATO_0000472;http://purl.obolibrary.org/obo/STATO_0000472# degree of freedom approximation;
+Testing;;xxx:testing;obo:OBI_0000673;http://purl.obolibrary.org/obo/OBI_0000673#statistical hypothesis test;
+Ftest;;stato:F_test;obo:STATO_0000086;http://purl.obolibrary.org/obo/STATO_0000086#Ftest;
+DrawingConclusions;;stato:drawing_conclusions;obo:STATO_0000673 ;http://purl.obolibrary.org/obo/STATO_0000673 ;
+hasInput;;stato:has_specified_input ;obo:OBI_0000293;http://purl.obolibrary.org/obo/OBI_0000293#has_specified_input;
+hasOutput;;stato:has_specified_output ;obo:OBI_0000299;http://purl.obolibrary.org/obo/OBI_0000299#has_specified_output;
+dependentVariable;;stato:study_design_dependent_variable;obo:OBI_0000751;http://purl.obolibrary.org/obo/OBI_0000751#studyDesignDependentVariable;
+independentVariable;;stato:study_design_independent_variable;obo:OBI_0000750;http://purl.obolibrary.org/obo/OBI_0000750#studyDesignDependentVariable;
+SatterthwaiteApprox;;stato:Satterthwaite_degree_of_freedom_approximation;obo:STATO_0000474;http://purl.obolibrary.org/obo/STATO_0000474#SatterthwaiteDfApprox;
+KenwardRogerApprox;;stato:kenward-roger_degree_of_freedom_approximation;obo:STATO_0000473;http://purl.obolibrary.org/obo/STATO_0000473#KenwardRogerDfApprox;
+isModelFor;isModelFor;stato:is_model_for;<http://purl.obolibrary.org/obo/stato.owl#is_model_for> ;http://purl.obolibrary.org/obo/stato.owl#is_model_for;
+hasOrder;hasOrderInSequence;stato:has_order;<http://purl.obolibrary.org/obo/stato.owl#has_order> ;http://purl.obolibrary.org/obo/stato.owl#has_order;
+isFunctionOf;;xxx:is_function_of;xxx:is_function_of;xxx:is_function_of;
+ParametricFunction;;xxx:parametric_function;xxx:parametric_function;xxx:parametric_function;
