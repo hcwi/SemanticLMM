@@ -122,6 +122,13 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                 lit = function(literal) {
                                   paste0("\"", literal, "\"")
                                 },
+                                num = function(number) {
+                                  if (length(number) == 0 || number == "") {
+                                     paste0("\"", number, "\"")  
+                                  } else {
+                                    paste0("\"", number, "\"^^xsd:float")  
+                                  }
+                                },
                                 mapping = function(type) {
                                   paste0(get(toupper(type)))
                                 },
@@ -129,8 +136,9 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                   paste(getTTL(), ".\n")
                                 },
                                 getTTL = function() {
-                                  paste(ident(id), TYPE, "OntologyEntity",
-                                        ";\n", LABEL, lit(label))
+                                  paste(ident(id), LABEL, lit(label) #,
+                                        #";\n", TYPE, "owl:Thing"
+                                        )
                                 },
                                 listAsTTL = function(oo) {
                                   ids = "" # concatenated IDs from the 'oo' list
@@ -163,7 +171,7 @@ ModelParameter <- {setRefClass("ModelParameter",
                                 getTTL = function() {
                                   paste(callSuper(),
                                         ";\n", TYPE, MODELPARAMETER,
-                                        ";\n", "xxx:TMP_TYPE", lit(type)
+                                        ";\n", TYPE, lit(type)
                                   )
                                 }
                               )
@@ -186,8 +194,8 @@ Hypothesis <- {setRefClass("Hypothesis",
                              getTTL = function() {
                                paste(callSuper(),
                                      ";\n", TYPE, HYPOTHESIS,
-                                     ";\n", PVALUE, lit(pvalue),
-                                     ";\n", QVALUE, lit(qvalue),
+                                     #";\n", PVALUE, num(pvalue),
+                                     #";\n", QVALUE, num(qvalue),
                                      ";\n", ISABOUT, listAsTTL(modelParams)
                                )
                              }
@@ -198,20 +206,24 @@ Statistic <- {setRefClass("Statistic",
                           contains = "OntologyEntity",
                           fields = list(
                             type = "character",
-                            value = "numeric"
+                            value = "numeric",
+                            isAbout = "list"
                           ),
                           methods = list(
-                            initialize = function(... , type, value) {
+                            initialize = function(... , type, value, isAbout = list()) {
                               callSuper(...)
                               .self$value <- value
                               .self$type <- type
+                              .self$isAbout <- isAbout
                             },
                             getTTL = function() {
                               paste(callSuper(),
-                                    ";\n", TYPE, TESTSTATISTIC,
-                                    ";\n", VALUE, lit(value),
-                                    ";\n", TYPE, lit(type))
-                            }
+                                    ";\n", TYPE, STATISTIC,
+                                    ";\n", VALUE, num(value),
+                                    ";\n", TYPE, mapping(type),
+                                    if (length(isAbout) > 0) {
+                                      paste(";\n", paste(ISABOUT, listAsTTL(isAbout), collapse = " ;\n "))}
+                              )}
                           )
 )}
 
@@ -237,10 +249,14 @@ Estimate <- {setRefClass("Estimate",
                             .self$isEstimateOf <- parameter
                           },
                           getTTL = function() {
+                            if(length(se) == 1 && se != "") {
+                              listAsTTL(list(
+                              Statistic(paste0("se_", label), type="se", value=se, isAbout = list(.self))
+                              ))
+                            }
                             paste(callSuper(),
                                   ";\n", TYPE, ESTIMATE,
-                                  ";\n", VALUE, lit(value),
-                                  ";\n", SE, lit(se),
+                                  ";\n", VALUE, num(value),
                                   ";\n", ISESTIMATEOF, listAsTTL(list(isEstimateOf)))
                           }
                         )
@@ -350,10 +366,11 @@ ModelTerm <- {
                   paste(callSuper(),
                         ";\n", TYPE, MODELTERM,
                         ";\n", HASORDER, lit(order),
-                        ";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "),
-                        ";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n "),
-                        ";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n ")) #TODO move from term to effects
-                }
+                        if (length(variable) > 0) {
+                          paste(";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "))
+                        },
+                        ";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n ")
+                )}
               )
   )}
 
@@ -418,7 +435,7 @@ CovarianceStructure <- {
                 estimate = "list" # of Estimates of Params
               ),
               methods = list(
-                initialize = function(..., covarianceModel = "Identity", params = list("sigma2e")) {
+                initialize = function(..., covarianceModel = "covIdentity", params = list("sigma2e")) {
                   callSuper(...)
                   #TODO correct choosing cov model
                   .self$covarianceModel <- covarianceModel
@@ -430,12 +447,10 @@ CovarianceStructure <- {
                 },
                 getTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, COVARIANCESTRUCTURE, #TODO correct choosing cov model
-                        ";\n", TYPE, COVIDENTITY,
-                        ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n "),
-                        if (length(estimate) > 0) {
-                          paste(";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "))
-                        })
+                        ";\n", TYPE, COVARIANCESTRUCTURE,
+                        ";\n", TYPE, mapping(covarianceModel),
+                        ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n ")
+                        )
                 }
               )
   )
@@ -464,9 +479,6 @@ Effect <- {
                         ";\n", TYPE, MODELPARAMETER,
                         if (length(correspondingVarLevels) > 0) {
                           paste(";\n", paste(ISABOUT, listAsTTL(correspondingVarLevels), collapse = " ;\n "))
-                        },
-                        if (length(estimate) > 0) {
-                          paste(";\n", paste(TMP_EST, listAsTTL(estimate), collapse = " ;\n "))
                         }
                         #";\n", DESCRIBESVALUEOF, describesValueOf, # remove or generate automatically
                       )
@@ -486,7 +498,8 @@ Lmm <- {
                 independentRandomTerm = "list", # of ModelTerm
                 errorTerm = "list", # of ModelTerm
                 criterionREML = "numeric",
-                criterionAIC = "numeric"
+                criterionAIC = "numeric",
+                criterionAICdf = "numeric"
               ),
               methods = list(
                 initialize = function(..., formula) {
@@ -498,13 +511,13 @@ Lmm <- {
                   paste(callSuper(),
                         ";\n", TYPE, LMM,
                         ";\n", FORMULA, lit(deparse(formula)),
-                        #";\n", CRITREML, criterionREML,
-                        #";\n", CRITAIC, criterionAIC,
+                        ";\n", ifelse(!is.na(criterionREML), 
+                                      paste(CRITREML, criterionREML),
+                                      paste(CRITAIC, criterionAIC, ";\n", CRITAICDF, criterionAICdf)),
                         ";\n", ISMODELFOR, listAsTTL(dependentVariable),
                         ";\n", paste(HASTERM, listAsTTL(independentFixedTerm), collapse = " ;\n "),
                         ";\n", paste(HASTERM, listAsTTL(independentRandomTerm), collapse = " ;\n "),
                         ";\n", paste(HASTERM, listAsTTL(errorTerm), collapse = " ;\n ")
-                        #";\n", HASTERM, lit("??? residual ???")
                         )
                 }
               )
@@ -522,17 +535,20 @@ Process <- {
                 hasInput = "list",
                 hasOutput = "list",
                 hasPart = "list",
-                processType = "character"
+                processType = "character",
+                type = "character"
               ),
               methods = list(
-                initialize = function(..., processType) {
+                initialize = function(..., processType, type = "") {
                   callSuper(...)
                   .self$processType <- processType
+                  .self$type = type
                 },
                 getTTL = function() {
                   gsub(pattern=" +", rep=" ",
                     paste(callSuper(),
                           ";\n", TYPE, mapping(processType),
+                          if (type != "") {paste(";\n", TYPE, mapping(type))},
                         if (length(hasInput) > 0) {
                           paste(";\n", paste(HASINPUT, listAsTTL(hasInput), collapse = " ;\n "))
                         },
