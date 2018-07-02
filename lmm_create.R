@@ -76,8 +76,9 @@ getFixedTerms <- function(mod) {
 getFixedEstimation <- function(mod) {
   
   procEst <- Process("paramEstimation", processType="ModelParameterEstimation")
-  procDfAppr <- Process("dfApproximation", processType="DfApproximation")
-  procTest <- Process("testing", processType="TESTING")
+  procDfAppr <- Process("dfCalculation", processType="DfCalculation", type="SatterthwaiteApprox")
+  procTest <- Process("testing", processType="testing")
+  procTest$hasPart <- append(procTest$hasPart, procDfAppr)
   
   fixefs <- summary(mod)$coefficients # get estimated effects
   feLabs <- row.names(fixefs)
@@ -87,6 +88,8 @@ getFixedEstimation <- function(mod) {
     feLabs <- sub(feLabs, pattern = varLab, rep="") # remove variable names from effect labels
   }
   feLabs
+  
+  # testing for effects - specific hypotheses
   
   for (i in 1:length(feLabs)) {
     eff <- getEntity("Effect", feLabs[i]) # find effects by labels
@@ -111,21 +114,50 @@ getFixedEstimation <- function(mod) {
       
       procEst$hasOutput <- append(procEst$hasOutput, est)
       
-      #TODO attach these values to sth that is printed
-      hypo <- Hypothesis(label=feLabs[i], pvalue=fixefs[i, "Pr(>|t|)"], modelParams = list(eff))
-      tstat <- Statistic(label="t-stat", type="T-student statistic", value=fixefs[i, "t value"])
-      df <- Statistic(label="df", type="df statistic?", value=fixefs[i, "df"])
-      pval <- Statistic(label="pvalue", type="pvalue", value=fixefs[i, "Pr(>|t|)"])
+      lab <- feLabs[i]
+      hypo <- Hypothesis(label=lab, pvalue=fixefs[i, "Pr(>|t|)"], modelParams = list(eff))
+      tstat <- Statistic(label=paste0("t-stat_", lab), type="Tstatistic", value=fixefs[i, "t value"])
+      df <- Statistic(label=paste0("df_", lab), type="df", value=fixefs[i, "df"])
+      pval <- Statistic(label=paste0("pvalue_", lab), type="pvalue", value=fixefs[i, "Pr(>|t|)"], isAbout=list(hypo))
       
-      procDfAppr$hasOutput <- append(procDfAppr$hasOutput, df)
-      #procDfAppr$processType <- append(procDfAppr$processType, "Sattherwaite approximation") #TODO change 'processType' to list and uncomment
+        #attr(model.matrix(m1_basic), "assign")
       
-      procTest$hasInput <- append(procTest$hasInput, list(df, hypo, tstat))
-      procTest$hasOutput <- append(procTest$hasOutput, list(pval))
+      
+      pDfAppr <- Process(paste0("dfCalculation_", lab), processType="DfCalculation", type="SatterthwaiteApprox")
+      pTest <- Process(paste0("testing_", lab), processType="testing")
+      
+      pDfAppr$hasOutput <- append(pDfAppr$hasOutput, df)
+      pTest$hasInput <- append(pTest$hasInput, list(df, hypo, tstat))
+      pTest$hasOutput <- append(pTest$hasOutput, list(pval))
+      
+      procTest$hasPart <- append(procTest$hasPart, pTest)
+      procDfAppr$hasPart <- append(procDfAppr$hasPart, pDfAppr)
     }
   }
   
-  list(procEst, procDfAppr, procTest)
+  # testing for effects - general hypotheses
+  ano <- anova(mod)
+  effLabs <- row.names(ano)
+  for (lab in effLabs) {
+    term <- getEntity("Term", lab)
+    assert_that(!is.null(term), msg = "No term for name from anova(mod) has been found")
+    
+    hypo <- Hypothesis(label=lab, pvalue=fixefs[i, "Pr(>|t|)"], modelParams = list(eff))
+    fstat <- Statistic(label=paste0("f-stat_", lab), type="Fstatistic", value=ano[lab, "F.value"])
+    df <- Statistic(label=paste0("df_", lab), type="df", value=ano[lab, "NumDF"]) #TODO DenDF for Sattherthwaite approximation ???
+    pval <- Statistic(label=paste0("pvalue_", lab), type="pvalue", value=ano[lab, "Pr(>F)"], isAbout=list(hypo))
+    
+    pDfAppr <- Process(paste0("dfCalculation_", lab), processType="DfCalculation", type="SatterthwaiteApprox")
+    pTest <- Process(paste0("testing_", lab), processType="testing")
+    
+    pDfAppr$hasOutput <- append(pDfAppr$hasOutput, df)
+    pTest$hasInput <- append(pTest$hasInput, list(df, hypo, fstat))
+    pTest$hasOutput <- append(pTest$hasOutput, list(pval))
+    procTest$hasPart <- append(procTest$hasPart, pTest)
+    procDfAppr$hasPart <- append(procDfAppr$hasPart, pDfAppr) 
+  }
+  
+  list(procEst, procTest)
 }
 
 getVariables <- function(mod) {
@@ -268,6 +300,7 @@ getErrorTerm <- function(mod) {
   covStr <- CovarianceStructure(label="identCovStr_e", params=paramName)
   param <- getEntity("ModelParameter", paramName)
   assert_that(!is.null(param))
+  #TODO check sigma(mod)
   value <- getME(mod, "devcomp")[["cmp"]]["sigmaREML"] #TODO other deviance components and fitness? e.g. sigmaML
   est <- Estimate(label = paramName, value = value^2, parameter = param) # unsure - covariance structure has a param (sigma_e), 
                                                                             # the param has estimated value (value) + ... s.e? 
@@ -286,11 +319,21 @@ getDependentVariables <- function(m) {
   depVar
 }
 
+getModel <- function(m) {
+  
+  lmm <- Lmm(label=modelName, formula = formula(mod))
+  lmm$criterionREML <- getME(mod, "devcomp")[["cmp"]]["REML"]
+  if (is.na(lmm$criterionREML)) {
+    lmm$criterionAICdf <- extractAIC(m)[1]
+    lmm$criterionAIC <- extractAIC(m)[2]
+  }
+  lmm
+}
 
 ############################ run ################################
 
 
-modelName <- deparse(quote(m3_basic)) # m0_basic
+modelName <- deparse(quote(m0_basic))
 mod <- get(modelName)
 #summary(m)$vcov # TODO
 
@@ -303,7 +346,7 @@ modelFitting <- Process("modelFitting0", processType="ModelFitting")
                                #Process("testing", processType="TESTING")
 #))
 
-lmm <- Lmm(label=modelName, formula = formula(mod))
+lmm <- getModel(mod)
 lmm$dependentVariable = getDependentVariables(mod)
 lmm$independentFixedTerm <- getFixedTerms(mod)
 lmm$independentRandomTerm <- getRandomTerms2(mod) #getRandomTerms(mod)
