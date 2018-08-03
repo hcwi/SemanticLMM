@@ -31,6 +31,7 @@ prefixes <- "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix ro: <http://purl.obolibrary.org/obo/ro.owl#> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
 @prefix xxx: <UNKNOWN_TO_BE_REPLACED#> .
+@prefix : <http://igr.poznan.pl/lmm/> .
 
 "
 

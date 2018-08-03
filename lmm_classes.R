@@ -8,12 +8,13 @@ init <- function() {
   
   getID <<- function(o) {
     l <- o$label
-    if (is.null(l) || l == "") {
-      id <<- id + 1
-      l <- id
-    }
+    #if (is.null(l) || l == "") {
+    #  id <<- id + 1
+    #  l <- id
+    #}
+    id <- format(Sys.time(), "%y%m%d%H%M%S")
     c <- as.character(class(o))
-    paste(c, l, sep="_")
+    paste(c, l, id, sep="_")
   }
   
   reg <<- list()
@@ -23,73 +24,80 @@ init <- function() {
     reg[o$id] <<- list(o)
   }
   
+  getEntity <<- function(className, label) {
+    for (r in reg) {
+      classOk <- grepl(class(r), patt = className, ignore.case = T)
+      if (classOk & r$label == label)
+        return(r)
+    }
+    return(NULL)
+  }
+  
+  listEntities <<- function() {
+    for (r in reg) {
+      cat(sprintf("%20s %20s\n", class(r), r$label))
+    }
+  }
+  #getEntity("OntologyEntity", "eoLabel")
+  
+  listOfStringsToObjects <<- function(objClass = "Level", objNames) {
+    
+    if (is(objNames,"character")) {
+      
+      objs <- list()
+      for (objName in objNames) {
+        obj <- getEntity(objClass, objName)
+        if (is.null(obj)) {
+          print(paste0("No level of '", objClass, "' for the name: ", objName))
+        } else {
+          objs <- append(objs, obj)
+        }
+      }
+      return(objs)
+      
+    } else {
+      
+      if (is.null(objNames)) {
+        return(list())
+      }
+      if (is(objNames, "list")) {
+        if (length(objNames) == 0 || is(objNames[[1]], "OntologyEntity")) {
+          return(objNames)
+        } else {
+          if (is(objNames[[1]], "character")) {
+            return(listOfStringsToObjects(objClass, unlist(objNames)))
+          }
+        }
+        stop(paste("objNames is a list of unknown type: ", class(objNames[[1]]),
+                   "Should be a list of OntologyEntities or a Vector of characters"))
+      } 
+      
+      stop("Unknown type of objNames")
+    }
+    
+  }
+  
 }
 init()
 
 reg #list registered objects
-getEntity <- function(className, label) {
-  for (r in reg) {
-    classOk <- grepl(class(r), patt = className, ignore.case = T)
-    if (classOk & r$label == label)
-      return(r)
-  }
-  return(NULL)
-}
 
-listEntities <- function() {
-  for (r in reg) {
-    cat(sprintf("%20s %20s\n", class(r), r$label))
-  }
-}
-#getEntity("OntologyEntity", "eoLabel")
-
-listOfStringsToObjects <- function(objClass = "Level", objNames) {
-  
-  if (is(objNames,"character")) {
-    
-    objs <- list()
-    for (objName in objNames) {
-      obj <- getEntity(objClass, objName)
-      if (is.null(obj)) {
-        print(paste0("No level of '", objClass, "' for the name: ", objName))
-      } else {
-        objs <- append(objs, obj)
-      }
-    }
-    return(objs)
-    
-  } else {
-    
-    if (is.null(objNames)) {
-      return(list())
-    }
-    if (is(objNames, "list")) {
-      if (length(objNames) == 0 | is(objNames[[1]], "OntologyEntity")) {
-        return(objNames)
-      } else {
-        if (is(objNames[[1]], "character")) {
-          return(listOfStringsToObjects(objClass, unlist(objNames)))
-        }
-      }
-      stop(paste("objNames is a list of unknown type: ", class(objNames[[1]]),
-                 "Should be a list of OntologyEntities or a Vector of characters"))
-    } 
-    
-    stop("Unknown type of objNames")
-  }
-  
-}
 
 ########################## LMM model classes ########################## 
 
 OntologyEntity <- {setRefClass("OntologyEntity",
                               fields = list(
                                 id = "character",
-                                label ="character"
+                                label = "character",
+                                type = "list"
                               ),
                               methods = list(
-                                initialize = function(label) {
+                                initialize = function(label, types = list()) {
                                   .self$label <- label
+                                  if (is.character(types)) {
+                                    types <- as.list(types)
+                                  }
+                                  .self$type <- types
                                   register(.self)
                                 },
                                 show = function() {
@@ -106,7 +114,7 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                         # if the object has been put in the queue before the current one (and thus already printed), 
                                         # the change to 'FALSE' doesn't make any difference, as the loop doesn't go back
                                         obj <- reg[[key]]
-                                        assert_that(is(obj, "OntologyEntity"))
+                                        assert_that(is(obj, "OntologyEntity"), msg = paste("No reg object for key: ", key))
                                         cat(obj$asTTL())
                                       }
                                       i <- i + 1
@@ -117,7 +125,7 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                   queue <<- NULL
                                 },
                                 ident = function(identifier) {
-                                  paste0("<", gsub(identifier, patt=":", rep="."), ">")
+                                  paste0("<", gsub(identifier, pattern=":", replacement ="."), ">")
                                 },
                                 lit = function(literal) {
                                   paste0("\"", literal, "\"")
@@ -136,8 +144,12 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                   paste(getTTL(), ".\n")
                                 },
                                 getTTL = function() {
-                                  paste(ident(id), LABEL, lit(label) #,
-                                        #";\n", TYPE, "owl:Thing"
+                                  types <- ""
+                                  for (t in type) {
+                                    types <- paste(types, ";\n", TYPE, mapping(t))
+                                  }  
+                                  paste(ident(id), LABEL, lit(label),
+                                        types
                                         )
                                 },
                                 listAsTTL = function(oo) {
@@ -154,29 +166,26 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                 }
                               )
 )}
-#oe <- OntologyEntity(label = "eoLabel")
-#oe
+# oe <- OntologyEntity(label = "eoLabel", type=list("ModelParameter", "Effect"))
+# oe <- OntologyEntity(label = "eoLabel", type="ModelParameter")
+# oe
 #str(oe)
 
 ModelParameter <- {setRefClass("ModelParameter",
                               contains = "OntologyEntity",
-                              fields = list(
-                                type = "character"
-                                ),
                               methods = list(
-                                initialize = function(... , type) {
+                                initialize = function(...) {
                                   callSuper(...)
-                                  .self$type <- type
                                 },
                                 getTTL = function() {
                                   paste(callSuper(),
-                                        ";\n", TYPE, MODELPARAMETER,
-                                        ";\n", TYPE, lit(type)
+                                        ";\n", TYPE, MODELPARAMETER
                                   )
                                 }
                               )
 )}
-#param1 <- ModelParameter(label = "param1", type = "variance")
+# param1 <- ModelParameter(label = "param1", type = list("variance"))
+# param1
 
 Hypothesis <- {setRefClass("Hypothesis", 
                            contains = "OntologyEntity",
@@ -205,30 +214,32 @@ Hypothesis <- {setRefClass("Hypothesis",
 Statistic <- {setRefClass("Statistic", 
                           contains = "OntologyEntity",
                           fields = list(
-                            type = "character",
                             value = "numeric",
-                            isAbout = "list"
+                            isAbout = "list",
+                            hasPart = "list"
                           ),
                           methods = list(
-                            initialize = function(... , type, value, isAbout = list()) {
+                            initialize = function(... , value=numeric(0), isAbout = list(), hasPart = list()) {
                               callSuper(...)
                               .self$value <- value
-                              .self$type <- type
                               .self$isAbout <- isAbout
+                              .self$hasPart <- hasPart
                             },
                             getTTL = function() {
                               paste(callSuper(),
                                     ";\n", TYPE, STATISTIC,
-                                    ";\n", VALUE, num(value),
-                                    ";\n", TYPE, mapping(type),
+                                    if (is.number(value)) {
+                                      paste(";\n", VALUE, num(value)) },
                                     if (length(isAbout) > 0) {
-                                      paste(";\n", paste(ISABOUT, listAsTTL(isAbout), collapse = " ;\n "))}
+                                      paste(";\n", paste(ISABOUT, listAsTTL(isAbout), collapse = " ;\n ")) },
+                                    if (length(hasPart) > 0) {
+                                      paste(";\n", paste(HASPART, listAsTTL(hasPart), collapse = " ;\n ")) }
                               )}
                           )
 )}
 
 #hypo1 <- Hypothesis(label="hypo0", pvalue=0.05, modelParams = list(param1))
-#tstat <- Statistic(label="t-stat", type="T-student statistic", value=18.46)
+#tstat <- Statistic(label="t-stat", type=list("Tstatistic"), value=18.46)
 #ttest <- StatisticalTest(label="t-test", df=20, pvalue=0.0023, testStatistic = list(tstat), hypothesis = list(hypo1))
 #ttest
 
@@ -251,7 +262,7 @@ Estimate <- {setRefClass("Estimate",
                           getTTL = function() {
                             if(length(se) == 1 && se != "") {
                               listAsTTL(list(
-                              Statistic(paste0("se_", label), type="se", value=se, isAbout = list(.self))
+                              Statistic(paste0("se_", label), type=list("se"), value=se, isAbout = list(.self))
                               ))
                             }
                             paste(callSuper(),
@@ -285,18 +296,13 @@ VariableLevel <- {setRefClass("VariableLevel",
 
 Variable <- {setRefClass("Variable",
                          contains = "OntologyEntity",
-                         fields = list(
-                           type = "character"
-                         ),
                          methods = list(
-                           initialize = function(..., type) {
+                           initialize = function(...) {
                              callSuper(...)
-                             .self$type <- type
                            },
                            getTTL = function() {
                              paste(callSuper(),
-                                   ";\n", TYPE, VARIABLE,
-                                   ";\n", TYPE, mapping(type)
+                                   ";\n", TYPE, VARIABLE#,
                                    )
                            }
                          )
@@ -369,7 +375,9 @@ ModelTerm <- {
                         if (length(variable) > 0) {
                           paste(";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "))
                         },
-                        ";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n ")
+                        if (length(effect) > 0) {
+                          paste(";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n "))
+                        }
                 )}
               )
   )}
@@ -430,32 +438,29 @@ CovarianceStructure <- {
   setRefClass("CovarianceStructure",
               contains = "OntologyEntity",
               fields = list(
-                covarianceModel = "character",
                 params = "list", # of ModelParams
                 estimate = "list" # of Estimates of Params
               ),
               methods = list(
-                initialize = function(..., covarianceModel = "covIdentity", params = list("sigma2e")) {
+                initialize = function(..., type = list("covIdentity"), params = list("sigma2e")) {
                   callSuper(...)
                   #TODO correct choosing cov model
-                  .self$covarianceModel <- covarianceModel
                   tmp <- list()
                   for (i in params) {
-                    tmp <- append(tmp, ModelParameter(label=i, type="variance param"))
+                    tmp <- append(tmp, ModelParameter(label=i, type=list("varianceComponent")))
                   }
                   .self$params <- tmp
                 },
                 getTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, COVARIANCESTRUCTURE,
-                        ";\n", TYPE, mapping(covarianceModel),
                         ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n ")
                         )
                 }
               )
   )
 }
-#cs <- CovarianceStructure(label = "blockTerm", params="sigma")
+# cs <- CovarianceStructure(label = "blockTerm", params="sigma")
 #cs
 
 Effect <- {
@@ -463,30 +468,89 @@ Effect <- {
               contains = "ModelParameter",
               fields= list(
                 correspondingVarLevels = "list", #of Levels (for now)
-                describesValueOf = "ANY", #dependent variable
+                relativeTo = "list", #list of reference effects (only ONE? reference effect)
+                #describesValueOf = "ANY", #dependent variable
                 estimate = "list"
               ),
               methods = list(
-                initialize = function(..., levels, describesValueOf) {
-                  callSuper(type="Effect", ...)
+                initialize = function(..., levels, reference = list()) {
+                  callSuper(...)
                   tmp <- listOfStringsToObjects("VariableLevel", levels)
                   .self$correspondingVarLevels <- tmp
-                  .self$describesValueOf <- describesValueOf
+                  .self$relativeTo <- reference
                 },
                 getTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, EFFECT,
-                        ";\n", TYPE, MODELPARAMETER,
                         if (length(correspondingVarLevels) > 0) {
                           paste(";\n", paste(ISABOUT, listAsTTL(correspondingVarLevels), collapse = " ;\n "))
+                        },
+                        if (length(relativeTo) > 0) {
+                          paste(";\n", paste("xxx:TMP_REFERENCE", listAsTTL(relativeTo), collapse = " ;\n "))
+                        },
+                        if (length(estimate) > 0) {
+                          paste(";\n", paste("xxx:TMP_EST", listAsTTL(estimate), collapse = " ;\n "))
                         }
                         #";\n", DESCRIBESVALUEOF, describesValueOf, # remove or generate automatically
                       )
                 }
               )
   )}
-#ef1 <- Effect(levels=list("CamB1","Drought")) # Interaction Effect
-#cat(ef1$asTTL())
+
+cv <- CategoricalVariable("testVar", levels = list("CamB1", "Drought"))
+ef1 <- Effect("testEffect", levels=list("CamB1","Drought"), type="EMM") # Interaction Effect
+cv2 <- CategoricalVariable("testVar2", levels = list("CamB2", "Drought2"))
+ef2 <- Effect("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), type="RelativeEffect") # Interaction Effect
+cat(ef1$asTTL())
+cat(ef2$asTTL())
+
+# ParametricFunction <- {
+#   setRefClass("ParametricFunction",
+#               contains = "OntologyEntity",
+#               fields = list(
+#                 formula = "ANY",
+#                 parameters = "list" #of model parameters
+#               ),
+#               methods = list(
+#                 initialize = function(..., params = list(), formula = NULL) {
+#                   callSuper(...)
+#                   .self$parameters <- params
+#                   .self$formula <- formula
+#                 },
+#                 getTTL = function() {
+#                   paste(callSuper(),
+#                         ";\n", TYPE, PARAMETRICFUNCTION,
+#                         #";\n", TYPE, EFFECT,
+#                         #";\n", TYPE, MODELPARAMETER,
+#                         ";\n", FORMULA, lit(formula),
+#                         if (length(parameters) > 0) {
+#                           paste(";\n", paste(ISFUNCTIONOF, listAsTTL(parameters), collapse = " ;\n "))
+#                         }
+#                   )
+#                 }
+#               )
+#   )}
+
+# pf <- ParametricFunction("paramFunction0" )
+# pf2 <- ParametricFunction("paramFunction2", params = list(param1, param1), formula = "blablabla")
+# pf2
+
+
+# Contrast <- {
+#   setRefClass("Contrast",
+#               contains = "ParametricFunction",
+#               methods = list(
+#                 getTTL = function() {
+#                   paste(callSuper(),
+#                         ";\n", TYPE, CONTRAST
+#                   )}
+#               )
+#   )}
+# param1 <- ModelParameter(label = "param1", type = list("variance"))
+# param2 <- ModelParameter(label = "param2", type = list("variance"))
+# con1 <- Contrast("Contrast0", params = list(param1, param2), formula = "???", type=list("TreatmentContrast"))
+# con1
+
 
 Lmm <- {
   setRefClass("Lmm",
@@ -535,20 +599,17 @@ Process <- {
                 hasInput = "list",
                 hasOutput = "list",
                 hasPart = "list",
-                processType = "character",
-                type = "character"
+                processType = "character"
               ),
               methods = list(
-                initialize = function(..., processType, type = "") {
+                initialize = function(..., processType) {
                   callSuper(...)
                   .self$processType <- processType
-                  .self$type = type
                 },
                 getTTL = function() {
                   gsub(pattern=" +", rep=" ",
                     paste(callSuper(),
-                          ";\n", TYPE, mapping(processType),
-                          if (type != "") {paste(";\n", TYPE, mapping(type))},
+                        ";\n", TYPE, mapping(processType),
                         if (length(hasInput) > 0) {
                           paste(";\n", paste(HASINPUT, listAsTTL(hasInput), collapse = " ;\n "))
                         },
@@ -562,7 +623,8 @@ Process <- {
                   )}
               )
   )}
-#proc <- Process("modelFitting", processType="MODELFITTING")
+#proc <- Process("modelFitting", processType="MODELFITTING")#, type = list("ContrastEstimation"))
+#proc
 #proc2 <- Process("modelParamEstimation", processType="MODELPARAMETERESTIMATION")
 #proc$hasPart <- append(proc$hasInput, proc2)
 #proc

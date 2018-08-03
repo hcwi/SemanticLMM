@@ -1,5 +1,5 @@
 Robject;LMM;STATO_SIMPLE;STATO;STATO_full;comment
-LMM;LinearMixedModel;stato:linear_mixed_model;obo:STATO_0000189;http://purl.obolibrary.org/obo/STATO_0000464#LinearMixedModel;not only linear!
+LMM;LinearMixedModel;stato:linear_mixed_model;obo:STATO_0000464;http://purl.obolibrary.org/obo/STATO_0000464#LinearMixedModel;not only linear!
 Variable;variable;stato:variable;obo:STATO_0000258;http://purl.obolibrary.org/obo/STATO_0000258#Variable;
 CategoricalVariable;categoricalVariable;stato:categorical_variable;obo:STATO_0000252;http://purl.obolibrary.org/obo/STATO_0000252#CategoricalVariable;
 ModelTerm;modelTerm;xxx:model_term;obo:STATO_0000466;http://purl.obolibrary.org/obo/STATO_0000466#Model term;
@@ -34,6 +34,8 @@ critAIC;;stato:AkaikeInformationCriterion;obo:STATO_0000325;http://purl.obolibra
 critAICdf;;xxx:critAIC_df;xxx:critAIC_df;xxx:critAIC_df;
 tmp_est;tmp_est;xxx:tmp_est;xxx:tmp_est;xxx:tmp_est;
 df;df;stato:df;obo:STATO_0000069;http://purl.obolibrary.org/obo/STATO_0000069#numbrOfDegreesOfFreedom;
+df_num;df_num;;xxx:df_num;xxx:df_num;
+df_den;df_den;;xxx:df_den;xxx:df_den;
 Statistic;statistic;stato:Statistic;obo:STATO_0000039;http://purl.obolibrary.org/obo/STATO_0000039#statistic;???
 FStatistic;f_statistic;stato:F_statistic;obo:STATO_0000282;http://purl.obolibrary.org/obo/STATO_0000282#Fstatistic;
 TStatistic;t_statistic;stato:T_statistic;obo:STATO_0000176;http://purl.obolibrary.org/obo/STATO_0000176#Tstatistic;
@@ -54,3 +56,16 @@ isModelFor;isModelFor;stato:is_model_for;<http://purl.obolibrary.org/obo/stato.o
 hasOrder;hasOrderInSequence;stato:has_order;<http://purl.obolibrary.org/obo/stato.owl#has_order> ;http://purl.obolibrary.org/obo/stato.owl#has_order;
 isFunctionOf;;xxx:is_function_of;xxx:is_function_of;xxx:is_function_of;
 ParametricFunction;;xxx:parametric_function;xxx:parametric_function;xxx:parametric_function;
+Contrast;;stato:contrast;obo:STATO_0000290;http://purl.obolibrary.org/obo/STATO_0000290#Contrast;
+TreatmentContrast;;stato:treatment_contrast;obo:STATO_0000307;http://purl.obolibrary.org/obo/STATO_0000307#TreatmentContrast;
+EMM;;xxx:emm;xxx:emm;xxx:emm;
+Variance;;xxx:variance;xxx:variance;xxx:variance;
+VarianceComponent;;;xxx:variance_component;xxx:variance_component;
+VarianceComponentEstimate;;;<http://purl.obolibrary.org/obo/stato.owl#variance_component_estimate> ;<http://purl.obolibrary.org/obo/stato.owl#variance_component_estimate> ;
+RelativeEffect;relativeEffect;xxx:relative_effect;xxx:relative_effect;xxx:relative_effect;
+UNKNOWN;;xxx:UNKNOWN;xxx:UNKNOWN;xxx:UNKNOWN;
+ConfidenceIntervalCalculation;;stato:confidence_interval_calculation;obo:STATO_0000175;http://purl.obolibrary.org/obo/STATO_0000175#confidence interval calculation;
+lowerConfidenceLimit;;stato:lower_confidence_limit;obo:STATO_0000315;http://purl.obolibrary.org/obo/STATO_0000314#lower confidence limit;
+upperConfidenceLimit;;stato:upper_confidence_limit;obo:STATO_0000314;http://purl.obolibrary.org/obo/STATO_0000314#upper confidence limit;
+confidenceLevel;;stato:confidence_level;obo:STATO_0000561;http://purl.obolibrary.org/obo/STATO_0000561#confidence level;
+confidenceInterval;;stato:confidence_interval;obo:STATO_0000196;http://purl.obolibrary.org/obo/STATO_0000196#confidence interval;

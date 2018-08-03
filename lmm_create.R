@@ -1,36 +1,57 @@
-source("lmm_classes.R")
-source("example.R")
 require(lme4)
 require(lmerTest)
+require(pbkrtest)
 require(emmeans)
 require(assertthat)
+source("lmm_classes.R")
+source("example.R")
+#contr.treat <- contr.treatment
+
+getVariables <- function(mod) {
+  
+  # terms <- terms(m5_3Fixed)
+  # all.vars(delete.response(terms))
+  
+  vars <- list()
+  varGrid <- levels(ref_grid(mod))
+  for (i in 1:length(varGrid)) {
+    var <- CategoricalVariable(label = names(varGrid)[i], 
+                               levels = varGrid[[i]], 
+                               type="IndependentVariable")
+    vars <- append(vars, var)
+  }
+  vars
+}
+
 
 # get fixed terms from model attributes
 # for each term, add variables and their levels
 getFixedTerms <- function(mod) {
   
+  vars <- getVariables(mod)
+  
   fixedTerms <- list()
   
-  termLabels <- attr(terms(mod), "term.labels") #attr(attr(mod@frame, "terms"), "predvars.fixed"
-  termOrders <- attr(terms(mod), "order")
+  if (attr(terms(mod), "intercept") == 1) {
+    fixTer <- FixedModelTerm(label = "Intercept", order = integer(0))
+    fixedTerms <- append(fixedTerms, fixTer)
+  }
   
-  for (i in 1:length(termLabels)) {
+  for (i in 1:length(terms(mod))) {
     
-    lab <- termLabels[i]
-    order <- termOrders[i]
+    lab <- attr(terms(mod), "term.labels")[i]
+    order <- attr(terms(mod), "order")[i]
     fixTer <- FixedModelTerm(label = lab, order = order)
     
     # add variables and their levels (no interation of levels, just values for separate variable)
     varLabs <- unlist(strsplit(lab,":"))
     interact <- 0 # a matrix with all combinations of levels for the term, to be used for Effects in the next paragraph
     for (v in varLabs) {
-      levels <- levels(ref_grid(mod))[[v]]
-      var <- CategoricalVariable(label = v, levels = levels, type="IndependentVariable")
+      var <- getEntity("Variable", v)
       fixTer$variable <- append(fixTer$variable, var)
       
       # add new column with levels (constructing a cartesian product of levels of variables)
-      levels_df <- as.data.frame(levels)
-      names(levels_df) <- v
+      levels_df <- as.data.frame(levels(ref_grid(mod))[v])
       interact <- merge(interact, levels_df, all=TRUE)
     }
     interact # inspect the matrix
@@ -50,10 +71,10 @@ getFixedTerms <- function(mod) {
             print(paste("PARSE ERROR. No VariableLevel found for: ", levName))
           } else {
             effLevels <- append(effLevels, levName)
-          }
+          }  
         }
         effName <- substr(effName, 2, nchar(effName)) # remove ugly beginning of the name 
-        effect <- Effect(label=effName, levels=effLevels, describesValueOf="")
+        effect <- Effect(label=effName, levels=effLevels, type="UNKNOWN")
         #cat(effect$asTTL()) # inspect
         fixTer$effect <- append(fixTer$effect, effect)
       }
@@ -73,66 +94,101 @@ getFixedTerms <- function(mod) {
 
 # get fixed effects 
 # this time from summary(m) rather then m itself
-getFixedEstimation <- function(mod) {
+getFixedEstimation <- function(mod, lmm) {
   
+  #declare processes
   procEst <- Process("paramEstimation", processType="ModelParameterEstimation")
   procDfAppr <- Process("dfCalculation", processType="DfCalculation", type="SatterthwaiteApprox")
   procTest <- Process("testing", processType="testing")
   procTest$hasPart <- append(procTest$hasPart, procDfAppr)
   
-  fixefs <- summary(mod)$coefficients # get estimated effects
-  feLabs <- row.names(fixefs)
+  #get fixed coefs to produce "effects"
+  fixcoefs <- summary(mod)$coefficients # get estimated effects
+  feLabs <- row.names(fixcoefs)
   varLabs <- unique(unlist(strsplit(attr(terms(mod), "term.labels"),":"))) # get variable names
-  
   for (varLab in varLabs) {
     feLabs <- sub(feLabs, pattern = varLab, rep="") # remove variable names from effect labels
   }
-  feLabs
   
-  # testing for effects - specific hypotheses
+  modmatrix <- model.matrix(mod)
+  termAssign <- attr(modmatrix, "assign")
+  ref <- min(termAssign) # ass == ref -> EMM else Contrast 
+  contrs <- attr(modmatrix, "contrasts")
+  ok <- all(sapply(contrs, function(x) {typeof(x) == "character" && startsWith(x, "contr.treat")} ))
+  assert_that(ok, msg = "Znaleziono inne kontrasty niz 'contr.treatment'. Ich wartosci nie zostana przetworzone.") # TODO zrobic ifa, jesli ok==TRUE
+  if (ok) {
+    print("Contrast ok. Processing standard contr.treatment:")
+  }
   
   for (i in 1:length(feLabs)) {
-    eff <- getEntity("Effect", feLabs[i]) # find effects by labels
-    if (is.null(eff)) {
-      if (feLabs[i] == "(Intercept)") { #TODO handle intercepts and relative effects as contrasts
-        print("=========================== TODO Primitive handling of (Intercept)")
-        tmp_ref_grid <- as.data.frame(ref_grid(mod))
-        refName <- tmp_ref_grid[1,1]
-        ref <- getEntity("Level", refName)
-        eff <- Effect(feLabs[i], levels = list(ref), describesValueOf = "")
-        termName <- names(tmp_ref_grid)[1]
-        term <- getEntity("Term", termName)
-        term$effect <- append(term$effect, eff)
+    
+    term <- lmm$independentFixedTerm[[termAssign[i] + ifelse(ref == 0, 1, 0)]] # term no. must be >= 1,  
+    
+    effType <- "UNKNOWN"
+    lvls <- list()
+    refEff <- list() 
+    
+    # effects
+    if (termAssign[i] == ref) {
+      effType = "emm" #TODO pass reference levels
+      if (termAssign[i] == 0) {
+        for (v in varLabs) {
+          var <- getEntity("Variable", v)
+          lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
+        }
       } else {
-        print(paste("PARSE ERROR. No Effect found for: ", feLabs[i]))
+        for (v in term$variable) {
+          lvls <- append(lvls, v$levels[[i]])
+        }
+        explicitVarLabs <- sapply(term$variable, function(x) x$label)
+        missingDefaultVarLabs <- setdiff(varLabs, explicitVarLabs)
+        for (v in missingDefaultVarLabs) {
+          var <- getEntity("Variable", v)
+          lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
+        }
       }
     } else {
-    
-      est <- Estimate(feLabs[i], value = fixefs[i, "Estimate"], parameter = eff)
-      est$se <- fixefs[i, "Std. Error"]
-      eff$estimate <- append(eff$estimate, est) # add estimate to the effect
-      
-      procEst$hasOutput <- append(procEst$hasOutput, est)
-      
-      lab <- feLabs[i]
-      hypo <- Hypothesis(label=lab, pvalue=fixefs[i, "Pr(>|t|)"], modelParams = list(eff))
-      tstat <- Statistic(label=paste0("t-stat_", lab), type="Tstatistic", value=fixefs[i, "t value"])
-      df <- Statistic(label=paste0("df_", lab), type="df", value=fixefs[i, "df"])
-      pval <- Statistic(label=paste0("pvalue_", lab), type="pvalue", value=fixefs[i, "Pr(>|t|)"], isAbout=list(hypo))
-      
-        #attr(model.matrix(m1_basic), "assign")
-      
-      
-      pDfAppr <- Process(paste0("dfCalculation_", lab), processType="DfCalculation", type="SatterthwaiteApprox")
-      pTest <- Process(paste0("testing_", lab), processType="testing")
-      
-      pDfAppr$hasOutput <- append(pDfAppr$hasOutput, df)
-      pTest$hasInput <- append(pTest$hasInput, list(df, hypo, tstat))
-      pTest$hasOutput <- append(pTest$hasOutput, list(pval))
-      
-      procTest$hasPart <- append(procTest$hasPart, pTest)
-      procDfAppr$hasPart <- append(procDfAppr$hasPart, pDfAppr)
+      effType = "contrast"
+      for (l in unlist(strsplit(feLabs[i], ":"))) {
+        lvl <- getEntity("Level", l)
+        lvls <- append(lvls, lvl)
+      }
+      if (sum(termAssign == ref) == 1 || # there is only one reference / intercept
+          sum(termAssign == termAssign[i]) == 1) { # or just one param per term
+        refEff <- append(refEff, lmm$independentFixedTerm[[1]]$effect[[1]])
+      } 
+      else {
+        r <- i - sum(termAssign < termAssign[i]) # the number of param in sequence (within a term)
+        refEff <- append(refEff, lmm$independentFixedTerm[[1]]$effect[[r + 1]]) # a corresponding effect from the first term
+        # +1, bacause the contr.treatment matrix cuts off the first column (effect)
+      }
     }
+    effect <- Effect(label=feLabs[i], levels=lvls, type = effType, reference = refEff)
+    term$effect <- append(term$effect, effect)
+    
+    # estimates
+    est <- Estimate(feLabs[i], value = fixcoefs[i, "Estimate"], parameter = effect)
+    est$se <- fixcoefs[i, "Std. Error"]
+    effect$estimate <- append(effect$estimate, est) # add estimate to the effect
+    procEst$hasOutput <- append(procEst$hasOutput, est)
+    
+    # testing 
+    lab <- feLabs[i]
+    hypo <- Hypothesis(label=lab, pvalue=fixcoefs[i, "Pr(>|t|)"], modelParams = list(effect))
+    tstat <- Statistic(label=paste0("t-stat_", lab), type="Tstatistic", value=fixcoefs[i, "t value"])
+    df <- Statistic(label=paste0("df_", lab), type="df", value=fixcoefs[i, "df"])
+    pval <- Statistic(label=paste0("pvalue_", lab), type="pvalue", value=fixcoefs[i, "Pr(>|t|)"], isAbout=list(hypo))
+    
+    pDfAppr <- Process(paste0("dfCalculation_", lab), processType="DfCalculation", type="SatterthwaiteApprox")
+    pDfAppr$hasOutput <- append(pDfAppr$hasOutput, df)
+    
+    procDfAppr$hasPart <- append(procDfAppr$hasPart, pDfAppr)
+    
+    pTest <- Process(paste0("testing_", lab), processType="testing")
+    pTest$hasInput <- append(pTest$hasInput, list(df, hypo, tstat))
+    pTest$hasOutput <- append(pTest$hasOutput, list(pval))
+    
+    procTest$hasPart <- append(procTest$hasPart, pTest)
   }
   
   # testing for effects - general hypotheses
@@ -142,22 +198,89 @@ getFixedEstimation <- function(mod) {
     term <- getEntity("Term", lab)
     assert_that(!is.null(term), msg = "No term for name from anova(mod) has been found")
     
-    hypo <- Hypothesis(label=lab, pvalue=fixefs[i, "Pr(>|t|)"], modelParams = list(eff))
-    fstat <- Statistic(label=paste0("f-stat_", lab), type="Fstatistic", value=ano[lab, "F.value"])
-    df <- Statistic(label=paste0("df_", lab), type="df", value=ano[lab, "NumDF"]) #TODO DenDF for Sattherthwaite approximation ???
+    hypo <- Hypothesis(label=lab, pvalue=ano[lab, "Pr(>F)"], modelParams = list(term))
+    fstat <- Statistic(label=paste0("f-stat_", lab), type="Fstatistic", value=ano[lab, "F value"])
+    df_num <- Statistic(label=paste0("df_num_", lab), type=list("df", "df_num"), value=ano[lab, "NumDF"])
+    df_den <- Statistic(label=paste0("df_den_", lab), type=list("df", "df_den"), value=ano[lab, "DenDF"]) 
     pval <- Statistic(label=paste0("pvalue_", lab), type="pvalue", value=ano[lab, "Pr(>F)"], isAbout=list(hypo))
     
     pDfAppr <- Process(paste0("dfCalculation_", lab), processType="DfCalculation", type="SatterthwaiteApprox")
     pTest <- Process(paste0("testing_", lab), processType="testing")
     
-    pDfAppr$hasOutput <- append(pDfAppr$hasOutput, df)
-    pTest$hasInput <- append(pTest$hasInput, list(df, hypo, fstat))
+    pDfAppr$hasOutput <- append(pDfAppr$hasOutput, df_num)
+    pDfAppr$hasOutput <- append(pDfAppr$hasOutput, df_den) #TODO separate process for DenDF approx than for numDF?
+    pTest$hasInput <- append(pTest$hasInput, list(df_num, df_den, hypo, fstat))
     pTest$hasOutput <- append(pTest$hasOutput, list(pval))
     procTest$hasPart <- append(procTest$hasPart, pTest)
     procDfAppr$hasPart <- append(procDfAppr$hasPart, pDfAppr) 
   }
   
   list(procEst, procTest)
+}
+
+getEmmeans <- function(mod) {
+  
+  procEmms <- Process("EmmCalculation", processType="ModelParameterEstimation")
+  procDfAppr <- Process("EmmDfCalculation", processType="DfCalculation", type="KenwardRogerApprox")
+  procConfIntCalc <- Process("confIntCalculation", processType="ConfidenceIntervalCalculation")
+  procConfIntCalc$hasPart <- append(procConfIntCalc$hasPart, procDfAppr)
+  
+  varLabs <- unique(unlist(strsplit(attr(terms(mod), "term.labels"),":"))) # get variable names
+  for (i in 1:length(varLabs)) {
+    com <- combn(varLabs, i)
+    for (j in 1:(dim(com)[2])) {
+      
+      eq <- paste0("~", paste(com[,j], collapse = "*"))
+      emms <- emmeans(mod, formula(eq))
+      emmsLab <- paste(com[,j], collapse = ".")
+      ems <- data.frame(emms)
+      
+      msg <- attr(summary(emms), "mesg")
+      
+      df_method <- sub(patt="Degrees-of-freedom method: ", x=grep("Degrees-of-freedom method: ", msg, v=T) , rep="")
+      df_method <- paste0(sub(pat="-", x=df_method, ""), "Approx")
+      df <- Statistic(label=paste0("df_emm_", emmsLab), type="df", value=ems[1, "df"]) #TODO czego dotyczy: effect czy est? # conf interval!
+      pDfAppr <- Process(paste0("dfCalculation_", df_method, "_", emmsLab), processType="DfCalculation", type=df_method)
+      pDfAppr$hasOutput <- append(pDfAppr$hasOutput, df)
+      procDfAppr$hasPart <- append(procDfAppr$hasPart, pDfAppr)
+      
+      conf_lev <- as.numeric(sub(patt="Confidence level used: ", x=grep("Confidence level used: ", msg, v=T), rep=""))
+      confLevel <- Statistic(label=paste0("confLevel_", emmsLab), type="confidenceLevel", value=conf_lev)
+      pConfIntCalc <- Process(paste0("confIntCalculation_", emmsLab), processType="ConfidenceIntervalCalculation")
+      pConfIntCalc$hasInput <- append(pConfIntCalc$hasInput, c(confLevel, df))
+      procConfIntCalc$hasPart <- append(procConfIntCalc$hasPart, pConfIntCalc)
+        
+      for (e in 1:dim(ems)[1]) {
+        lvls <- list()
+        #effLab <- "emm"
+        for (l in 1:i) {
+          levLab <- as.character(ems[e,l])
+          #effLab <- paste0(effLab, ".", levLab) #CHECK why was it concatenated with 'emm'? some other effect conflicts with it?
+          effLab <- levLab
+          lev <- getEntity("Level", levLab)
+          lvls <- append(lvls, lev)
+        }
+        effect <- Effect(paste0("emm_", effLab), levels = lvls, type = "emm")
+        
+        est <- Estimate(paste0('emm_', effLab), value = ems[e, "emmean"], parameter = effect)
+        est$se <- ems[e, "SE"]
+        effect$estimate <- append(effect$estimate, est)
+        procEmms$hasOutput <- append(procEmms$hasOutput, est)
+        
+        confInt <- Statistic(label=paste0("confInt_", effLab), type="confidenceInterval", isAbout = list(effect))
+        confLevel <- Statistic(label=paste0("confLevel_", effLab), type="confidenceLevel", value=conf_lev, isAbout=list(confInt))
+        lowerCL <- Statistic(label=paste0("lcl_", effLab), type="lowerConfidenceLimit", value=ems[e, "lower.CL"])
+        upperCL <- Statistic(label=paste0("ucl_", effLab), type="upperConfidenceLimit", value=ems[e, "upper.CL"])
+        confInt$hasPart <- list(confLevel, lowerCL, upperCL)
+        pConfIntCalc$hasOutput <- append(pConfIntCalc$hasOutput, confInt)
+      }
+      
+    }
+  }
+  #TODO add overall mean:
+  #emmeans(mod, ~1)
+  
+  list(procEmms, procConfIntCalc)
 }
 
 getVariables <- function(mod) {
@@ -170,9 +293,9 @@ getVariables <- function(mod) {
     variable <- getEntity("Variable", varName)
     if (is.null(variable)) {
       if (is.null(varLevels)) {
-        variable <- Variable(varName, type="UNKNOWN YET")
+        variable <- Variable(varName)
       } else {
-        variable <- CategoricalVariable(varName, levels = varLevels, type="UNKNOWN YET")
+        variable <- CategoricalVariable(varName, levels = varLevels)
       }
     }
     #print(variable$asTTL())
@@ -192,7 +315,7 @@ getRandomTerms2 <- function(mod) {
     termName <- names(mod@flist[i]) # get variable names
     termVarNames <- unlist(strsplit(termName,":"))
     termVariables <- listOfStringsToObjects("Variable", termVarNames)
-    sapply(termVariables, function(x) { x$type <- "IndependentVariable"})
+    sapply(termVariables, function(x) { x$type <- append(x$type,"IndependentVariable") })
     
     assert_that(length(termVarNames) == length(termVariables))
     randomTerm <- RandomModelTerm(termName, variable = termVariables)
@@ -206,7 +329,7 @@ getRandomTerms2 <- function(mod) {
       termEffectLevelNames <- unlist(strsplit(termEffectName,":"))
       effLevels <- listOfStringsToObjects("Level", termEffectLevelNames)
       assert_that(length(effLevels) == length(termEffectLevelNames))
-      eff <- Effect(termEffectName, levels = effLevels, describesValueOf = "")
+      eff <- Effect(termEffectName, levels = effLevels)
       effects <- append(effects, eff)
     }
     effects
@@ -290,7 +413,7 @@ getErrorTerm <- function(mod) {
   effects <- list()
   estimates <- list()
   
-  ef <- Effect("e", levels=NULL, describesValueOf = "???") #TODO dependent variable (or other things in multidimensional model) #TODO remove for error??
+  ef <- Effect("e", levels=NULL) #TODO dependent variable (or other things in multidimensional model) #TODO remove for error??
   effects <- append(effects, ef)
   
   errorTerm$effect <- effects;
@@ -319,13 +442,13 @@ getDependentVariables <- function(m) {
   depVar
 }
 
-getModel <- function(m) {
+getModel <- function(mod) {
   
-  lmm <- Lmm(label=modelName, formula = formula(mod))
+  lmm <- Lmm(label=format(Sys.time(), "%Y%m%d%H%M%S"), formula = formula(mod))
   lmm$criterionREML <- getME(mod, "devcomp")[["cmp"]]["REML"]
   if (is.na(lmm$criterionREML)) {
-    lmm$criterionAICdf <- extractAIC(m)[1]
-    lmm$criterionAIC <- extractAIC(m)[2]
+    lmm$criterionAICdf <- extractAIC(mod)[1]
+    lmm$criterionAIC <- extractAIC(mod)[2]
   }
   lmm
 }
@@ -333,37 +456,47 @@ getModel <- function(m) {
 ############################ run ################################
 
 
-modelName <- deparse(quote(m0_basic))
-mod <- get(modelName)
+exportModelToRDF <- function(mod) {
+  
+  lmm <- getModel(mod)
+  lmm$dependentVariable = getDependentVariables(mod)
+  lmm$independentFixedTerm <- getFixedTerms(mod)
+  lmm$independentRandomTerm <- getRandomTerms2(mod) #getRandomTerms(mod)
+  lmm$errorTerm <- getErrorTerm(mod)
+  
+  modelFitting <- Process("modelFitting0", processType="ModelFitting")
+  modelFitting$hasInput <- append(modelFitting$hasInput, lmm)
+  procs <- getFixedEstimation(mod, lmm)
+  modelFitting$hasPart <- append(modelFitting$hasPart, procs)
+  procs <- getVarCorrEstimation(mod)
+  modelFitting$hasPart <- append(modelFitting$hasPart, procs)
+  procs <- getRandomPrediction(mod)
+  modelFitting$hasPart <- append(modelFitting$hasPart, procs)
+  procs <- getEmmeans(mod)
+  modelFitting$hasPart <- append(modelFitting$hasPart, procs)
+  
+  
+  # print model:
+  #lmm$show()
+  #cat(lmm$asTTL())
+  #cat(modelFitting$asTTL())
+  modelFitting
+
+}
+
+tmp <- list(m0) #m_all
+
+for (model in tmp) {
+  #modelName <- deparse(quote(model))
+  #mod <- get(modelName)
+  modelFitting <- exportModelToRDF(model)
+  graphName <- modelFitting$hasInput[[1]]$label
+  capture.output(cat(prefixes), 
+                 cat("<graphs/graph_", graphName, ">", sep=""), 
+                 cat(" {\n"),
+                 modelFitting, 
+                 cat("}"),
+                 file = paste0("out", .Platform$file.sep, graphName, ".trig"))
+}
+
 #summary(m)$vcov # TODO
-
-modelFitting <- Process("modelFitting0", processType="ModelFitting")
-#modelFitting$hasPart <- append(modelFitting$hasPart, c(
-                               #Process("varCompEstimation", processType="MODELPARAMETERESTIMATION"),
-                               #Process("paramPrediction", processType="MODELPARAMETERESTIMATION")
-                               #Process("paramEstimation", processType="MODELPARAMETERESTIMATION"),
-                               #Process("dfApproximation", processType="DFAPPROXIMATION"),
-                               #Process("testing", processType="TESTING")
-#))
-
-lmm <- getModel(mod)
-lmm$dependentVariable = getDependentVariables(mod)
-lmm$independentFixedTerm <- getFixedTerms(mod)
-lmm$independentRandomTerm <- getRandomTerms2(mod) #getRandomTerms(mod)
-lmm$errorTerm <- getErrorTerm(mod)
-
-modelFitting$hasInput <- append(modelFitting$hasInput, lmm)
-procs <- getFixedEstimation(mod)
-modelFitting$hasPart <- append(modelFitting$hasPart, procs)
-procs <- getVarCorrEstimation(mod)
-modelFitting$hasPart <- append(modelFitting$hasPart, procs)
-procs <- getRandomPrediction(mod)
-modelFitting$hasPart <- append(modelFitting$hasPart, procs)
-
-# print model:
-#lmm$show()
-cat(lmm$asTTL())
-cat(modelFitting$asTTL())
-modelFitting
-
-capture.output(cat(prefixes), modelFitting, file = paste0("out", .Platform$file.sep, lmm$label, ".ttl"))
