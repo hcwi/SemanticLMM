@@ -45,42 +45,42 @@ getFixedTerms <- function(mod) {
     
     # add variables and their levels (no interation of levels, just values for separate variable)
     varLabs <- unlist(strsplit(lab,":"))
-    interact <- 0 # a matrix with all combinations of levels for the term, to be used for Effects in the next paragraph
+    #interact <- 0 # a matrix with all combinations of levels for the term, to be used for Effects in the next paragraph
     for (v in varLabs) {
       var <- getEntity("Variable", v)
       fixTer$variable <- append(fixTer$variable, var)
       
       # add new column with levels (constructing a cartesian product of levels of variables)
-      levels_df <- as.data.frame(levels(ref_grid(mod))[v])
-      interact <- merge(interact, levels_df, all=TRUE)
+      #levels_df <- as.data.frame(levels(ref_grid(mod))[v])
+      #interact <- merge(interact, levels_df, all=TRUE)
     }
-    interact # inspect the matrix
+    #interact # inspect the matrix
     
-    # create Effect for all combinations of factor levels (irrespective whether they are present in the estimation or not)
-    if (is.null(dim(interact))) {
-      print("No levels defined. This should be handled by processing for Continuous Variable")
-    } else {
-      for (e in 1:dim(interact)[1]) { #iterate through rows (effects)
-        effLevels <- list() # levels per effect
-        effName <- ""
-        for (l in 2:dim(interact)[2]) { #iterate through columns (levels of factors)
-          levName <- as.character(interact[e,l])
-          effName <- paste(effName, levName, sep=":")
-          lev <- getEntity("VariableLevel",levName)
-          if (is.null(lev)) {
-            print(paste("PARSE ERROR. No VariableLevel found for: ", levName))
-          } else {
-            effLevels <- append(effLevels, levName)
-          }  
-        }
-        effName <- substr(effName, 2, nchar(effName)) # remove ugly beginning of the name 
-        effect <- Effect(label=effName, levels=effLevels, type="UNKNOWN")
-        #cat(effect$asTTL()) # inspect
-        fixTer$effect <- append(fixTer$effect, effect)
-      }
-      
-    }
-    
+    # # create Effect for all combinations of factor levels (irrespective whether they are present in the estimation or not)
+    # if (is.null(dim(interact))) {
+    #   print("No levels defined. This should be handled by processing for Continuous Variable")
+    # } else {
+    #   for (e in 1:dim(interact)[1]) { #iterate through rows (effects)
+    #     effLevels <- list() # levels per effect
+    #     effName <- ""
+    #     for (l in 2:dim(interact)[2]) { #iterate through columns (levels of factors)
+    #       levName <- as.character(interact[e,l])
+    #       effName <- paste(effName, levName, sep=":")
+    #       lev <- getEntity("VariableLevel", levName)
+    #       if (is.null(lev)) {
+    #         print(paste("PARSE ERROR. No VariableLevel found for: ", levName))
+    #       } else {
+    #         effLevels <- append(effLevels, levName)
+    #       }  
+    #     }
+    #     effName <- substr(effName, 2, nchar(effName)) # remove ugly beginning of the name 
+    #     effect <- Parameter(label=effName, levels=effLevels, type="UNKNOWN")
+    #     #cat(effect$asTTL()) # inspect
+    #     fixTer$effect <- append(fixTer$effect, effect)
+    #   }
+    #   
+    # }
+    # 
     fixedTerms = append(fixedTerms, fixTer)
   }
   
@@ -97,7 +97,7 @@ getFixedTerms <- function(mod) {
 getFixedEstimation <- function(mod, lmm) {
   
   #declare processes
-  procEst <- Process("paramEstimation", processType="ModelParameterEstimation")
+  procEst <- Process("paramEstimation", processType="ModelParameterEstimation", type="BLUE")
   procDfAppr <- Process("dfCalculation", processType="DfCalculation", type="SatterthwaiteApprox")
   procTest <- Process("testing", processType="testing")
   procTest$hasPart <- append(procTest$hasPart, procDfAppr)
@@ -130,7 +130,7 @@ getFixedEstimation <- function(mod, lmm) {
     
     # effects
     if (termAssign[i] == ref) {
-      effType = "emm" #TODO pass reference levels
+      effType = "emm"
       if (termAssign[i] == 0) {
         for (v in varLabs) {
           var <- getEntity("Variable", v)
@@ -148,7 +148,8 @@ getFixedEstimation <- function(mod, lmm) {
         }
       }
     } else {
-      effType = "contrast"
+      effType = c("treatmentContrast", "effect")
+      #here can add estType="contrastEstimate")
       for (l in unlist(strsplit(feLabs[i], ":"))) {
         lvl <- getEntity("Level", l)
         lvls <- append(lvls, lvl)
@@ -163,11 +164,11 @@ getFixedEstimation <- function(mod, lmm) {
         # +1, bacause the contr.treatment matrix cuts off the first column (effect)
       }
     }
-    effect <- Effect(label=feLabs[i], levels=lvls, type = effType, reference = refEff)
+    effect <- Parameter(label=feLabs[i], levels=lvls, type = as.list(c(effType, "ModelParameter")), reference = refEff)
     term$effect <- append(term$effect, effect)
     
     # estimates
-    est <- Estimate(feLabs[i], value = fixcoefs[i, "Estimate"], parameter = effect)
+    est <- Estimate(feLabs[i], value = fixcoefs[i, "Estimate"], parameter = effect, type="Estimate")
     est$se <- fixcoefs[i, "Std. Error"]
     effect$estimate <- append(effect$estimate, est) # add estimate to the effect
     procEst$hasOutput <- append(procEst$hasOutput, est)
@@ -252,15 +253,14 @@ getEmmeans <- function(mod) {
         
       for (e in 1:dim(ems)[1]) {
         lvls <- list()
-        #effLab <- "emm"
+        effLab <- ""
         for (l in 1:i) {
           levLab <- as.character(ems[e,l])
-          #effLab <- paste0(effLab, ".", levLab) #CHECK why was it concatenated with 'emm'? some other effect conflicts with it?
-          effLab <- levLab
+          effLab <- paste0(effLab, ".", levLab)
           lev <- getEntity("Level", levLab)
           lvls <- append(lvls, lev)
         }
-        effect <- Effect(paste0("emm_", effLab), levels = lvls, type = "emm")
+        effect <- Parameter(paste0("emm_", effLab), levels = lvls, type = "emm")
         
         est <- Estimate(paste0('emm_', effLab), value = ems[e, "emmean"], parameter = effect)
         est$se <- ems[e, "SE"]
@@ -329,7 +329,7 @@ getRandomTerms2 <- function(mod) {
       termEffectLevelNames <- unlist(strsplit(termEffectName,":"))
       effLevels <- listOfStringsToObjects("Level", termEffectLevelNames)
       assert_that(length(effLevels) == length(termEffectLevelNames))
-      eff <- Effect(termEffectName, levels = effLevels)
+      eff <- Parameter(termEffectName, levels = effLevels, type=list("Effect")) #ModelParameter X, then what? #TODO eBLUP?
       effects <- append(effects, eff)
     }
     effects
@@ -343,14 +343,14 @@ getRandomTerms2 <- function(mod) {
 
 getRandomPrediction <- function(mod) {
   
-  procPred <- Process("paramPrediction", processType="ModelParameterEstimation")
+  procPred <- Process("paramPrediction", processType="ModelParameterEstimation", type="BLUP")
   
   estimates <- list()
   ranefs <- ranef(mod)
   for (ranef in ranefs) {
     effNames <- row.names(ranef)
     for (effName in effNames) {
-      eff <- getEntity("Effect", effName)
+      eff <- getEntity("Parameter", effName)
       if (is.null(eff)) {
         print("No effect for name:", effName)
       } else {
@@ -369,7 +369,7 @@ getRandomPrediction <- function(mod) {
 
 getVarCorrEstimation <- function(mod) {
   
-  procEst <- Process("varCompEstimation", processType="ModelParameterEstimation")
+  procEst <- Process("varCompEstimation", processType="ModelParameterEstimation", type="REML")
   
   estimates <- list()
   
@@ -382,17 +382,20 @@ getVarCorrEstimation <- function(mod) {
     if (is.null(term)) {
       if (termName == "Residual") {
         #TODO handle residual #FIXME
+        term <- getEntity("ErrorModelTerm", termName)
+        
       } else {
         print(paste("No term for name:", termName))
+        break;
       }
-    } else {
-      param <- term$covarianceStructure[[1]]$params[[1]] #TODO select param to fill
-      val <- vcFrame[i, "vcov"]
-      est <- Estimate(termName, value = val, parameter = param)
-      #param$estimate <- append(param$estimate, est)
-      
-      estimates <- append(estimates, est)
-    }
+    } 
+    param <- term$covarianceStructure[[1]]$params[[1]] #TODO select param to fill
+    val <- vcFrame[i, "vcov"]
+    est <- Estimate(termName, value = val, parameter = param, type="Estimate")
+    param$estimate <- list(est)
+    #param$estimate <- append(param$estimate, est)
+    
+    estimates <- append(estimates, est)
   }
   
   procEst$hasOutput <- estimates
@@ -408,43 +411,49 @@ getVarCorrEstimation <- function(mod) {
 # get error (residual)
 getErrorTerm <- function(mod) {
   
-  errorTerm <- ErrorModelTerm(label = "e") #TODO change to ErrorTerm / ErrorModelTerm / ???
+  errorTerm <- ErrorModelTerm(label = "Residual")
   
-  effects <- list()
-  estimates <- list()
+  # adding individual effects for the error term
+  # for the time being let's not add individual effects for the error term, as they are not interesting for the audience
+  #effects <- list()
+  #stimates <- list()
+  #ef <- Parameter("e", levels=NULL, type="ModelParameter") #TODO dependent variable (or other things in multidimensional model)
+  #effects <- append(effects, ef)
+  #errorTerm$effect <- effects;
+  #errorTerm$estimate <- estimates;
   
-  ef <- Effect("e", levels=NULL) #TODO dependent variable (or other things in multidimensional model) #TODO remove for error??
-  effects <- append(effects, ef)
-  
-  errorTerm$effect <- effects;
-  errorTerm$estimate <- estimates;
-  
-  paramName <- "identCovStr_e_sigma2_e"
-  covStr <- CovarianceStructure(label="identCovStr_e", params=paramName)
-  param <- getEntity("ModelParameter", paramName)
+  paramName <- "Resid_sigma2e"
+  covStr <- CovarianceStructure(label="ResidualCovStr", params=paramName, type="covIdentity")
+  param <- getEntity("Parameter", paramName)
   assert_that(!is.null(param))
-  #TODO check sigma(mod)
-  value <- getME(mod, "devcomp")[["cmp"]]["sigmaREML"] #TODO other deviance components and fitness? e.g. sigmaML
-  est <- Estimate(label = paramName, value = value^2, parameter = param) # unsure - covariance structure has a param (sigma_e), 
+  # alternatives:
+  #1: check sigma(mod)
+  #2: value <- getME(mod, "devcomp")[["cmp"]]["sigmaREML"] #TODO other deviance components and fitness? e.g. sigmaML
+  #est <- Estimate(label = paramName, value = value^2, parameter = param, type="Estimate") # unsure - covariance structure has a param (sigma_e), 
                                                                             # the param has estimated value (value) + ... s.e? 
                                                                             # in model the value of the param is given as "Residual Std.Dev."
-  covStr$estimate <- list(est)
+  #covStr$estimate <- list(est)
   errorTerm$covarianceStructure <- list(covStr)
-  errorTerm$estimate <- list(est)
+  #errorTerm$estimate <- list(est) #CHECK why the estimates were assigned to the terms, let's comment it for now and see what comes out
   
   list(errorTerm)
 }
 
 getDependentVariables <- function(m) {
   depVar <- list()
-  var <- Variable(label = as.character(formula(m))[2], type="DependentVariable")
+  varLab <- as.character(formula(m))[2] #TODO check what happens when >1 dependent variables
+  var <- getEntity("Variable", varLab)
+  if (is.null(var)) {
+    var <- Variable(label = , type="DependentVariable")
+  }
   depVar <- append(depVar$dependentVariable, var)
   depVar
 }
 
 getModel <- function(mod) {
   
-  lmm <- Lmm(label=format(Sys.time(), "%Y%m%d%H%M%S"), formula = formula(mod))
+  vars <- getVariables(mod)
+  lmm <- Lmm(label=format(Sys.time(), "%Y%m%d%H%M%S"), formula = formula(mod), vars = vars)
   lmm$criterionREML <- getME(mod, "devcomp")[["cmp"]]["REML"]
   if (is.na(lmm$criterionREML)) {
     lmm$criterionAICdf <- extractAIC(mod)[1]

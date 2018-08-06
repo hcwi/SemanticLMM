@@ -17,6 +17,7 @@ label;rdfs:label;rdfs:label;rdfs:label;rdfs:label;
 hasLevel;hasLevel;stato:has_part;obo:BFO_0000051;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;obo:BFO_0000051#hasPart
 isLevelOf;isLevelOf;stato:is_part_of;obo:BFO_0000050;http://purl.obolibrary.org/obo/BFO_0000050#isPartOf;
 hasEffect;defines;stato:declares;obo:STATO_0000001;http://purl.obolibrary.org/obo/STATO_0000001#declares;
+declares;defines;stato:declares;obo:STATO_0000001;http://purl.obolibrary.org/obo/STATO_0000001#declares;
 isAbout;isAbout;ro:is_about;obo:IAO_0000136;http://purl.obolibrary.org/obo/IAO_0000136#isAbout;
 hasPart;hasPart;stato:has_part;obo:BFO_0000051;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
 hasTerm;hasPart;stato:has_part;obo:BFO_0000051;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;
@@ -26,7 +27,7 @@ hypothesis;hypothesis;stato:hypothesis;obo:STATO_0000065;http://purl.obolibrary.
 Pvalue;p-value;stato:p-value;obo:OBI_0000175;http://purl.obolibrary.org/obo/OBI_0000175#p-value;
 Qvalue;q-value;stato:q-value;obo:OBI_0001442;http://purl.obolibrary.org/obo/OBI_0001442#q-value;
 nullHypothesis;nullHypothesis;stato:null_hypothesis;obo:STATO_0000057;http://purl.obolibrary.org/obo/STATO_0000057#null hypothesis;
-describesValueOf;isValueOf;stato:specifies_value_of;obo:OBI_0001927;http://purl.obolibrary.org/obo/OBI_0001927#specifiesValueOf;
+specifiesValueOf;isValueOf;stato:specifies_value_of;obo:OBI_0001927;http://purl.obolibrary.org/obo/OBI_0001927#specifiesValueOf;
 CovarianceStructure;CovarianceStructure;stato:covariance_structure;obo:STATO_0000346;http://purl.obolibrary.org/obo/STATO_0000346#CovarianceStructure;
 CovIdentity;CovarianceStructureIdentity;xxx:identity_covariance_structure;xxx:identity_covariance_structure;xxx:identity_covariance_structure;
 critREML;;xxx:critREML;xxx:critREML;xxx:critREML;
@@ -58,6 +59,7 @@ isFunctionOf;;xxx:is_function_of;xxx:is_function_of;xxx:is_function_of;
 ParametricFunction;;xxx:parametric_function;xxx:parametric_function;xxx:parametric_function;
 Contrast;;stato:contrast;obo:STATO_0000290;http://purl.obolibrary.org/obo/STATO_0000290#Contrast;
 TreatmentContrast;;stato:treatment_contrast;obo:STATO_0000307;http://purl.obolibrary.org/obo/STATO_0000307#TreatmentContrast;
+ContrastEstimate;;stato:contrast_estimate;obo:STATO_0000384;http://purl.obolibrary.org/obo/STATO_0000384#ContrastEstimate;
 EMM;;xxx:emm;xxx:emm;xxx:emm;
 Variance;;xxx:variance;xxx:variance;xxx:variance;
 VarianceComponent;;;xxx:variance_component;xxx:variance_component;
@@ -69,3 +71,9 @@ lowerConfidenceLimit;;stato:lower_confidence_limit;obo:STATO_0000315;http://purl
 upperConfidenceLimit;;stato:upper_confidence_limit;obo:STATO_0000314;http://purl.obolibrary.org/obo/STATO_0000314#upper confidence limit;
 confidenceLevel;;stato:confidence_level;obo:STATO_0000561;http://purl.obolibrary.org/obo/STATO_0000561#confidence level;
 confidenceInterval;;stato:confidence_interval;obo:STATO_0000196;http://purl.obolibrary.org/obo/STATO_0000196#confidence interval;
+BLUE;;stato:BLUE;<http://purl.obolibrary.org/obo/stato.owl#best_linear_unbiaised_estimator> ;<http://purl.obolibrary.org/obo/stato.owl#best_linear_unbiaised_estimator> ;typo in STATO!!!
+BLUP;;stato:BLUP;<http://purl.obolibrary.org/obo/stato.owl#best_linear_unbiased_predictor> ;<http://purl.obolibrary.org/obo/stato.owl#best_linear_unbiased_predictor> ;
+StudyDesign;;stato:study_design;obo:OBI_0500000;http://purl.obolibrary.org/obo/STATO_0000196#confidence interval;
+DesignMatrix;;stato:design_matrix;obo:STATO_0000289;http://purl.obolibrary.org/obo/STATO_0000289#design_matrix;
+denotes;;stato:denotes;obo:IAO_0000219;http://purl.obolibrary.org/obo/IAO_0000219#denotes;
+REML;;stato:restricted_maximum_likelihood_estimation;obo:STATO_0000427;http://purl.obolibrary.org/obo/STATO_0000427#REML;

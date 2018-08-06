@@ -80,7 +80,7 @@ init <- function() {
 }
 init()
 
-reg #list registered objects
+#reg #list registered objects
 
 
 ########################## LMM model classes ########################## 
@@ -171,21 +171,6 @@ OntologyEntity <- {setRefClass("OntologyEntity",
 # oe
 #str(oe)
 
-ModelParameter <- {setRefClass("ModelParameter",
-                              contains = "OntologyEntity",
-                              methods = list(
-                                initialize = function(...) {
-                                  callSuper(...)
-                                },
-                                getTTL = function() {
-                                  paste(callSuper(),
-                                        ";\n", TYPE, MODELPARAMETER
-                                  )
-                                }
-                              )
-)}
-# param1 <- ModelParameter(label = "param1", type = list("variance"))
-# param1
 
 Hypothesis <- {setRefClass("Hypothesis", 
                            contains = "OntologyEntity",
@@ -266,7 +251,7 @@ Estimate <- {setRefClass("Estimate",
                               ))
                             }
                             paste(callSuper(),
-                                  ";\n", TYPE, ESTIMATE,
+                                  ";\n", TYPE, "xxx:Estimate", #ESTIMATE,
                                   ";\n", VALUE, num(value),
                                   ";\n", ISESTIMATEOF, listAsTTL(list(isEstimateOf)))
                           }
@@ -447,7 +432,7 @@ CovarianceStructure <- {
                   #TODO correct choosing cov model
                   tmp <- list()
                   for (i in params) {
-                    tmp <- append(tmp, ModelParameter(label=i, type=list("varianceComponent")))
+                    tmp <- append(tmp, Parameter(label=i, type=list("ModelParameter", "varianceComponent")))
                   }
                   .self$params <- tmp
                 },
@@ -463,25 +448,30 @@ CovarianceStructure <- {
 # cs <- CovarianceStructure(label = "blockTerm", params="sigma")
 #cs
 
-Effect <- {
-  setRefClass("Effect",
-              contains = "ModelParameter",
+#param1 <- ModelParameter(label = "param1", type = list("variance"))
+# param1
+
+
+Parameter <- {
+  setRefClass("Parameter",
+              contains = "OntologyEntity",
               fields= list(
                 correspondingVarLevels = "list", #of Levels (for now)
                 relativeTo = "list", #list of reference effects (only ONE? reference effect)
-                #describesValueOf = "ANY", #dependent variable
+                specifiesValueOf = "ANY", #dependent variable
                 estimate = "list"
               ),
               methods = list(
-                initialize = function(..., levels, reference = list()) {
+                initialize = function(..., levels=list(), reference = list(), valueOf = list()) {
                   callSuper(...)
                   tmp <- listOfStringsToObjects("VariableLevel", levels)
                   .self$correspondingVarLevels <- tmp
                   .self$relativeTo <- reference
+                  .self$specifiesValueOf <- valueOf
                 },
                 getTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, EFFECT,
+                        ";\n", TYPE, "xxx:Parameter",
                         if (length(correspondingVarLevels) > 0) {
                           paste(";\n", paste(ISABOUT, listAsTTL(correspondingVarLevels), collapse = " ;\n "))
                         },
@@ -490,17 +480,19 @@ Effect <- {
                         },
                         if (length(estimate) > 0) {
                           paste(";\n", paste("xxx:TMP_EST", listAsTTL(estimate), collapse = " ;\n "))
+                        },
+                        if (length(specifiesValueOf) > 0) {
+                          paste(";\n", paste(SPECIFIESVALUEOF, listAsTTL(specifiesValueOf), collapse = " ;\n "))
                         }
-                        #";\n", DESCRIBESVALUEOF, describesValueOf, # remove or generate automatically
                       )
                 }
               )
   )}
 
 cv <- CategoricalVariable("testVar", levels = list("CamB1", "Drought"))
-ef1 <- Effect("testEffect", levels=list("CamB1","Drought"), type="EMM") # Interaction Effect
+ef1 <- Parameter("testEffect", levels=list("CamB1","Drought"), type="EMM") # Interaction Effect
 cv2 <- CategoricalVariable("testVar2", levels = list("CamB2", "Drought2"))
-ef2 <- Effect("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), type="RelativeEffect") # Interaction Effect
+ef2 <- Parameter("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), type=c("RelativeEffect", "ModelParameter")) # Interaction Effect
 cat(ef1$asTTL())
 cat(ef2$asTTL())
 
@@ -551,6 +543,46 @@ cat(ef2$asTTL())
 # con1 <- Contrast("Contrast0", params = list(param1, param2), formula = "???", type=list("TreatmentContrast"))
 # con1
 
+StudyDesign <- {
+  setRefClass("StudyDesign",
+              contains = "OntologyEntity",
+              fields = list(
+                vars = "list"
+              ),
+              methods = list(
+                initialize = function(..., declares) {
+                  callSuper(...)
+                  .self$vars <- declares
+                },
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, STUDYDESIGN,
+                        ";\n", paste(DECLARES, listAsTTL(vars), collapse = " ;\n ")
+                  )
+                }
+              )
+  )}
+
+DesignMatrix <- {
+  setRefClass("DesignMatrix",
+              contains = "OntologyEntity",
+              fields = list(
+                studyDesign = "list"
+              ),
+              methods = list(
+                initialize = function(..., declares) {
+                  callSuper(...)
+                  .self$studyDesign <- list(StudyDesign("sd", declares = declares))
+                },
+                getTTL = function() {
+                  paste(callSuper(),
+                        ";\n", TYPE, DESIGNMATRIX,
+                        ";\n", paste(DENOTES, listAsTTL(studyDesign), collapse = " ;\n ")
+                  )
+                }
+              )
+  )}
+
 
 Lmm <- {
   setRefClass("Lmm",
@@ -563,15 +595,19 @@ Lmm <- {
                 errorTerm = "list", # of ModelTerm
                 criterionREML = "numeric",
                 criterionAIC = "numeric",
-                criterionAICdf = "numeric"
+                criterionAICdf = "numeric",
+                variables = "list",
+                designMatrix = "list"
               ),
               methods = list(
-                initialize = function(..., formula) {
+                initialize = function(..., formula, vars = list()) {
                   callSuper(...)
                   .self$formula <- formula
                   #.self$residual <- resid
+                  .self$variables <- vars
                 },
                 getTTL = function() {
+                  .self$designMatrix <- list(DesignMatrix("dm", declares = variables))
                   paste(callSuper(),
                         ";\n", TYPE, LMM,
                         ";\n", FORMULA, lit(deparse(formula)),
@@ -581,7 +617,8 @@ Lmm <- {
                         ";\n", ISMODELFOR, listAsTTL(dependentVariable),
                         ";\n", paste(HASTERM, listAsTTL(independentFixedTerm), collapse = " ;\n "),
                         ";\n", paste(HASTERM, listAsTTL(independentRandomTerm), collapse = " ;\n "),
-                        ";\n", paste(HASTERM, listAsTTL(errorTerm), collapse = " ;\n ")
+                        ";\n", paste(HASTERM, listAsTTL(errorTerm), collapse = " ;\n "),
+                        ";\n", paste(HASTERM, listAsTTL(designMatrix), collapse = " ;\n ")
                         )
                 }
               )
