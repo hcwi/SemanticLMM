@@ -4,7 +4,7 @@ require(pbkrtest)
 require(emmeans)
 require(assertthat)
 source("lmm_classes.R")
-source("example.R")
+#source("example.R")
 #contr.treat <- contr.treatment
 
 getVariables <- function(mod) {
@@ -15,33 +15,71 @@ getVariables <- function(mod) {
   vars <- list()
   varGrid <- levels(ref_grid(mod))
   for (i in 1:length(varGrid)) {
-    var <- CategoricalVariable(label = names(varGrid)[i], 
-                               levels = varGrid[[i]], 
-                               type="IndependentVariable")
+    levs <- varGrid[[i]]
+    if (length(levs) > 1) {
+      var <- CategoricalVariable(label = names(varGrid)[i], 
+                                 levels = levs, 
+                                 type="IndependentVariable")
+    } else {
+      var <- ContinuousVariable(label = names(varGrid)[i], 
+                                 levels = levs, # as.character(c(levs, 1)) # add unit value?
+                                 type=list("IndependentVariable"))
+    }
     vars <- append(vars, var)
   }
   vars
 }
 
 
+# getVariables <- function(mod) {
+#   
+#   variables <- list()
+#   
+#   for (i in 1:length(mod@frame)) {
+#     varName <- names(mod@frame[i])
+#     varLevels <- levels(mod@frame[[i]])
+#     variable <- getEntity("Variable", varName)
+#     if (is.null(variable)) {
+#       if (is.null(varLevels)) {
+#         variable <- Variable(varName)
+#       } else {
+#         variable <- CategoricalVariable(varName, levels = varLevels)
+#       }
+#     }
+#     #print(variable$asTTL())
+#     variables <- append(variables, variable)
+#   }
+#   
+#   variables
+# }
+
+
 # get fixed terms from model attributes
 # for each term, add variables and their levels
 getFixedTerms <- function(mod) {
   
-  vars <- getVariables(mod)
+  #vars <- getVariables(mod) # commented!
   
   fixedTerms <- list()
   
   if (attr(terms(mod), "intercept") == 1) {
-    fixTer <- FixedModelTerm(label = "Intercept", order = integer(0))
+    fixTer <- FixedModelTerm(label = "(Intercept)", order = as.integer(0))
+    #rint("--- Creating term (Intercept) with parenthesis - new implementation!")
     fixedTerms <- append(fixedTerms, fixTer)
   }
   
-  for (i in 1:length(terms(mod))) {
+  terms <- terms(mod)
+  
+  for (i in 1:length(attr(terms, "term.labels"))) {
     
     lab <- attr(terms(mod), "term.labels")[i]
     order <- attr(terms(mod), "order")[i]
     fixTer <- FixedModelTerm(label = lab, order = order)
+    
+    #change the code from the next part to the approach based on factors table, below - NOT TESTED:
+    #fct <- attr(terms(mod), "factors")
+    #varLabs <- rownames(fct)[fct[,i] == 1]
+    
     
     # add variables and their levels (no interation of levels, just values for separate variable)
     varLabs <- unlist(strsplit(lab,":"))
@@ -105,6 +143,7 @@ getFixedEstimation <- function(mod, lmm) {
   #get fixed coefs to produce "effects"
   fixcoefs <- summary(mod)$coefficients # get estimated effects
   feLabs <- row.names(fixcoefs)
+  reLabs <- feLabs
   varLabs <- unique(unlist(strsplit(attr(terms(mod), "term.labels"),":"))) # get variable names
   for (varLab in varLabs) {
     feLabs <- sub(feLabs, pattern = varLab, rep="") # remove variable names from effect labels
@@ -115,10 +154,7 @@ getFixedEstimation <- function(mod, lmm) {
   ref <- min(termAssign) # ass == ref -> EMM else Contrast 
   contrs <- attr(modmatrix, "contrasts")
   ok <- all(sapply(contrs, function(x) {typeof(x) == "character" && startsWith(x, "contr.treat")} ))
-  assert_that(ok, msg = "Znaleziono inne kontrasty niz 'contr.treatment'. Ich wartosci nie zostana przetworzone.") # TODO zrobic ifa, jesli ok==TRUE
-  if (ok) {
-    print("Contrast ok. Processing standard contr.treatment:")
-  }
+  assert_that(ok, msg = "ERROR. Found other contrasts than 'contr.treatment' which cannot be handled.")
   
   for (i in 1:length(feLabs)) {
     
@@ -130,30 +166,69 @@ getFixedEstimation <- function(mod, lmm) {
     
     # effects
     if (termAssign[i] == ref) {
-      effType = "emm"
-      if (termAssign[i] == 0) {
+      effType = c("emm", "effect")
+      if (termAssign[i] == 0) { # for a general intercept add base levels/values of all variables
         for (v in varLabs) {
           var <- getEntity("Variable", v)
-          lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
+          if (is(var, "CategoricalVariable")) {
+            lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
+          } else {
+            lvls <- append(lvls, Statistic("baseLevel", value=0, isAbout=list(var), type="ValueSpecification"))
+          }
         }
-      } else {
-        for (v in term$variable) {
-          lvls <- append(lvls, v$levels[[i]])
+      } else { #TODO CHECK & test # not considering use cases with interaction terms only (i.e. without single covariate to refer to!)
+        isRegression <- FALSE
+        for (var in term$variable) {
+          if (is(var, "CategoricalVariable")) {
+            lvls <- append(lvls, var$levels[[i]])
+          } else {
+            isRegression <- TRUE
+            levLab <- paste0(var$label,"_unit")
+            lvl <- getEntity("Statistic", levLab)
+            if (is.null(lvl)) {
+              lvl <- Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
+            }
+            lvls <- append(lvls, lvl)
+          }
         }
-        explicitVarLabs <- sapply(term$variable, function(x) x$label)
-        missingDefaultVarLabs <- setdiff(varLabs, explicitVarLabs)
-        for (v in missingDefaultVarLabs) {
-          var <- getEntity("Variable", v)
-          lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
+        if (!isRegression) {
+          explicitVarLabs <- sapply(term$variable, function(x) x$label)
+          missingDefaultVarLabs <- setdiff(varLabs, explicitVarLabs)
+          for (v in missingDefaultVarLabs) {
+            var <- getEntity("Variable", v)
+            if (is(var, "CategoricalVariable")) {
+              lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
+            } else {
+              levLab <- paste0(var$label,"_unit")
+              lvl <- getEntity("Statistic", levLab)
+              if (is.null(lvl)) {
+                lvl <- Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
+              }
+              lvls <- append(lvls,lvl)
+            }
+          }
         }
       }
     } else {
       effType = c("treatmentContrast", "effect")
       #here can add estType="contrastEstimate")
-      for (l in unlist(strsplit(feLabs[i], ":"))) {
-        lvl <- getEntity("Level", l)
+      
+      if (feLabs[i] != "") {
+        for (l in unlist(strsplit(feLabs[i], ":"))) {
+          lvl <- getEntity("Level", l)
+          lvls <- append(lvls, lvl)
+        }
+      } else {
+        v <- reLabs[i]
+        var <- getEntity("Variable", v)
+        levLab <- paste0(var$label,"_unit")
+        lvl <- getEntity("Statistic", levLab)
+        if (is.null(lvl)) {
+          lvl <- Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
+        }
         lvls <- append(lvls, lvl)
       }
+      
       if (sum(termAssign == ref) == 1 || # there is only one reference / intercept
           sum(termAssign == termAssign[i]) == 1) { # or just one param per term
         refEff <- append(refEff, lmm$independentFixedTerm[[1]]$effect[[1]])
@@ -164,17 +239,18 @@ getFixedEstimation <- function(mod, lmm) {
         # +1, bacause the contr.treatment matrix cuts off the first column (effect)
       }
     }
-    effect <- Parameter(label=feLabs[i], levels=lvls, type = as.list(c(effType, "ModelParameter")), reference = refEff)
+    
+    lab <- ifelse(feLabs[i] == "", reLabs[i], feLabs[i])
+    effect <- Parameter(label=lab, levels=lvls, type = as.list(effType), reference = refEff)
     term$effect <- append(term$effect, effect)
     
     # estimates
-    est <- Estimate(feLabs[i], value = fixcoefs[i, "Estimate"], parameter = effect, type="Estimate")
+    est <- Estimate(lab, value = fixcoefs[i, "Estimate"], parameter = effect, type="Estimate")
     est$se <- fixcoefs[i, "Std. Error"]
     effect$estimate <- append(effect$estimate, est) # add estimate to the effect
     procEst$hasOutput <- append(procEst$hasOutput, est)
     
     # testing 
-    lab <- feLabs[i]
     hypo <- Hypothesis(label=lab, pvalue=fixcoefs[i, "Pr(>|t|)"], modelParams = list(effect))
     tstat <- Statistic(label=paste0("t-stat_", lab), type="Tstatistic", value=fixcoefs[i, "t value"])
     df <- Statistic(label=paste0("df_", lab), type="df", value=fixcoefs[i, "df"])
@@ -258,6 +334,14 @@ getEmmeans <- function(mod) {
           levLab <- as.character(ems[e,l])
           effLab <- paste0(effLab, ".", levLab)
           lev <- getEntity("Level", levLab)
+          if (is.null(lev)) {
+            var <- getEntity("Variable", names(ems)[l])
+            refLab <- paste0(var$label,"_",levLab)
+            lev <- getEntity("Statistic", refLab)
+            if (is.null(lev)) {
+              lev <- Statistic(refLab, value = as.numeric(levLab), isAbout=list(var), type="ValueSpecification")
+            }
+          }
           lvls <- append(lvls, lev)
         }
         effect <- Parameter(paste0("emm_", effLab), levels = lvls, type = "emm")
@@ -283,28 +367,58 @@ getEmmeans <- function(mod) {
   list(procEmms, procConfIntCalc)
 }
 
-getVariables <- function(mod) {
-  
-  variables <- list()
 
-  for (i in 1:length(mod@frame)) {
-    varName <- names(mod@frame[i])
-    varLevels <- levels(mod@frame[[i]])
-    variable <- getEntity("Variable", varName)
-    if (is.null(variable)) {
-      if (is.null(varLevels)) {
-        variable <- Variable(varName)
-      } else {
-        variable <- CategoricalVariable(varName, levels = varLevels)
+getRandomTerms_lmer <- function(mod) {
+  
+  randomTerms <- list()
+  for (i in 1:length(mod@flist)) { # iterate over terms
+    
+    termName <- names(mod@flist[i]) # get variable names
+    termVarNames <- unlist(strsplit(termName,":"))
+    termVariables <- list()
+    for (tvn in termVarNames) {
+        tvar <- getEntity("Variable", tvn)
+        if (is.null(tvar)) {
+          tvar <- CategoricalVariable(tvn, type=list("IndependentVariable"))
+        }
+        termVariables <- append(termVariables, tvar)
       }
+    
+    assert_that(length(termVarNames) == length(termVariables))
+    randomTerm <- RandomModelTerm(termName, variable = termVariables)
+    #cat(randomTerm$asTTL())
+    
+    randomTerm$covarianceStructure <- list(CovarianceStructure(termName))
+    
+    effects <- list()
+    termEffectNames <- levels(mod@flist[[i]]) # get effects and assign levels to them
+    for (termEffectName in termEffectNames) {
+      termEffectLevelNames <- unlist(strsplit(termEffectName,":"))
+      effLevels <- list()
+      for (j in 1:length(termEffectLevelNames)) {
+        tvn <- termEffectLevelNames[j]
+        tvar <- getEntity("Level", tvn)
+        if (is.null(tvar)) {
+          var <- termVariables[[j]]
+          tvar <- VariableLevel(tvn, value=tvn, variable=var)
+          var$levels <- append(var$levels, tvar)
+        }
+        effLevels <- append(effLevels, tvar)
+      }
+      assert_that(length(effLevels) == length(termEffectLevelNames))
+      eff <- Parameter(termEffectName, levels = effLevels, type=list("Effect")) #ModelParameter X, then what? #TODO eBLUP?
+      effects <- append(effects, eff)
     }
-    #print(variable$asTTL())
-    variables <- append(variables, variable)
+    effects
+    randomTerm$effect <- effects
+    
+    randomTerms <- append(randomTerms, randomTerm)
   }
   
-  variables
+  randomTerms
 }
 
+# probably out of use, not working for lmer
 getRandomTerms2 <- function(mod) {
   
   variables <- getVariables(mod)
@@ -439,12 +553,14 @@ getErrorTerm <- function(mod) {
   list(errorTerm)
 }
 
-getDependentVariables <- function(m) {
+getDependentVariables <- function(mod) {
   depVar <- list()
-  varLab <- as.character(formula(m))[2] #TODO check what happens when >1 dependent variables
+  varLab <- as.character(formula(mod))[2] #TODO check what happens when >1 dependent variables
+  # alternatively - perhaps better:
+  # varLab <- rownames(attr(terms(mod), "factors"))[apply(attr(terms(mod), "factors"), 1, sum) == 0]
   var <- getEntity("Variable", varLab)
   if (is.null(var)) {
-    var <- Variable(label = , type="DependentVariable")
+    var <- Variable(label = varLab, type="DependentVariable")
   }
   depVar <- append(depVar$dependentVariable, var)
   depVar
@@ -453,28 +569,45 @@ getDependentVariables <- function(m) {
 getModel <- function(mod) {
   
   vars <- getVariables(mod)
-  lmm <- Lmm(label=format(Sys.time(), "%Y%m%d%H%M%S"), formula = formula(mod), vars = vars)
+  lab <- gsub(deparse(formula(mod)),pattern = " ", rep="")
+  lab <- gsub(lab, pattern = "~", rep="-")
+  lab <- gsub(lab, pattern = "*", rep="", fixed=T)
+  lab <- gsub(lab, pattern = "+", rep=".", fixed=T)
+  lab <- substr(lab, 1, grepRaw(lab, pat="(", fixed=T)-2)
+  lmm <- Lmm(label=paste0("model_", lab), #format(Sys.time(), "%Y%m%d%H%M%S"), 
+             formula = formula(mod), vars = vars)
   lmm$criterionREML <- getME(mod, "devcomp")[["cmp"]]["REML"]
-  if (is.na(lmm$criterionREML)) {
-    lmm$criterionAICdf <- extractAIC(mod)[1]
-    lmm$criterionAIC <- extractAIC(mod)[2]
-  }
+  lmm$criterionAIC <- AIC(mod) #summary(mod)$AIC
+  lmm$criterionBIC <- BIC(mod) #summar
+  #if (is.na(lmm$criterionREML)) {
+  #  lmm$criterionAICdf <- extractAIC(mod)[1]
+  #  lmm$criterionAIC <- extractAIC(mod)[2]
+  #}
   lmm
 }
 
 ############################ run ################################
 
 
-exportModelToRDF <- function(mod) {
+exportModelToRDF <- function(mod, ds=list()) {
   
+  init()
   lmm <- getModel(mod)
   lmm$dependentVariable = getDependentVariables(mod)
   lmm$independentFixedTerm <- getFixedTerms(mod)
-  lmm$independentRandomTerm <- getRandomTerms2(mod) #getRandomTerms(mod)
+  lmm$independentRandomTerm <- getRandomTerms_lmer(mod) #getRandomTerms(mod)
+  lapply(lmm$independentRandomTerm, function(x) {lmm$variables <- append(lmm$variables, x$variable)}) #hopefully tmp, 
+  #adding random variables to overall model variables
   lmm$errorTerm <- getErrorTerm(mod)
   
-  modelFitting <- Process("modelFitting0", processType="ModelFitting")
+  modelFitting <- Process("modelFitting", processType="ModelFitting", comments=list(paste0("rdfs:comment \"Results obtained by R lme4 package, lmer function\"")))
   modelFitting$hasInput <- append(modelFitting$hasInput, lmm)
+  modelFitting$hasInput <- append(modelFitting$hasInput, Dataset(label = ifelse(!is.null(ds[["label"]]), ds[["label"]], "Dataset"), 
+                                                                 url = ifelse(!is.null(ds[["url"]]), ds[["url"]], "url unavailable"),
+                                                                 comments = {if (!is.null(ds[["comments"]])) ds[["comments"]] else list()},
+                                                                 variables = append(lmm$variables, lmm$dependentVariable)))
+  modelFitting$hasOutput <- lmm$getQuality()
+  
   procs <- getFixedEstimation(mod, lmm)
   modelFitting$hasPart <- append(modelFitting$hasPart, procs)
   procs <- getVarCorrEstimation(mod)
@@ -483,29 +616,57 @@ exportModelToRDF <- function(mod) {
   modelFitting$hasPart <- append(modelFitting$hasPart, procs)
   procs <- getEmmeans(mod)
   modelFitting$hasPart <- append(modelFitting$hasPart, procs)
-  
-  
-  # print model:
-  #lmm$show()
-  #cat(lmm$asTTL())
-  #cat(modelFitting$asTTL())
-  modelFitting
 
+  modelFitting
 }
 
-tmp <- list(m0) #m_all
+run <- function() {
+  
+  tmp <-  models[1:1]
+  
+  for (mod in tmp) {
+    #mod <- m0 #m_cov_noint #m_cov_noint #m0  #m_cov
+    #modelName <- deparse(quote(model))
+    #mod <- get(modelName)
+    init()
+    print(formula(mod))
+    modelFitting <- exportModelToRDF(mod)
+    graphName <- modelFitting$hasInput[[1]]$id
+    print(graphName)
+    capture.output(cat(prefixes), 
+                   cat("<graphs/graph_", graphName, ">", sep=""), 
+                   cat(" {\n"),
+                   modelFitting, 
+                   cat("}"),
+                   file = paste0("out", .Platform$file.sep, graphName, ".trig"))
+  }
+}
 
-for (model in tmp) {
-  #modelName <- deparse(quote(model))
-  #mod <- get(modelName)
-  modelFitting <- exportModelToRDF(model)
-  graphName <- modelFitting$hasInput[[1]]$label
+#summary(m)$vcov # TODO
+run <- function() {
+
+    mod <- example1()
+  init()
+  print(formula(mod))
+  modelFitting <- exportModelToRDF(mod)
+  modelFitting$hasInput[[2]]$label <- "example1"
+  modelFitting$hasInput[[2]]$url <- "    
+  y Treatment Block
+  1 1.5        T1    B1
+  2 1.7        T1    B2
+  3 2.1        T2    B1
+  4 2.1        T2    B2
+  5 1.9        T3    B1
+  6 2.2        T3    B2
+"
+  graphName <- modelFitting$hasInput[[1]]$id
+  print(graphName)
   capture.output(cat(prefixes), 
                  cat("<graphs/graph_", graphName, ">", sep=""), 
                  cat(" {\n"),
                  modelFitting, 
                  cat("}"),
                  file = paste0("out", .Platform$file.sep, graphName, ".trig"))
+  
 }
 
-#summary(m)$vcov # TODO

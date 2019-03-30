@@ -7,14 +7,16 @@ FixedModelTerm;fixedModelTerm;xxx:model_fixed_effect_term;obo:STATO_0000468;http
 RandomModelTerm;RandomModelTerm;xxx:model_random_effect_term;obo:STATO_0000467;http://purl.obolibrary.org/obo/STATO_0000467#Random model term;
 ErrorModelTerm;ErrorModelTerm;xxx:model_error_effect_term;obo:STATO_0000470;http://purl.obolibrary.org/obo/STATO_0000470#Error model term;?
 ModelParameter;ModelParameter;stato:model_parameter;obo:STATO_0000034;http://purl.obolibrary.org/obo/STATO_0000034#ModelParameter;
-Effect;effect;xxx:effect;xxx:effect;xxx:effect;
-Formula;formula;xxx:formula;xxx:formula;xxx:formula;
+Effect;effect;lmm:effect;lmm:effect;http://igr.poznan.pl/lmm#effect;https://github.com/ISA-tools/stato/issues/75
+Formula;formula;lmm:formula;lmm:formula;http://igr.poznan.pl/lmm#formula;https://github.com/ISA-tools/stato/issues/76
 Estimate;estimate;stato:model_parameter_estimate;obo:STATO_0000144;http://purl.obolibrary.org/obo/STATO_0000144#ModelParameterEstimate;
 Value;value;rdf:value;rdf:value;rdf:value;
-se;se;stato:standard_error;obo:OBI_0000235;http://purl.obolibrary.org/obo/OBI_0000235#standardError;standard error of the mean
+se;se;stato:standard_error;obo:STATO_0000562;http://purl.obolibrary.org/obo/STATO_0000562#standardError;standard error of estimate
 type;rdf:type;a;rdf:type;rdf:type;
 label;rdfs:label;rdfs:label;rdfs:label;rdfs:label;
-hasLevel;hasLevel;stato:has_part;obo:BFO_0000051;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;obo:BFO_0000051#hasPart
+hasLevel_obsolete;hasLevel;stato:has_part;obo:BFO_0000051;http://purl.obolibrary.org/obo/BFO_0000051#hasPart;obo:BFO_0000051#hasPart
+hasLevel;hasLevel;stato:has_value_specification;obo:OBI_0001938;http://purl.obolibrary.org/obo/OBI_0001938#hasValueSpecification;
+isLevelOf_obsolete;isLevelOf;stato:is_part_of;obo:BFO_0000050;http://purl.obolibrary.org/obo/BFO_0000050#isPartOf;
 isLevelOf;isLevelOf;stato:is_part_of;obo:BFO_0000050;http://purl.obolibrary.org/obo/BFO_0000050#isPartOf;
 hasEffect;defines;stato:declares;obo:STATO_0000001;http://purl.obolibrary.org/obo/STATO_0000001#declares;
 declares;defines;stato:declares;obo:STATO_0000001;http://purl.obolibrary.org/obo/STATO_0000001#declares;
@@ -29,17 +31,17 @@ Qvalue;q-value;stato:q-value;obo:OBI_0001442;http://purl.obolibrary.org/obo/OBI_
 nullHypothesis;nullHypothesis;stato:null_hypothesis;obo:STATO_0000057;http://purl.obolibrary.org/obo/STATO_0000057#null hypothesis;
 specifiesValueOf;isValueOf;stato:specifies_value_of;obo:OBI_0001927;http://purl.obolibrary.org/obo/OBI_0001927#specifiesValueOf;
 CovarianceStructure;CovarianceStructure;stato:covariance_structure;obo:STATO_0000346;http://purl.obolibrary.org/obo/STATO_0000346#CovarianceStructure;
-CovIdentity;CovarianceStructureIdentity;xxx:identity_covariance_structure;xxx:identity_covariance_structure;xxx:identity_covariance_structure;
-critREML;;xxx:critREML;xxx:critREML;xxx:critREML;
-critAIC;;stato:AkaikeInformationCriterion;obo:STATO_0000325;http://purl.obolibrary.org/obo/STATO_0000325#CovarianceStructure;
-critAICdf;;xxx:critAIC_df;xxx:critAIC_df;xxx:critAIC_df;
-tmp_est;tmp_est;xxx:tmp_est;xxx:tmp_est;xxx:tmp_est;
+CovIdentity;CovarianceStructureIdentity;stato:identity_covariance_structure;obo:STATO_0000588;http://purl.obolibrary.org/obo/STATO_0000588#ScaleIdentityCovarianceStructure;
+critREML;;lmm:REML_criterion;lmm:REML_criterion;http://igr.poznan.pl/lmm#REML_criterion;
+critAIC;;stato:AkaikeInformationCriterion;obo:STATO_0000325;http://purl.obolibrary.org/obo/STATO_0000325#AIC;
+critBIC;;stato:BIC;obo:STATO_0000327;http://purl.obolibrary.org/obo/STATO_0000327#BIC;
 df;df;stato:df;obo:STATO_0000069;http://purl.obolibrary.org/obo/STATO_0000069#numbrOfDegreesOfFreedom;
-df_num;df_num;;xxx:df_num;xxx:df_num;
-df_den;df_den;;xxx:df_den;xxx:df_den;
+df_num;df_num;;obo:STATO_0000498;http://purl.obolibrary.org/obo/STATO_0000498#numeratorDegreesOfFreedom;
+df_den;df_den;;obo:STATO_0000527;http://purl.obolibrary.org/obo/STATO_0000527#denominatorDegreesOfFreedom;
 Statistic;statistic;stato:Statistic;obo:STATO_0000039;http://purl.obolibrary.org/obo/STATO_0000039#statistic;???
 FStatistic;f_statistic;stato:F_statistic;obo:STATO_0000282;http://purl.obolibrary.org/obo/STATO_0000282#Fstatistic;
 TStatistic;t_statistic;stato:T_statistic;obo:STATO_0000176;http://purl.obolibrary.org/obo/STATO_0000176#Tstatistic;
+WaldStatistic;;obo:Wald_statistic;obo:STATO_0000584;http://purl.obolibrary.org/obo/STATO_0000584#Wald_statistic;
 ModelFitting;;stato:model_fitting;obo:STATO_0000218;http://purl.obolibrary.org/obo/STATO_0000218#model fitting;
 ModelParameterEstimation;;stato:model_parameter_estimation;obo:STATO_0000119;http://purl.obolibrary.org/obo/STATO_0000119#Model parameter estimation;
 ContrastEstimation;;stato:contrast_estimation;obo:STATO_0000383;http://purl.obolibrary.org/obo/STATO_0000383#contrast estimation;
@@ -54,18 +56,16 @@ independentVariable;;stato:study_design_independent_variable;obo:OBI_0000750;htt
 SatterthwaiteApprox;;stato:Satterthwaite_degree_of_freedom_approximation;obo:STATO_0000474;http://purl.obolibrary.org/obo/STATO_0000474#SatterthwaiteDfApprox;
 KenwardRogerApprox;;stato:kenward-roger_degree_of_freedom_approximation;obo:STATO_0000473;http://purl.obolibrary.org/obo/STATO_0000473#KenwardRogerDfApprox;
 isModelFor;isModelFor;stato:is_model_for;<http://purl.obolibrary.org/obo/stato.owl#is_model_for> ;http://purl.obolibrary.org/obo/stato.owl#is_model_for;
-hasOrder;hasOrderInSequence;stato:has_order;<http://purl.obolibrary.org/obo/stato.owl#has_order> ;http://purl.obolibrary.org/obo/stato.owl#has_order;
-isFunctionOf;;xxx:is_function_of;xxx:is_function_of;xxx:is_function_of;
-ParametricFunction;;xxx:parametric_function;xxx:parametric_function;xxx:parametric_function;
+hasOrder;hasOrderInSequence;stato:has_order;<http://purl.obolibrary.org/obo/stato.owl#has_order> ;http://purl.obolibrary.org/obo/STATO_0000382#has_order;
+isFunctionOf;;xxx:is_function_of;xxx:is_function_of;xxx:is_function_of;https://github.com/ISA-tools/stato/issues/76
+ParametricFunction;;xxx:parametric_function;xxx:parametric_function;xxx:parametric_function;https://github.com/ISA-tools/stato/issues/76
 Contrast;;stato:contrast;obo:STATO_0000290;http://purl.obolibrary.org/obo/STATO_0000290#Contrast;
 TreatmentContrast;;stato:treatment_contrast;obo:STATO_0000307;http://purl.obolibrary.org/obo/STATO_0000307#TreatmentContrast;
 ContrastEstimate;;stato:contrast_estimate;obo:STATO_0000384;http://purl.obolibrary.org/obo/STATO_0000384#ContrastEstimate;
-EMM;;xxx:emm;xxx:emm;xxx:emm;
-Variance;;xxx:variance;xxx:variance;xxx:variance;
-VarianceComponent;;;xxx:variance_component;xxx:variance_component;
+EMM;;lmm:emm;lmm:marginal_mean;http://igr.poznan.pl/lmm#marginal_mean;
+Variance;;stato:variance;obo:STATO_0000113;http://purl.obolibrary.org/obo/STATO_0000113#variance;
+VarianceParameter;;;lmm:variance_parameter;http://igr.poznan.pl/lmm#variance_parameter;https://github.com/ISA-tools/stato/issues/70
 VarianceComponentEstimate;;;<http://purl.obolibrary.org/obo/stato.owl#variance_component_estimate> ;<http://purl.obolibrary.org/obo/stato.owl#variance_component_estimate> ;
-RelativeEffect;relativeEffect;xxx:relative_effect;xxx:relative_effect;xxx:relative_effect;
-UNKNOWN;;xxx:UNKNOWN;xxx:UNKNOWN;xxx:UNKNOWN;
 ConfidenceIntervalCalculation;;stato:confidence_interval_calculation;obo:STATO_0000175;http://purl.obolibrary.org/obo/STATO_0000175#confidence interval calculation;
 lowerConfidenceLimit;;stato:lower_confidence_limit;obo:STATO_0000315;http://purl.obolibrary.org/obo/STATO_0000314#lower confidence limit;
 upperConfidenceLimit;;stato:upper_confidence_limit;obo:STATO_0000314;http://purl.obolibrary.org/obo/STATO_0000314#upper confidence limit;
@@ -77,3 +77,30 @@ StudyDesign;;stato:study_design;obo:OBI_0500000;http://purl.obolibrary.org/obo/S
 DesignMatrix;;stato:design_matrix;obo:STATO_0000289;http://purl.obolibrary.org/obo/STATO_0000289#design_matrix;
 denotes;;stato:denotes;obo:IAO_0000219;http://purl.obolibrary.org/obo/IAO_0000219#denotes;
 REML;;stato:restricted_maximum_likelihood_estimation;obo:STATO_0000427;http://purl.obolibrary.org/obo/STATO_0000427#REML;
+ValueSpecification;;stato:value_specification;obo:OBI_0001933;http://purl.obolibrary.org/obo/OBI_0001933#value_specification;
+CategoricalValueSpecification;;stato:categorical_value_specification;obo:OBI_0001930;http://purl.obolibrary.org/obo/OBI_0001930#categorical_value_specification;
+description;;dc:description;dc:description;http://purl.org/dc/elements/1.1/description;
+creator;;dc:creator;dc:creator;http://purl.org/dc/elements/1.1/creator;
+dataset;;stato:dataset;obo:IAO_0000100;http://purl.obolibrary.org/obo/IAO_0000100#dataset;
+correlation;;stato:correlation_coefficient;obo:STATO_0000142;http://purl.obolibrary.org/obo/STATO_0000142#correlation_coefficient;
+BlockingVariable;;stato:blocking_variable;obo:STATO_0000248;http://purl.obolibrary.org/obo/STATO_0000248#blocking_variable;
+hasValueSpecification;;stato:has_value_specification;obo:OBI_0001938;http://purl.obolibrary.org/obo/OBI_0001938#has_value_specification;
+ContinuousVariable;;stato:continuous_variable;obo:STATO_0000251;http://purl.obolibrary.org/obo/STATO_0000251#continuous_variable;
+containment;;xxx:containment;lmm:containment_calculation;http://igr.poznan.pl/lmm#containment_calculation;
+isDenotedBy;;stato:is_denoted_by;obo:STATO_0000205;http://purl.obolibrary.org/obo/STATO_0000205#is_denoted_by;
+isRelativeTo;;lmm:is_relative_to;lmm:is_relative_to;http://igr.poznan.pl/lmm#is_relative_to;
+pdIdent;;stato:sigma2i;obo:STATO_0000588;http://purl.obolibrary.org/obo/STATO_0000588#scaledIdntity;
+pdCompSymm;;stato:cs;obo:STATO_0000362;http://purl.obolibrary.org/obo/STATO_0000362#CS;
+pdDiag;;lmm:diagonalCS;lmm:diagonal_covariance_structure;http://igr.poznan.pl/lmm#diagonal_CS;
+hasEffectOn;;;obo:STATO_0000344;http://purl.obolibrary.org/obo/STATO_0000344#has_effect_on;
+hasFixedEffectOn;;;obo:STATO_0000345;http://purl.obolibrary.org/obo/STATO_0000345#has_fixed_effect_on;
+hasRandomEffectOn;;;obo:STATO_0000381;http://purl.obolibrary.org/obo/STATO_0000381#has_random_effect_on;
+fixedEffect;;;lmm:fixed_effect;;
+randomEffect;;;lmm:random_effect;;
+RelativeEffect;relativeEffect;xxx:relative_effect;lmm:relative_effect;http://igr.poznan.pl/lmm#relative_effect;
+DirectEffect;directEffect;xxx:direct_effect;lmm:direct_effect;http://igr.poznan.pl/lmm#direct_effect;
+pdAR;;xxx:autoregressionCS;obo:STATO_0000365;http://purl.obolibrary.org/obo/STATO_0000365#AR(1);
+WaldTest;;;obo:STATO_0000559;http://purl.obolibrary.org/obo/STATO_0000559#Wald_test;
+covariance;;stato:covariance;obo:STATO_0000301;http://purl.obolibrary.org/obo/STATO_000030#covariance;
+testingOfTerm;;;obo:STATO_0000558;http://purl.obolibrary.org/obo/STATO_0000558#term_testing;
+compoundVariable;;;lmm:compound_variable;http://igr.poznan.pl/lmm#compound_variable;

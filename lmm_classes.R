@@ -12,7 +12,7 @@ init <- function() {
     #  id <<- id + 1
     #  l <- id
     #}
-    id <- format(Sys.time(), "%y%m%d%H%M%S")
+    id <- format(as.numeric(Sys.time())*100000, digits=15) #format(Sys.time(), "%y%m%d%H%M%S")
     c <- as.character(class(o))
     paste(c, l, id, sep="_")
   }
@@ -48,7 +48,7 @@ init <- function() {
       for (objName in objNames) {
         obj <- getEntity(objClass, objName)
         if (is.null(obj)) {
-          print(paste0("No level of '", objClass, "' for the name: ", objName))
+          print(paste0("Haven't found '", objClass, "' for the name: ", objName))
         } else {
           objs <- append(objs, obj)
         }
@@ -89,15 +89,17 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                               fields = list(
                                 id = "character",
                                 label = "character",
-                                type = "list"
+                                type = "list",
+                                comments = "list"
                               ),
                               methods = list(
-                                initialize = function(label, types = list()) {
+                                initialize = function(label, type = list(), comments = list()) {
                                   .self$label <- label
-                                  if (is.character(types)) {
-                                    types <- as.list(types)
+                                  if (is.character(type)) {
+                                    type <- as.list(type)
                                   }
-                                  .self$type <- types
+                                  .self$type <- type
+                                  .self$comments <- comments
                                   register(.self)
                                 },
                                 show = function() {
@@ -145,11 +147,16 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                 },
                                 getTTL = function() {
                                   types <- ""
-                                  for (t in type) {
+                                  for (t in .self$type) {
                                     types <- paste(types, ";\n", TYPE, mapping(t))
                                   }  
+                                  comments <- ""
+                                  if (length(.self$comments)>0) {
+                                    comments <- paste(";\n", .self$comments, collapse = "")
+                                  }
                                   paste(ident(id), LABEL, lit(label),
-                                        types
+                                        types,
+                                        comments
                                         )
                                 },
                                 listAsTTL = function(oo) {
@@ -166,11 +173,40 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                 }
                               )
 )}
-# oe <- OntologyEntity(label = "eoLabel", type=list("ModelParameter", "Effect"))
 # oe <- OntologyEntity(label = "eoLabel", type="ModelParameter")
 # oe
 #str(oe)
 
+ObjProperty <- {setRefClass("ObjProperty", 
+                        contains = "OntologyEntity",
+                        fields = list(
+                          pred = "character",
+                          obj = "list", #list of objects this entity is about, e.g. AIC isAbout model, df is about AIC
+                          value = "ANY"
+                        ),
+                        methods = list(
+                          initialize = function(... , pred, obj, value) {
+                            callSuper(...)
+                            .self$pred <- pred
+                            if (length(obj) == 1) {
+                              obj <- list(obj)
+                            }
+                            .self$obj <- obj
+                            .self$value <- value
+                          },
+                          getTTL = function() {
+                            paste(callSuper(),
+                                  if (is.number(value)) {
+                                    paste(";\n", VALUE, num(value)) 
+                                    } else {
+                                      paste(";\n", VALUE, lit(value)) 
+                                    },
+                                  ";\n", get(toupper(pred)), listAsTTL(obj)
+                            )
+                          }
+                        )
+)}
+#(op <- ObjProperty(label="REML", type="critREML", pred="isAbout", value=98765, obj=OntologyEntity("testEntity")))
 
 Hypothesis <- {setRefClass("Hypothesis", 
                            contains = "OntologyEntity",
@@ -196,6 +232,30 @@ Hypothesis <- {setRefClass("Hypothesis",
                            )
 )}
 
+Dataset <- {setRefClass("Dataset", 
+                           contains = "OntologyEntity",
+                           fields = list(
+                             url = "character",
+                             variables = "list"
+                           ),
+                           methods = list(
+                             initialize = function(... , url=character(0), variables = list()) {
+                               callSuper(...)
+                               .self$url <- url
+                               .self$variables <- variables
+                             },
+                             getTTL = function() {
+                               paste(callSuper(),
+                                     ";\n", TYPE, DATASET,
+                                     if (length(url)>0) {paste(";\n", DESCRIPTION, lit(url))},
+                                     ";\n", CREATOR, lit("HCK"),
+                                     if (length(variables) > 0) {
+                                       paste(";\n", paste(HASPART, listAsTTL(variables), collapse = " ;\n ")) }
+                                     
+                               )
+                             }
+                           )
+)}
 Statistic <- {setRefClass("Statistic", 
                           contains = "OntologyEntity",
                           fields = list(
@@ -212,7 +272,7 @@ Statistic <- {setRefClass("Statistic",
                             },
                             getTTL = function() {
                               paste(callSuper(),
-                                    ";\n", TYPE, STATISTIC,
+                                    #";\n", TYPE, STATISTIC,
                                     if (is.number(value)) {
                                       paste(";\n", VALUE, num(value)) },
                                     if (length(isAbout) > 0) {
@@ -239,19 +299,20 @@ Estimate <- {setRefClass("Estimate",
                           isEstimateOf = "ANY" #ModelParameter
                         ),
                         methods = list(
-                          initialize = function(... , value, parameter) {
+                          initialize = function(... , value, parameter, se = NULL) {
                             callSuper(...)
                             .self$value <- value
                             .self$isEstimateOf <- parameter
+                            if (!is.null(se)) {.self$se <- se}
                           },
                           getTTL = function() {
-                            if(length(se) == 1 && se != "") {
+                            if(!is.na(se) && length(se) == 1 && se != "") {
                               listAsTTL(list(
                               Statistic(paste0("se_", label), type=list("se"), value=se, isAbout = list(.self))
                               ))
                             }
                             paste(callSuper(),
-                                  ";\n", TYPE, "xxx:Estimate", #ESTIMATE,
+                                  ";\n", TYPE, ESTIMATE,
                                   ";\n", VALUE, num(value),
                                   ";\n", ISESTIMATEOF, listAsTTL(list(isEstimateOf)))
                           }
@@ -261,20 +322,41 @@ Estimate <- {setRefClass("Estimate",
 #est
 #cat(est$asTTL())
 
-VariableLevel <- {setRefClass("VariableLevel",
+ValueSpecification <- {setRefClass("ValueSpecification",
                               contains = "OntologyEntity",
                               fields = list(
-                                variable = "ANY"
+                                variable = "ANY",
+                                value = "ANY"
                               ),
                               methods = list(
-                                initialize = function(..., variable) {
+                                initialize = function(..., variable, value = NULL) {
                                   callSuper(...)
                                   .self$variable <- variable
+                                  .self$value <- value
                                 },
                                 getTTL = function() {
                                   paste(callSuper(),
+                                        ";\n", TYPE, VALUESPECIFICATION,
+                                        if (!is.null(value)) {
+                                          if (is.number(value)) {
+                                            paste(";\n", VALUE, num(value)) 
+                                          } else {
+                                            paste(";\n", VALUE, lit(value)) 
+                                          }
+                                        }
+                                        #, ";\n", SPECIFIESVALUEOF, listAsTTL(list(variable))
+                                        )
+                                }
+                              )
+)}
+
+VariableLevel <- {setRefClass("VariableLevel",
+                              contains = "ValueSpecification",
+                              methods = list(
+                                getTTL = function() {
+                                  paste(callSuper(),
                                         ";\n", TYPE, VARIABLELEVEL,
-                                        ";\n", ISLEVELOF, listAsTTL(list(variable)))
+                                        ";\n", TYPE, CATEGORICALVALUESPECIFICATION)
                                 }
                               )
 )}
@@ -286,11 +368,35 @@ Variable <- {setRefClass("Variable",
                              callSuper(...)
                            },
                            getTTL = function() {
-                             paste(callSuper(),
-                                   ";\n", TYPE, VARIABLE#,
+                             paste(callSuper()
+                                   #,
+                                   #";\n", TYPE, VARIABLE
                                    )
                            }
                          )
+)}
+
+ContinuousVariable <- {setRefClass("ContinuousVariable",
+                                   contains = "Variable",
+                                   fields = list(
+                                     levels = "list" # of VariableLevel
+                                   ),
+                                   methods = list(
+                                     initialize = function(... , levels=numeric()) {
+                                       callSuper(...)
+                                       .self$levels <- list()
+                                       for (l in levels){
+                                         lab = paste0(.self$label, "=", as.character(l))
+                                         .self$levels <- append(.self$levels, 
+                                                                ValueSpecification(label=lab, value=as.numeric(l), variable=.self))
+                                       }
+                                     },
+                                     getTTL = function() {
+                                       paste(callSuper(),
+                                             ";\n", TYPE, CONTINUOUSVARIABLE,
+                                             ";\n", HASVALUESPECIFICATION, listAsTTL(levels))
+                                     }
+                                   )
 )}
 
 CategoricalVariable <- {setRefClass("CategoricalVariable",
@@ -310,10 +416,36 @@ CategoricalVariable <- {setRefClass("CategoricalVariable",
                            getTTL = function() {
                              paste(callSuper(),
                                    ";\n", TYPE, CATEGORICALVARIABLE,
-                                   ";\n", HASLEVEL, listAsTTL(levels))
+                                   ";\n", HASVALUESPECIFICATION, listAsTTL(levels))
                            }
                          )
 )}
+
+CompoundVariable <- {setRefClass("CompoundVariable",
+                                contains = "Variable",
+                                fields = list(
+                                  levels = "list" # of Variables
+                                ),
+                                methods = list(
+                                  initialize = function(... , levels=list()) {
+                                    callSuper(...)
+                                    .self$levels <- list()
+                                    for (l in levels){
+                                      if (!is(l, "Variable")) {
+                                        l <- ContinuousVariable(l, levels=list(1), type=list("DependentVariable"))
+                                      }
+                                      .self$levels <- append(.self$levels, l)
+                                    }
+                                  },
+                                  getTTL = function() {
+                                    paste(callSuper(),
+                                          ";\n", TYPE, CONTINUOUSVARIABLE,
+                                          ";\n", TYPE, COMPOUNDVARIABLE,
+                                          ";\n", HASPART, listAsTTL(levels))
+                                  }
+                                )
+)}
+#tmp <- CompoundVariable("CompoundVar", levels=list("y1", "y2", "y3"))
 
 #####
 # CategoricalIndependentVariable <- {setRefClass("CategoricalIndependentVariable",
@@ -355,7 +487,7 @@ ModelTerm <- {
                 },
                 getTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, MODELTERM,
+                        #";\n", TYPE, MODELTERM,
                         ";\n", HASORDER, lit(order),
                         if (length(variable) > 0) {
                           paste(";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "))
@@ -419,38 +551,79 @@ FixedModelTerm <- {
 #rmt1 <- RandomModelTerm(label="blockTerm")
 #rmt1$variable <- list(CategoricalVariable(label="Block", levels=c("b1", "b2", "b3")), CategoricalVariable(label="Rep", levels=c("r1", "r2", "r3")))
 
+# CovarianceStructure <- {
+#   setRefClass("CovarianceStructure",
+#               contains = "OntologyEntity",
+#               fields = list(
+#                 params = "list", # of ModelParams
+#                 estimate = "list" # of Estimates of Params
+#               ),
+#               methods = list(
+#                 initialize = function(..., covType = list("covIdentity"), params = list("sigma2e")) {
+#                   callSuper(...)
+#                   #TODO correct choosing cov model
+#                   tmp <- list()
+#                   for (i in params) {
+#                     tmp <- append(tmp, Parameter(label=i, type=list("ModelParameter", "varianceComponent")))
+#                   }
+#                   .self$params <- tmp
+#                 },
+#                 getTTL = function() {
+#                   paste(callSuper(),
+#                         ";\n", TYPE, COVARIANCESTRUCTURE,
+#                         ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n ")
+#                         )
+#                 }
+#               )
+#   )
+# }
+# cs <- CovarianceStructure(label = "blockTerm", params="sigma")
+#cs
+
 CovarianceStructure <- {
   setRefClass("CovarianceStructure",
               contains = "OntologyEntity",
               fields = list(
                 params = "list", # of ModelParams
-                estimate = "list" # of Estimates of Params
+                estimate = "list", # of Estimates of Params
+                covModel = "character", # covariance model (Identity, CompoundSymmetry, ...)
+                vars = "list"
               ),
               methods = list(
-                initialize = function(..., type = list("covIdentity"), params = list("sigma2e")) {
+                initialize = function(..., covModel = "pdIdent", params = list("sigma2e"), vars = list()) {
                   callSuper(...)
-                  #TODO correct choosing cov model
-                  tmp <- list()
+                  .self$covModel <- covModel
+                  ps <- list()
                   for (i in params) {
-                    tmp <- append(tmp, Parameter(label=i, type=list("ModelParameter", "varianceComponent")))
+                    #TODO add if it is a variance, covariance or correlation ?!
+                    if (is(i, "Parameter")) {
+                      i$type <- append(i$type, "ModelParameter")
+                      i$type <- append(i$type, "varianceParameter")
+                    } else {
+                      i <- Parameter(label=i, type=list("ModelParameter", "varianceParameter"))
+                    }
+                    ps <- append(ps, i)
                   }
-                  .self$params <- tmp
+                  .self$params <- ps
+                  .self$vars <- vars
                 },
                 getTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, COVARIANCESTRUCTURE,
-                        ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n ")
-                        )
+                        ";\n", TYPE, get(toupper(covModel)),
+                        ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n "),
+                        if (length(vars) > 0) {
+                          paste(";\n", paste(ISABOUT, listAsTTL(vars), collapse = " ;\n "))
+                        }
+                  )
                 }
               )
   )
 }
-# cs <- CovarianceStructure(label = "blockTerm", params="sigma")
-#cs
+
 
 #param1 <- ModelParameter(label = "param1", type = list("variance"))
 # param1
-
 
 Parameter <- {
   setRefClass("Parameter",
@@ -459,30 +632,53 @@ Parameter <- {
                 correspondingVarLevels = "list", #of Levels (for now)
                 relativeTo = "list", #list of reference effects (only ONE? reference effect)
                 specifiesValueOf = "ANY", #dependent variable
-                estimate = "list"
+                estimate = "list",
+                effectType = "character"
               ),
               methods = list(
-                initialize = function(..., levels=list(), reference = list(), valueOf = list()) {
+                initialize = function(..., levels=list(), reference = list(), valueOf = list(), effectType=character(0)) {
                   callSuper(...)
-                  tmp <- listOfStringsToObjects("VariableLevel", levels)
-                  .self$correspondingVarLevels <- tmp
+                  .self$correspondingVarLevels <- listOfStringsToObjects("VariableLevel", levels)
                   .self$relativeTo <- reference
+                  if (length(valueOf) == 0) {
+                    warning(paste("No isAbout variable declared for parameter:", label))
+                  } else if (length(valueOf) == 1 && typeof(valueOf) != "list") {
+                    valueOf <- list(valueOf)
+                  }
                   .self$specifiesValueOf <- valueOf
+                  if (length(effectType) == 0) {
+                    warning(paste("No fixed/random effect type declared for parameter:", label))
+                  }
+                  .self$effectType <- effectType
                 },
                 getTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, "xxx:Parameter",
+                        ";\n", TYPE, MODELPARAMETER,
                         if (length(correspondingVarLevels) > 0) {
                           paste(";\n", paste(ISABOUT, listAsTTL(correspondingVarLevels), collapse = " ;\n "))
                         },
                         if (length(relativeTo) > 0) {
-                          paste(";\n", paste("xxx:TMP_REFERENCE", listAsTTL(relativeTo), collapse = " ;\n "))
+                          paste(";\n", TYPE, RELATIVEEFFECT,
+                                ";\n", paste(ISRELATIVETO, listAsTTL(relativeTo), collapse = " ;\n "))
                         },
-                        if (length(estimate) > 0) {
-                          paste(";\n", paste("xxx:TMP_EST", listAsTTL(estimate), collapse = " ;\n "))
-                        },
-                        if (length(specifiesValueOf) > 0) {
-                          paste(";\n", paste(SPECIFIESVALUEOF, listAsTTL(specifiesValueOf), collapse = " ;\n "))
+                        #if (length(estimate) > 0) {
+                        #  paste(";\n", paste("xxx:TMP_EST", listAsTTL(estimate), collapse = " ;\n "))
+                        #},
+                        if (length(effectType) > 0) {
+                          if (effectType == "fixed") {
+                            paste(";\n", TYPE, FIXEDEFFECT, #TODO: why doesn't print?!
+                                  if (length(specifiesValueOf) > 0) {
+                                    paste(";\n", paste(HASFIXEDEFFECTON, listAsTTL(specifiesValueOf), collapse = " ;\n "))
+                                  })
+                          } else if (effectType == "random") {
+                            paste(";\n", TYPE, RANDOMEFFECT,
+                                  if (length(specifiesValueOf) > 0) {
+                                    paste(";\n", paste(HASRANDOMEFFECTON, listAsTTL(specifiesValueOf), collapse = " ;\n "))
+                                  })
+                          } else {
+                            paste(";\n", TYPE, EFFECT,
+                                  ";\n", paste(HASEFFECTON, listAsTTL(specifiesValueOf), collapse = " ;\n "))
+                          }
                         }
                       )
                 }
@@ -492,9 +688,11 @@ Parameter <- {
 cv <- CategoricalVariable("testVar", levels = list("CamB1", "Drought"))
 ef1 <- Parameter("testEffect", levels=list("CamB1","Drought"), type="EMM") # Interaction Effect
 cv2 <- CategoricalVariable("testVar2", levels = list("CamB2", "Drought2"))
-ef2 <- Parameter("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), type=c("RelativeEffect", "ModelParameter")) # Interaction Effect
+ef2 <- Parameter("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), effectType="random", valueOf=ContinuousVariable("y")) # Interaction Effect
 cat(ef1$asTTL())
 cat(ef2$asTTL())
+ef3 <- Parameter("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), effectType="xxx", valueOf=ContinuousVariable("y")) # Interaction Effect
+cat(ef3$asTTL())
 
 # ParametricFunction <- {
 #   setRefClass("ParametricFunction",
@@ -577,6 +775,7 @@ DesignMatrix <- {
                 getTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, DESIGNMATRIX,
+                        ";\n", DESCRIPTION, lit("binary"),
                         ";\n", paste(DENOTES, listAsTTL(studyDesign), collapse = " ;\n ")
                   )
                 }
@@ -588,38 +787,71 @@ Lmm <- {
   setRefClass("Lmm",
               contains = "OntologyEntity",
               fields = list(
-                formula = "formula",
+                formula = "character",
                 dependentVariable = "list", 
                 independentFixedTerm = "list", # of ModelTerm
                 independentRandomTerm = "list", # of ModelTerm
                 errorTerm = "list", # of ModelTerm
                 criterionREML = "numeric",
                 criterionAIC = "numeric",
-                criterionAICdf = "numeric",
+                df = "numeric",
+                criterionBIC = "numeric",
                 variables = "list",
-                designMatrix = "list"
+                designMatrix = "list",
+                quality= "list"
               ),
               methods = list(
                 initialize = function(..., formula, vars = list()) {
                   callSuper(...)
+                  if (is.language(formula)) {
+                    formula <- deparse(formula)
+                  }
                   .self$formula <- formula
                   #.self$residual <- resid
                   .self$variables <- vars
                 },
+                getQuality = function() {
+                  if (length(.self$quality) == 0) {
+                    props <- list() # get model props 
+                    if (length(criterionREML)) {
+                      props <- append(props, ObjProperty(label="REML", type="critREML", pred="isAbout", value=criterionREML, obj=.self))
+                    }
+                    if (length(criterionAIC)) {
+                      props <- append(props, ObjProperty("AIC", "critAIC", pred="isAbout", value=criterionAIC, obj=.self))
+                    }
+                    if (length(criterionBIC)) {
+                      props <- append(props, ObjProperty("BIC", "critBIC", pred="isAbout", value=criterionBIC, obj=.self))
+                    }
+                    .self$quality <- props
+                  }
+                  .self$quality
+                },
                 getTTL = function() {
-                  .self$designMatrix <- list(DesignMatrix("dm", declares = variables))
+                  .self$designMatrix <- list(DesignMatrix("dm", declares = append(variables, dependentVariable)))
+                  {
+                    props <- getQuality()
+                    if (length(df)) {
+                      props <- append(props, ObjProperty("DF", "df", pred="isAbout", value=df, obj=.self))
+                    }
+                    if (length(props) > 0) {
+                      devNull <- listAsTTL(props) # puts properties in the queue for printing
+                    }
+                  } # get props
+                  formula <- ObjProperty(label="formula", type="formula", pred="denotes", obj=.self, value=formula)
                   paste(callSuper(),
                         ";\n", TYPE, LMM,
-                        ";\n", FORMULA, lit(deparse(formula)),
-                        ";\n", ifelse(!is.na(criterionREML), 
-                                      paste(CRITREML, criterionREML),
-                                      paste(CRITAIC, criterionAIC, ";\n", CRITAICDF, criterionAICdf)),
+                        #";\n", FORMULA, lit(deparse(formula)),
+                        ";\n", ISDENOTEDBY, listAsTTL(list(formula)),
+                        #";\n", ifelse(!is.na(criterionREML), 
+                        #              paste(CRITREML, criterionREML),
+                        #              paste(CRITAIC, criterionAIC, ";\n", CRITAICDF, criterionAICdf)),
                         ";\n", ISMODELFOR, listAsTTL(dependentVariable),
                         ";\n", paste(HASTERM, listAsTTL(independentFixedTerm), collapse = " ;\n "),
                         ";\n", paste(HASTERM, listAsTTL(independentRandomTerm), collapse = " ;\n "),
                         ";\n", paste(HASTERM, listAsTTL(errorTerm), collapse = " ;\n "),
-                        ";\n", paste(HASTERM, listAsTTL(designMatrix), collapse = " ;\n ")
+                        ";\n", paste(ISDENOTEDBY, listAsTTL(designMatrix), collapse = " ;\n ")
                         )
+                  
                 }
               )
   )}

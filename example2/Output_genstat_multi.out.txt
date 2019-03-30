@@ -1,0 +1,299 @@
+ 120  job
+
+********* End of job.
+
+Genstat 64-bit Release 19.1  (PC/Windows 7)       25 January 2019 13:47:38
+Copyright 2018, VSN International Ltd.
+Registered to: IPG PAS
+
+ 121  "przyklad do papieru LMM dla przykladu 2"
+ 122  import 'dane_wielo.xlsx';is=names
+
+Loading Spreadsheet File
+------------------------
+
+Catalogue of file dane_wielo.xlsx
+
+Sheet Title: Arkusz1
+Description: Data read from dane_wielo.xlsx [Arkusz1]A2:F7
+Sheet Type: vector
+  Index            Type    Nval   Name
+      1         variate       6   y[1]
+      2         variate       6   y[2]
+      3         variate       6   y[3]
+      4         variate       6   y[4]
+      5          factor       6   Fact
+      6          factor       6   Block
+
+ 123  print names[]
+
+        y[1]        y[2]        y[3]        y[4]        Fact       Block
+       6.000       2.000       6.000       4.000           1           1
+       4.000       3.000       4.000       6.000           1           2
+       5.000       5.000       7.000       2.000           2           1
+       6.000       1.000       3.000       4.000           2           2
+       9.000       7.000       6.000       8.000           3           1
+       3.000       8.000       7.000       9.000           3           2
+
+ 124
+ 125  FACTOR [LEVELS=6] %_units;!((1...6)4)
+ 126  FACTOR [LEVELS=4; LABELS=!t('y[1]','y[2]','y[3]','y[4]')] %_variable;!(6(1...4))
+ 127  APPEND [NEW=_Data] y[1],y[2],y[3],y[4]
+ 128  APPEND [NEW=%_Fact] 4(Fact)
+ 129  APPEND [NEW=%_Block] 4(Block)
+ 130
+ 131  "vec(dane) czyli dane do lmm"
+ 132  print _Data,%_variable,%_Fact,%_Block
+
+       _Data  %_variable      %_Fact     %_Block
+       6.000        y[1]           1           1
+       4.000        y[1]           1           2
+       5.000        y[1]           2           1
+       6.000        y[1]           2           2
+       9.000        y[1]           3           1
+       3.000        y[1]           3           2
+       2.000        y[2]           1           1
+       3.000        y[2]           1           2
+       5.000        y[2]           2           1
+       1.000        y[2]           2           2
+       7.000        y[2]           3           1
+       8.000        y[2]           3           2
+       6.000        y[3]           1           1
+       4.000        y[3]           1           2
+       7.000        y[3]           2           1
+       3.000        y[3]           2           2
+       6.000        y[3]           3           1
+       7.000        y[3]           3           2
+       4.000        y[4]           1           1
+       6.000        y[4]           1           2
+       2.000        y[4]           2           1
+       4.000        y[4]           2           2
+       8.000        y[4]           3           1
+       9.000        y[4]           3           2
+
+ 133
+ 134  "Fit Multivariate Linear Mixed Model"
+ 135  VCOMPONENTS [FIXED=%_Fact.%_variable; CONSTANT=omit] \
+ 136    random = %_Block.%_variable + %_units.%_variable;CONSTRAINTS=positive
+ 137
+ 138  "struktura dla bloków"
+ 139  VSTRUCTURE [TERMS=%_Block.%_variable] FACTOR=%_variable; MODEL="diag"ar
+ 140
+ 141  "dla b³êdu unstructured nie chodzi bo ma³o obserwacji, banded daje ujemny"
+ 142  VSTRUCTURE [TERMS=%_units.%_variable] FACTOR=%_variable; MODEL=diag
+ 143
+ 144  REML [PRINT=model,components,waldTests,eff; MAXCYCLE=30; FMETHOD=automatic; \
+ 145    MVINCLUDE=explanatory,\
+ 146    yvariate; METHOD=AI; pse=est] _Data
+
+146.....................................................................................................................................................................................................
+
+
+REML variance components analysis
+=================================
+
+Response variate:  _Data
+Fixed model:       %_variable.%_Fact
+Random model:      %_Block.%_variable + %_variable.%_units
+Number of units:   24
+
+%_variable.%_units used as residual term with covariance structure as below
+
+Sparse algorithm with AI optimisation
+
+
+Covariance structures defined for random model
+----------------------------------------------
+
+Covariance structures defined within terms:
+
+Term                    Factor      Model                        Order  No. rows
+%_Block.%_variable      %_Block     Identity                         1         2
+                        %_variable  Auto-regressive                  1         4
+%_variable.%_units      %_variable  Diagonal                         4         4
+                        %_units     Identity                         0         6
+
+
+******** Warning 13, code VC 38, statement 1 on line 146
+
+Command: REML [PRINT=model,components,waldTests,eff; MAXCYCLE=30; FMETHOD=automatic;  MVINCLUDE=explanatory, yvariate; METHOD=AI; pse=est] _Data
+Value of deviance at final iteration larger than at previous iteration(s).
+
+Minimum deviance = 30.0692: value at final iteration = 30.1239
+
+
+
+
+Estimated parameters for covariance models
+------------------------------------------
+
+Random term(s)   Factor        Model(order)  Parameter        Estimate      s.e.
+%_Block.%_variable
+                 %_Block       Identity      Scalar              1.175     1.650
+                 %_variable    AR(1)         phi_1             -0.9950         *
+
+
+Residual variance model
+-----------------------
+
+Term             Factor        Model(order)  Parameter        Estimate      s.e.
+%_variable.%_units                           Sigma2              1.000     fixed
+                 %_variable    Diagonal      d_1                 3.987     3.100
+                                             d_2                 6.697     6.226
+                                             d_3                 2.146     1.764
+                                             d_4                0.1677    0.1680
+                 %_units       Identity      -                       -         -
+
+
+
+******** Warning 14, code VD 39, statement 1 on line 146
+
+Command: REML [PRINT=model,components,waldTests,eff; MAXCYCLE=30; FMETHOD=automatic;  MVINCLUDE=explanatory, yvariate; METHOD=AI; pse=est] _Data
+Error in AI algorithm when forming denominator DF for approximate F-tests.
+
+
+
+
+Wald tests for fixed effects
+----------------------------
+
+Sequentially adding terms to fixed model
+
+Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
+%_variable.%_Fact                  671.31      12         55.94  <0.001
+
+Dropping individual terms from full fixed model
+
+Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
+%_variable.%_Fact                  671.31      12         55.94  <0.001
+
+* MESSAGE: chi-square distribution for Wald tests is an asymptotic approximation (i.e. for large samples) and underestimates the probabilities in other cases.
+
+
+Table of effects for %_variable.%_Fact
+--------------------------------------
+
+
+       %_Fact        1        2        3
+   %_variable
+         y[1]    5.000    5.500    6.000
+         y[2]    2.500    3.000    7.500
+         y[3]    5.000    5.000    6.500
+         y[4]    5.000    3.000    8.500
+
+
+Standard errors
+
+Average:           1.425
+Maximum:           1.984
+Minimum:          0.8192
+
+ 147
+ 148  "oceny efektów sta³ych"
+ 149  vkeep %_Fact.%_variable;eff=eff;vareff=vareff
+ 150  print eff
+
+                      eff
+       %_Fact           1           2           3
+   %_variable
+         y[1]       5.000       5.500       6.000
+         y[2]       2.500       3.000       7.500
+         y[3]       5.000       5.000       6.500
+         y[4]       5.000       3.000       8.500
+
+
+ 151  calc se = sqrt(vareff)
+
+******** Warning 15, code CA 7, statement 1 on line 151
+
+Command: calc se = sqrt(vareff)
+Invalid value for argument of function.
+The first argument of the SQRT function in unit  7 has the value -0.5843
+
+
+
+ 152  print vareff
+
+                              vareff
+
+%_variable y[1].%_Fact 1      2.5809
+%_variable y[1].%_Fact 2      0.5873      2.5809
+%_variable y[1].%_Fact 3      0.5873      0.5873      2.5809
+%_variable y[2].%_Fact 1     -0.5843     -0.5843     -0.5843      3.9359
+%_variable y[2].%_Fact 2     -0.5843     -0.5843     -0.5843      0.5873      3.9359
+%_variable y[2].%_Fact 3     -0.5843     -0.5843     -0.5843      0.5873      0.5873      3.9359
+%_variable y[3].%_Fact 1      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      1.6601
+%_variable y[3].%_Fact 2      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      1.6601
+%_variable y[3].%_Fact 3      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      0.5873      1.6601
+%_variable y[4].%_Fact 1     -0.5785     -0.5785     -0.5785      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.6711
+%_variable y[4].%_Fact 2     -0.5785     -0.5785     -0.5785      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      0.6711
+%_variable y[4].%_Fact 3     -0.5785     -0.5785     -0.5785      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      0.5873      0.6711
+                        %_variable y[1].%_Fact 1 %_variable y[1].%_Fact 2 %_variable y[1].%_Fact 3 %_variable y[2].%_Fact 1 %_variable y[2].%_Fact 2 %_variable y[2].%_Fact 3 %_variable y[3].%_Fact 1
+%_variable y[3].%_Fact 2 %_variable y[3].%_Fact 3 %_variable y[4].%_Fact 1 %_variable y[4].%_Fact 2 %_variable y[4].%_Fact 3
+
+ 153  print se
+
+                       se
+            1      1.6065
+            2      0.7663      1.6065
+            3      0.7663      0.7663      1.6065
+            4           *           *           *      1.9839
+            5           *           *           *      0.7663      1.9839
+            6           *           *           *      0.7663      0.7663      1.9839
+            7      0.7625      0.7625      0.7625           *           *           *      1.2884
+            8      0.7625      0.7625      0.7625           *           *           *      0.7663      1.2884
+            9      0.7625      0.7625      0.7625           *           *           *      0.7663      0.7663      1.2884
+           10           *           *           *      0.7625      0.7625      0.7625           *           *           *      0.8192
+           11           *           *           *      0.7625      0.7625      0.7625           *           *           *      0.7663      0.8192
+           12           *           *           *      0.7625      0.7625      0.7625           *           *           *      0.7663      0.7663      0.8192
+                        1           2           3           4           5           6           7           8           9          10          11          12
+
+ 154
+ 155  "BLUP efektów losowych bloków"
+ 156  vpred [pred=pred; se=sep] class=%_Block,%_variable
+
+156.....................................................................................................................................................................................................
+
+Predictions from REML analysis
+------------------------------
+
+Model terms included for prediction: %_variable.%_Fact + %_Block.%_variable
+
+Status of model variables in prediction:
+
+  Variable           Type        Status
+  %_variable         factor      Classifies predictions
+  %_Fact             factor      Averaged over - equal weights
+  %_Block            factor      Classifies predictions
+
+
+Response variate: _Data
+
+Predictions
+
+   %_variable     y[1]     y[2]     y[3]     y[4]
+      %_Block
+            1    6.276    3.557    6.283    4.712
+            2    4.724    5.110    4.717    6.288
+
+
+Standard errors
+
+   %_variable     y[1]     y[2]     y[3]     y[4]
+      %_Block
+            1   0.8378   1.0718   0.6207   0.2270
+            2   0.8378   1.0718   0.6207   0.2270
+
+
+Approximate average standard error of difference: 0.9988 (calculated on variance scale)
+
+ 157  print pred,sep
+
+   %_variable        y[1]                    y[2]                    y[3]                    y[4]
+                     pred         sep        pred         sep        pred         sep        pred         sep
+      %_Block
+            1       6.276      0.8378       3.557      1.0718       6.283      0.6207       4.712      0.2270
+            2       4.724      0.8378       5.110      1.0718       4.717      0.6207       6.288      0.2270
+
+
+ 158
