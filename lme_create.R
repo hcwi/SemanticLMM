@@ -1,3 +1,9 @@
+#require(lme4)
+#require(lmerTest)
+#require(emmeans)
+#require(assertthat)
+source("lmm_classes.R")
+
 run <- function() {
   m_lmer <- example1_lmer()
   m_lme <- example1_lme()

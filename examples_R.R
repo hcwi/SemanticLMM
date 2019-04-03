@@ -28,8 +28,7 @@ examplesOats_lmer<- function() {
   
   print(formula(mod))
   modelFitting <- exportModelToRDF(mod, ex)
-  saveTriples(modelFitting)
-  
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
 }
 
 
@@ -43,19 +42,19 @@ examplesOats_lme <- function() {
   mod <- lme(yield ~ nitro + Variety, random = ~1|Block, data = ex$data)
   print(formula(mod))
   modelFitting <- exportModelToRDF_2(mod, ex)
-  saveTriples(modelFitting)
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   
   mod <- lme(yield ~ 0 + nitro * Variety, random = list(Block=pdIdent(~1)), data = ex$data)
   print(formula(mod))
   modelFitting <- exportModelToRDF_2(mod, ex)
-  saveTriples(modelFitting)
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod3 <- mod
   
   #mod <- lme(yield ~ nitro + Variety, random = list(Block=pdDiag(~Block-1)), data = ex$data) # pdDiag not implemented
   mod <- lme(yield ~ nitro, random = ~1|Variety/Block, data = ex$data)
   print(formula(mod))
   modelFitting <- exportModelToRDF_2(mod, ex)
-  saveTriples(modelFitting)
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod4 <- mod
 
   #mod <- lme(yield ~ ordered(nitro) + Variety, random = list(Block=pdIdent(~1)), data = ex$data)
@@ -98,11 +97,11 @@ examplesNPK_lmer<- function() {
   mod <- lmer(yield ~ N*P*K + (1|block), data = ex$data)
   print(formula(mod))
   modelFitting <- exportModelToRDF(mod, ex)
-  saveTriples(modelFitting)
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   
   mod <- lmer(yield ~ 0 + N*K + (1|block), data = ex$data)
   print(formula(mod))
   modelFitting <- exportModelToRDF(mod, ex)
-  saveTriples(modelFitting)
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   
 }

@@ -1,7 +1,7 @@
-
+source("lmm_classes.R")
 # Manual input to create a the model in RDF
 
-example2 <- function() {
+example2_genstat <- function() {
   
   # independent variables
   
@@ -352,6 +352,6 @@ VSTRUCTURE [TERMS=%_multiY.%_units] FACTOR=%_multiY; MODEL=diag;",
   #graphName <- lmm$id #modelFitting$hasInput[[1]]$id
   #print(graphName)
   
-  saveTriples(modelFitting) #, graphName = "Example2")
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   
 }

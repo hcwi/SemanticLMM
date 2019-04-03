@@ -19,14 +19,14 @@ getPolapgen <- function() {
   }
   dat
   
-  dataset <- list()
-  dataset$data <- dat
-  dataset$label <- "Dataset_Polapgen"
-  dataset$url <- paste("http://cropnet.pl/plantphenodb/index.php?id=250")
-  dataset$dataset <- Dataset(label = ifelse(!is.null(ds[["label"]]), ds[["label"]], "Dataset"), 
+  ds <- list()
+  ds$data <- dat
+  ds$label <- "Dataset_Polapgen"
+  ds$url <- paste("http://cropnet.pl/plantphenodb/index.php?id=250")
+  ds$dataset <- Dataset(label = ifelse(!is.null(ds[["label"]]), ds[["label"]], "Dataset"), 
                              url = ifelse(!is.null(ds[["url"]]), ds[["url"]], "url unavailable"),
                              comments = {if (!is.null(ds[["comments"]])) ds[["comments"]] else list()})
-  dataset
+  ds
 }
 
 
@@ -38,7 +38,7 @@ examplePolapgen_lme <- function() {
   mod
   print(formula(mod))
   modelFitting <- exportModelToRDF_2(mod, ds = ex3)
-  saveTriples(modelFitting) #, graphName = "Example3")
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id) #, graphName = "Example3")
 }
 
 example3_lme <- function() { 
@@ -53,7 +53,7 @@ example3_lme <- function() {
   mod
   print(formula(mod))
   modelFitting <- exportModelToRDF_2(mod, ds = subset)
-  saveTriples(modelFitting)
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
 }
 
 
@@ -62,40 +62,40 @@ examplePolapgenAllTraits_lme <-function() {
   str(ex3$data)
   
   mod <- lme(TGW ~ InfraspecificName*StudyStart + HD, random = ~1|Replication, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod <- lme(TGW ~ InfraspecificName+StudyStart + HD, random = ~1|Replication, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod <- lme(TGW ~ InfraspecificName + HD, random = ~1|StudyStart/Replication, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod <- lme(TGW ~ HD, random = ~1|InfraspecificName, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod <- lme(TGW ~ InfraspecificName + StudyStart*HD, random = ~1|Replication, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   
   mod <- lme(GW_MS ~ InfraspecificName*StudyStart + HD, random = ~1|Replication, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod <- lme(GW_MS ~ StudyStart+HD, random = ~1|InfraspecificName, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   
   mod <- lme(main_spike ~ InfraspecificName*StudyStart + HD, random = ~1|Replication, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod <- lme(main_spike ~ StudyStart+HD, random = ~1|InfraspecificName, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   
   mod <- lme(main_stem ~ InfraspecificName*StudyStart + HD, random = ~1|Replication, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod <- lme(main_stem ~ StudyStart+HD, random = ~1|InfraspecificName, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   
   mod <- lme(G_MS ~ InfraspecificName*StudyStart + HD, random = ~1|Replication, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   mod <- lme(G_MS ~ StudyStart+HD, random = ~1|InfraspecificName, data = ex3$data); print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ds = ex3); saveTriples(modelFitting)
+  modelFitting <- exportModelToRDF_2(mod, ds = ex3); modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
   
   #mod <- lme(TGW ~ StudyStart+HD, random = ~1|InfraspecificName/Replication, data = ex3)
   #print(formula(mod))
   #modelFitting <- exportModelToRDF_2(mod, ds = ex3)
-  #saveTriples(modelFitting) #, graphName = "Example3")
+  #modelFitting$saveTriples(modelFitting$hasInput[[1]]$id) #, graphName = "Example3")
   
   
 }

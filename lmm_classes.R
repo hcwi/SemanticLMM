@@ -1,4 +1,5 @@
 ########################## aux functions ########################## 
+require(assertthat)
 
 init <- function() {
   
@@ -170,6 +171,18 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                     queue[o$id] <<- TRUE # add to the queue and / or set printing (if already exists)
                                   }
                                   substring(ids,3) # return concatenated without initial separators ', '
+                                },
+                                saveTriples = function(graphName = NULL) {
+                                  if(is.null(graphName)) {
+                                    graphName <- .self$id
+                                  }
+                                  capture.output(cat(prefixes), 
+                                                 cat("<graphs/graph_", graphName, ">", sep=""), 
+                                                 cat(" {\n"),
+                                                 .self, 
+                                                 cat("}"),
+                                                 file = paste0("out", .Platform$file.sep, graphName, ".trig"))
+                                  print(paste0("Exported to ", graphName, ".trig"))
                                 }
                               )
 )}
@@ -684,15 +697,15 @@ Parameter <- {
                 }
               )
   )}
-
-cv <- CategoricalVariable("testVar", levels = list("CamB1", "Drought"))
-ef1 <- Parameter("testEffect", levels=list("CamB1","Drought"), type="EMM") # Interaction Effect
-cv2 <- CategoricalVariable("testVar2", levels = list("CamB2", "Drought2"))
-ef2 <- Parameter("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), effectType="random", valueOf=ContinuousVariable("y")) # Interaction Effect
-cat(ef1$asTTL())
-cat(ef2$asTTL())
-ef3 <- Parameter("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), effectType="xxx", valueOf=ContinuousVariable("y")) # Interaction Effect
-cat(ef3$asTTL())
+# test params
+# cv <- CategoricalVariable("testVar", levels = list("CamB1", "Drought"))
+# ef1 <- Parameter("testEffect", levels=list("CamB1","Drought"), type="EMM") # Interaction Effect
+# cv2 <- CategoricalVariable("testVar2", levels = list("CamB2", "Drought2"))
+# ef2 <- Parameter("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), effectType="random", valueOf=ContinuousVariable("y")) # Interaction Effect
+# cat(ef1$asTTL())
+# cat(ef2$asTTL())
+# ef3 <- Parameter("testRelativeEffect", levels=list("CamB2","Drought2"), reference = list(ef1), effectType="xxx", valueOf=ContinuousVariable("y")) # Interaction Effect
+# cat(ef3$asTTL())
 
 # ParametricFunction <- {
 #   setRefClass("ParametricFunction",

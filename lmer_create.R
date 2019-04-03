@@ -1,10 +1,8 @@
 require(lme4)
 require(lmerTest)
-require(pbkrtest)
 require(emmeans)
 require(assertthat)
 source("lmm_classes.R")
-#source("example.R")
 #contr.treat <- contr.treatment
 
 getVariables <- function(mod) {
@@ -555,7 +553,7 @@ getErrorTerm <- function(mod) {
 
 getDependentVariables <- function(mod) {
   depVar <- list()
-  varLab <- as.character(formula(mod))[2] #TODO check what happens when >1 dependent variables
+  varLab <- as.character(formula(mod))[2]
   # alternatively - perhaps better:
   # varLab <- rownames(attr(terms(mod), "factors"))[apply(attr(terms(mod), "factors"), 1, sum) == 0]
   var <- getEntity("Variable", varLab)
@@ -645,7 +643,7 @@ run <- function() {
 #summary(m)$vcov # TODO
 run <- function() {
 
-    mod <- example1()
+  mod <- example1()
   init()
   print(formula(mod))
   modelFitting <- exportModelToRDF(mod)

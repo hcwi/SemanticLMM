@@ -20,11 +20,11 @@ example1_lmer<- function() {
   ex1 <- getExample1()
   
   require(lme4)
-  mod0 <- lmer(y ~ 0 + Treatment + (1|Block), data = ex1$data)
+  mod <- lmer(y ~ 0 + Treatment + (1|Block), data = ex1$data)
   
   print(formula(mod))
   modelFitting <- exportModelToRDF(mod, ex1)
-  saveTriples(modelFitting) #, graphName = "Example1")
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id) #, graphName = "Example1")
   
 }
 
@@ -35,11 +35,11 @@ example1_lme <- function() {
   ex1 <- getExample1()
   
   require(nlme)
-  mod <- lme(y ~ 0 + Treatment, random = ~1|Block, data = ex1)
+  mod <- lme(y ~ 0 + Treatment, random = ~1|Block, data = ex1$data)
   
   print(formula(mod))
   modelFitting <- exportModelToRDF_2(mod, ex1)
-  saveTriples(modelFitting) #, graphName = "Example1")
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id) #, graphName = "Example1")
   
 }
 
