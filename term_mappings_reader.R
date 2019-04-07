@@ -5,19 +5,16 @@ prepareTermsFromOntology <- function(ont = "LMM") {
   termListCsv <- "/Users/hania/Code/R_oom/modelTerms/modelTerms.csv"
   terms <- read.table(termListCsv, sep=";", header = TRUE, comment.char = "", stringsAsFactors = FALSE)
   
-  # creating an R file with variables from the terms above
+  # creating variables for the terms
   # (selecting one of LMM or STATO terms from csv file above and putting it in R file with assignement operation "<-" )
-  RTermListFile <- "modelTerms.R"
-  cat(file=RTermListFile)
   for (i in 1:dim(terms)[1]) {
     ontTerm <- terms[i,ont]
     if (ontTerm == "") {
+      warning(paste("No ", ont, " term for the object '", terms[i,1], "' found.", sep=""))
       ontTerm <- toupper(terms[i,1])
     }
-    cat(paste0(toupper(terms[i,1]), " <- \"", ontTerm, "\""), fill = TRUE, file = RTermListFile, append = TRUE)
+    assign(toupper(terms[i,1]), ontTerm, envir = termsEnv)
   }
-  
-  RTermListFile
 }
 
 prefixes <- "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -34,6 +31,5 @@ prefixes <- "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix lmm: <http://igr.poznan.pl/lmm#> .
 
 "
-
-RTermListFile <- prepareTermsFromOntology("STATO") #STATO_SIMPLE")
-source(RTermListFile)
+termsEnv <- new.env()
+prepareTermsFromOntology("STATO") #STATO_SIMPLE")

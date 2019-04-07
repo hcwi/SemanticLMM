@@ -147,6 +147,12 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                   paste(getTTL(), ".\n")
                                 },
                                 getTTL = function() {
+                                  attach(termsEnv)
+                                  res <- innerGetTTL()
+                                  detach(termsEnv)
+                                  res
+                                },
+                                innerGetTTL = function() {
                                   types <- ""
                                   for (t in .self$type) {
                                     types <- paste(types, ";\n", TYPE, mapping(t))
@@ -158,7 +164,7 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                   paste(ident(id), LABEL, lit(label),
                                         types,
                                         comments
-                                        )
+                                  )
                                 },
                                 listAsTTL = function(oo) {
                                   ids = "" # concatenated IDs from the 'oo' list
@@ -207,19 +213,19 @@ ObjProperty <- {setRefClass("ObjProperty",
                             .self$obj <- obj
                             .self$value <- value
                           },
-                          getTTL = function() {
+                          innerGetTTL = function() {
                             paste(callSuper(),
                                   if (is.number(value)) {
                                     paste(";\n", VALUE, num(value)) 
-                                    } else {
-                                      paste(";\n", VALUE, lit(value)) 
-                                    },
+                                  } else {
+                                    paste(";\n", VALUE, lit(value)) 
+                                  },
                                   ";\n", get(toupper(pred)), listAsTTL(obj)
                             )
                           }
                         )
 )}
-#(op <- ObjProperty(label="REML", type="critREML", pred="isAbout", value=98765, obj=OntologyEntity("testEntity")))
+(op <- ObjProperty(label="REML", type="critREML", pred="isAbout", value=98765, obj=OntologyEntity("testEntity")))
 
 Hypothesis <- {setRefClass("Hypothesis", 
                            contains = "OntologyEntity",
@@ -234,7 +240,7 @@ Hypothesis <- {setRefClass("Hypothesis",
                                .self$pvalue <- pvalue
                                .self$modelParams <- modelParams
                              },
-                             getTTL = function() {
+                             innerGetTTL = function() {
                                paste(callSuper(),
                                      ";\n", TYPE, HYPOTHESIS,
                                      #";\n", PVALUE, num(pvalue),
@@ -257,7 +263,7 @@ Dataset <- {setRefClass("Dataset",
                                .self$url <- url
                                .self$variables <- variables
                              },
-                             getTTL = function() {
+                             innerGetTTL = function() {
                                paste(callSuper(),
                                      ";\n", TYPE, DATASET,
                                      if (length(url)>0) {paste(";\n", DESCRIPTION, lit(url))},
@@ -283,7 +289,7 @@ Statistic <- {setRefClass("Statistic",
                               .self$isAbout <- isAbout
                               .self$hasPart <- hasPart
                             },
-                            getTTL = function() {
+                            innerGetTTL = function() {
                               paste(callSuper(),
                                     #";\n", TYPE, STATISTIC,
                                     if (is.number(value)) {
@@ -318,7 +324,7 @@ Estimate <- {setRefClass("Estimate",
                             .self$isEstimateOf <- parameter
                             if (!is.null(se)) {.self$se <- se}
                           },
-                          getTTL = function() {
+                          innerGetTTL = function() {
                             if(!is.na(se) && length(se) == 1 && se != "") {
                               listAsTTL(list(
                               Statistic(paste0("se_", label), type=list("se"), value=se, isAbout = list(.self))
@@ -347,7 +353,7 @@ ValueSpecification <- {setRefClass("ValueSpecification",
                                   .self$variable <- variable
                                   .self$value <- value
                                 },
-                                getTTL = function() {
+                                innerGetTTL = function() {
                                   paste(callSuper(),
                                         ";\n", TYPE, VALUESPECIFICATION,
                                         if (!is.null(value)) {
@@ -366,7 +372,7 @@ ValueSpecification <- {setRefClass("ValueSpecification",
 VariableLevel <- {setRefClass("VariableLevel",
                               contains = "ValueSpecification",
                               methods = list(
-                                getTTL = function() {
+                                innerGetTTL = function() {
                                   paste(callSuper(),
                                         ";\n", TYPE, VARIABLELEVEL,
                                         ";\n", TYPE, CATEGORICALVALUESPECIFICATION)
@@ -380,7 +386,7 @@ Variable <- {setRefClass("Variable",
                            initialize = function(...) {
                              callSuper(...)
                            },
-                           getTTL = function() {
+                           innerGetTTL = function() {
                              paste(callSuper()
                                    #,
                                    #";\n", TYPE, VARIABLE
@@ -404,7 +410,7 @@ ContinuousVariable <- {setRefClass("ContinuousVariable",
                                                                 ValueSpecification(label=lab, value=as.numeric(l), variable=.self))
                                        }
                                      },
-                                     getTTL = function() {
+                                     innerGetTTL = function() {
                                        paste(callSuper(),
                                              ";\n", TYPE, CONTINUOUSVARIABLE,
                                              ";\n", HASVALUESPECIFICATION, listAsTTL(levels))
@@ -426,7 +432,7 @@ CategoricalVariable <- {setRefClass("CategoricalVariable",
                                                      VariableLevel(label=l, variable=.self))
                              }
                            },
-                           getTTL = function() {
+                           innerGetTTL = function() {
                              paste(callSuper(),
                                    ";\n", TYPE, CATEGORICALVARIABLE,
                                    ";\n", HASVALUESPECIFICATION, listAsTTL(levels))
@@ -450,7 +456,7 @@ CompoundVariable <- {setRefClass("CompoundVariable",
                                       .self$levels <- append(.self$levels, l)
                                     }
                                   },
-                                  getTTL = function() {
+                                  innerGetTTL = function() {
                                     paste(callSuper(),
                                           ";\n", TYPE, CONTINUOUSVARIABLE,
                                           ";\n", TYPE, COMPOUNDVARIABLE,
@@ -467,7 +473,7 @@ CompoundVariable <- {setRefClass("CompoundVariable",
 #                                                 initialize = function(... , levels=character()) {
 #                                                   callSuper(..., levels = levels)
 #                                                 },
-#                                                 getTTL = function() {
+#                                                 innerGetTTL = function() {
 #                                                   paste(callSuper(),
 #                                                         ";\n", TYPE, CATEGORICALINDEPENDENTVARIABLE
 #                                                   )
@@ -498,7 +504,7 @@ ModelTerm <- {
                   .self$order <- order
                   .self$variable <- variable
                 },
-                getTTL = function() {
+                innerGetTTL = function() {
                   paste(callSuper(),
                         #";\n", TYPE, MODELTERM,
                         ";\n", HASORDER, lit(order),
@@ -519,7 +525,7 @@ RandomModelTerm <- {
                 covarianceStructure = "list" #of CovarianceStructure #TODO change to "ANY" and remove lists
                 ),
               methods = list(
-                getTTL = function() {
+                innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, RANDOMMODELTERM,
                         ";\n", paste(HASPART, listAsTTL(covarianceStructure), collapse = " ;\n ")
@@ -532,7 +538,7 @@ ErrorModelTerm <- {
   setRefClass("ErrorModelTerm",
               contains = "RandomModelTerm",
               methods = list(
-                getTTL = function() {
+                innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, ERRORMODELTERM
                         )
@@ -544,7 +550,7 @@ FixedModelTerm <- {
   setRefClass("FixedModelTerm",
               contains = "ModelTerm",
               methods = list(
-                getTTL = function() {
+                innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, FIXEDMODELTERM
                         )
@@ -581,7 +587,7 @@ FixedModelTerm <- {
 #                   }
 #                   .self$params <- tmp
 #                 },
-#                 getTTL = function() {
+#                 innerGetTTL = function() {
 #                   paste(callSuper(),
 #                         ";\n", TYPE, COVARIANCESTRUCTURE,
 #                         ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n ")
@@ -620,7 +626,7 @@ CovarianceStructure <- {
                   .self$params <- ps
                   .self$vars <- vars
                 },
-                getTTL = function() {
+                innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, COVARIANCESTRUCTURE,
                         ";\n", TYPE, get(toupper(covModel)),
@@ -664,7 +670,7 @@ Parameter <- {
                   }
                   .self$effectType <- effectType
                 },
-                getTTL = function() {
+                innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, MODELPARAMETER,
                         if (length(correspondingVarLevels) > 0) {
@@ -720,7 +726,7 @@ Parameter <- {
 #                   .self$parameters <- params
 #                   .self$formula <- formula
 #                 },
-#                 getTTL = function() {
+#                 innerGetTTL = function() {
 #                   paste(callSuper(),
 #                         ";\n", TYPE, PARAMETRICFUNCTION,
 #                         #";\n", TYPE, EFFECT,
@@ -743,7 +749,7 @@ Parameter <- {
 #   setRefClass("Contrast",
 #               contains = "ParametricFunction",
 #               methods = list(
-#                 getTTL = function() {
+#                 innerGetTTL = function() {
 #                   paste(callSuper(),
 #                         ";\n", TYPE, CONTRAST
 #                   )}
@@ -765,7 +771,7 @@ StudyDesign <- {
                   callSuper(...)
                   .self$vars <- declares
                 },
-                getTTL = function() {
+                innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, STUDYDESIGN,
                         ";\n", paste(DECLARES, listAsTTL(vars), collapse = " ;\n ")
@@ -785,7 +791,7 @@ DesignMatrix <- {
                   callSuper(...)
                   .self$studyDesign <- list(StudyDesign("sd", declares = declares))
                 },
-                getTTL = function() {
+                innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, DESIGNMATRIX,
                         ";\n", DESCRIPTION, lit("binary"),
@@ -839,7 +845,7 @@ Lmm <- {
                   }
                   .self$quality
                 },
-                getTTL = function() {
+                innerGetTTL = function() {
                   .self$designMatrix <- list(DesignMatrix("dm", declares = append(variables, dependentVariable)))
                   {
                     props <- getQuality()
@@ -888,7 +894,7 @@ Process <- {
                   callSuper(...)
                   .self$processType <- processType
                 },
-                getTTL = function() {
+                innerGetTTL = function() {
                   gsub(pattern=" +", rep=" ",
                     paste(callSuper(),
                         ";\n", TYPE, mapping(processType),
