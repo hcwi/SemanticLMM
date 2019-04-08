@@ -3,16 +3,10 @@ require(assertthat)
 
 init <- function() {
   
-  source("term_mappings_reader.R")
-  
-  id <<- 0
+  source("mappingsReader.R")
   
   getID <<- function(o) {
     l <- o$label
-    #if (is.null(l) || l == "") {
-    #  id <<- id + 1
-    #  l <- id
-    #}
     id <- format(as.numeric(Sys.time())*100000, digits=15) #format(Sys.time(), "%y%m%d%H%M%S")
     c <- as.character(class(o))
     paste(c, l, id, sep="_")
@@ -27,7 +21,7 @@ init <- function() {
   
   getEntity <<- function(className, label) {
     for (r in reg) {
-      classOk <- grepl(class(r), patt = className, ignore.case = T)
+      classOk <- grepl(class(r), pattern = className, ignore.case = T)
       if (classOk & r$label == label)
         return(r)
     }
@@ -39,7 +33,7 @@ init <- function() {
       cat(sprintf("%20s %20s\n", class(r), r$label))
     }
   }
-  #getEntity("OntologyEntity", "eoLabel")
+  #getEntity("AnnotatedEntity", "eoLabel")
   
   listOfStringsToObjects <<- function(objClass = "Level", objNames) {
     
@@ -62,7 +56,7 @@ init <- function() {
         return(list())
       }
       if (is(objNames, "list")) {
-        if (length(objNames) == 0 || is(objNames[[1]], "OntologyEntity")) {
+        if (length(objNames) == 0 || is(objNames[[1]], "AnnotatedEntity")) {
           return(objNames)
         } else {
           if (is(objNames[[1]], "character")) {
@@ -86,7 +80,7 @@ init()
 
 ########################## LMM model classes ########################## 
 
-OntologyEntity <- {setRefClass("OntologyEntity",
+AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                               fields = list(
                                 id = "character",
                                 label = "character",
@@ -96,10 +90,11 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                               methods = list(
                                 initialize = function(label, type = list(), comments = list()) {
                                   .self$label <- label
-                                  if (is.character(type)) {
-                                    type <- as.list(type)
+                                  tmp <- type
+                                  if (is.character(tmp)) {
+                                    tmp <- as.list(tmp)
                                   }
-                                  .self$type <- type
+                                  .self$type <- tmp
                                   .self$comments <- comments
                                   register(.self)
                                 },
@@ -117,7 +112,7 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                         # if the object has been put in the queue before the current one (and thus already printed), 
                                         # the change to 'FALSE' doesn't make any difference, as the loop doesn't go back
                                         obj <- reg[[key]]
-                                        assert_that(is(obj, "OntologyEntity"), msg = paste("No reg object for key: ", key))
+                                        assert_that(is(obj, "AnnotatedEntity"), msg = paste("No reg object for key: ", key))
                                         cat(obj$asTTL())
                                       }
                                       i <- i + 1
@@ -169,7 +164,7 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                 listAsTTL = function(oo) {
                                   ids = "" # concatenated IDs from the 'oo' list
                                   for (o in oo) {
-                                    assert_that(is(o, "OntologyEntity"))
+                                    assert_that(is(o, "AnnotatedEntity"))
                                     ids <- paste(ids, ident(o$id), sep=", ") # add ID to the string
                                     if (!exists("queue") || is.null(queue)) {
                                       queue <<- list()
@@ -192,12 +187,12 @@ OntologyEntity <- {setRefClass("OntologyEntity",
                                 }
                               )
 )}
-# oe <- OntologyEntity(label = "eoLabel", type="ModelParameter")
+# oe <- AnnotatedEntity(label = "eoLabel", type="ModelParameter")
 # oe
 #str(oe)
 
 ObjProperty <- {setRefClass("ObjProperty", 
-                        contains = "OntologyEntity",
+                        contains = "AnnotatedEntity",
                         fields = list(
                           pred = "character",
                           obj = "list", #list of objects this entity is about, e.g. AIC isAbout model, df is about AIC
@@ -205,12 +200,12 @@ ObjProperty <- {setRefClass("ObjProperty",
                         ),
                         methods = list(
                           initialize = function(... , pred, obj, value) {
+                            if (any(sapply(as.list(match.call()), is.null))) {
+                              warning("NULL argument of a function", match.call())
+                            }
                             callSuper(...)
                             .self$pred <- pred
-                            if (length(obj) == 1) {
-                              obj <- list(obj)
-                            }
-                            .self$obj <- obj
+                            .self$obj <- ifelse(is.list(obj), obj, list(obj))
                             .self$value <- value
                           },
                           innerGetTTL = function() {
@@ -225,10 +220,10 @@ ObjProperty <- {setRefClass("ObjProperty",
                           }
                         )
 )}
-(op <- ObjProperty(label="REML", type="critREML", pred="isAbout", value=98765, obj=OntologyEntity("testEntity")))
+(op <- ObjProperty(label="REML", type="critREML", pred="isAbout", value=98765, obj=AnnotatedEntity("testEntity")))
 
 Hypothesis <- {setRefClass("Hypothesis", 
-                           contains = "OntologyEntity",
+                           contains = "AnnotatedEntity",
                            fields = list(
                              pvalue = "numeric",
                              qvalue = "numeric",
@@ -252,7 +247,7 @@ Hypothesis <- {setRefClass("Hypothesis",
 )}
 
 Dataset <- {setRefClass("Dataset", 
-                           contains = "OntologyEntity",
+                           contains = "AnnotatedEntity",
                            fields = list(
                              url = "character",
                              variables = "list"
@@ -276,7 +271,7 @@ Dataset <- {setRefClass("Dataset",
                            )
 )}
 Statistic <- {setRefClass("Statistic", 
-                          contains = "OntologyEntity",
+                          contains = "AnnotatedEntity",
                           fields = list(
                             value = "numeric",
                             isAbout = "list",
@@ -308,7 +303,7 @@ Statistic <- {setRefClass("Statistic",
 #ttest
 
 Estimate <- {setRefClass("Estimate", 
-                        contains = "OntologyEntity",
+                        contains = "AnnotatedEntity",
                         fields = list(
                           value = "numeric",
                           se = "numeric",
@@ -342,7 +337,7 @@ Estimate <- {setRefClass("Estimate",
 #cat(est$asTTL())
 
 ValueSpecification <- {setRefClass("ValueSpecification",
-                              contains = "OntologyEntity",
+                              contains = "AnnotatedEntity",
                               fields = list(
                                 variable = "ANY",
                                 value = "ANY"
@@ -381,7 +376,7 @@ VariableLevel <- {setRefClass("VariableLevel",
 )}
 
 Variable <- {setRefClass("Variable",
-                         contains = "OntologyEntity",
+                         contains = "AnnotatedEntity",
                          methods = list(
                            initialize = function(...) {
                              callSuper(...)
@@ -491,7 +486,7 @@ CompoundVariable <- {setRefClass("CompoundVariable",
 
 ModelTerm <- {
   setRefClass("ModelTerm",
-              contains = "OntologyEntity",
+              contains = "AnnotatedEntity",
               fields = list(
                 order = "integer",
                 variable = "list", # of Variable
@@ -572,7 +567,7 @@ FixedModelTerm <- {
 
 # CovarianceStructure <- {
 #   setRefClass("CovarianceStructure",
-#               contains = "OntologyEntity",
+#               contains = "AnnotatedEntity",
 #               fields = list(
 #                 params = "list", # of ModelParams
 #                 estimate = "list" # of Estimates of Params
@@ -601,7 +596,7 @@ FixedModelTerm <- {
 
 CovarianceStructure <- {
   setRefClass("CovarianceStructure",
-              contains = "OntologyEntity",
+              contains = "AnnotatedEntity",
               fields = list(
                 params = "list", # of ModelParams
                 estimate = "list", # of Estimates of Params
@@ -646,7 +641,7 @@ CovarianceStructure <- {
 
 Parameter <- {
   setRefClass("Parameter",
-              contains = "OntologyEntity",
+              contains = "AnnotatedEntity",
               fields= list(
                 correspondingVarLevels = "list", #of Levels (for now)
                 relativeTo = "list", #list of reference effects (only ONE? reference effect)
@@ -660,6 +655,7 @@ Parameter <- {
                   .self$correspondingVarLevels <- listOfStringsToObjects("VariableLevel", levels)
                   .self$relativeTo <- reference
                   if (length(valueOf) == 0) {
+                    #TODO add variable
                     warning(paste("No isAbout variable declared for parameter:", label))
                   } else if (length(valueOf) == 1 && typeof(valueOf) != "list") {
                     valueOf <- list(valueOf)
@@ -715,7 +711,7 @@ Parameter <- {
 
 # ParametricFunction <- {
 #   setRefClass("ParametricFunction",
-#               contains = "OntologyEntity",
+#               contains = "AnnotatedEntity",
 #               fields = list(
 #                 formula = "ANY",
 #                 parameters = "list" #of model parameters
@@ -762,7 +758,7 @@ Parameter <- {
 
 StudyDesign <- {
   setRefClass("StudyDesign",
-              contains = "OntologyEntity",
+              contains = "AnnotatedEntity",
               fields = list(
                 vars = "list"
               ),
@@ -782,7 +778,7 @@ StudyDesign <- {
 
 DesignMatrix <- {
   setRefClass("DesignMatrix",
-              contains = "OntologyEntity",
+              contains = "AnnotatedEntity",
               fields = list(
                 studyDesign = "list"
               ),
@@ -804,7 +800,7 @@ DesignMatrix <- {
 
 Lmm <- {
   setRefClass("Lmm",
-              contains = "OntologyEntity",
+              contains = "AnnotatedEntity",
               fields = list(
                 formula = "character",
                 dependentVariable = "list", 
@@ -847,23 +843,17 @@ Lmm <- {
                 },
                 innerGetTTL = function() {
                   .self$designMatrix <- list(DesignMatrix("dm", declares = append(variables, dependentVariable)))
-                  {
-                    props <- getQuality()
-                    if (length(df)) {
-                      props <- append(props, ObjProperty("DF", "df", pred="isAbout", value=df, obj=.self))
-                    }
-                    if (length(props) > 0) {
-                      devNull <- listAsTTL(props) # puts properties in the queue for printing
-                    }
-                  } # get props
+                  props <- getQuality()
+                  if (length(df)) {
+                    props <- append(props, ObjProperty("DF", "df", pred="isAbout", value=df, obj=.self))
+                  }
+                  if (length(props) > 0) {
+                    devNull <- listAsTTL(props) # puts properties in the queue for printing
+                  }
                   formula <- ObjProperty(label="formula", type="formula", pred="denotes", obj=.self, value=formula)
                   paste(callSuper(),
                         ";\n", TYPE, LMM,
-                        #";\n", FORMULA, lit(deparse(formula)),
                         ";\n", ISDENOTEDBY, listAsTTL(list(formula)),
-                        #";\n", ifelse(!is.na(criterionREML), 
-                        #              paste(CRITREML, criterionREML),
-                        #              paste(CRITAIC, criterionAIC, ";\n", CRITAICDF, criterionAICdf)),
                         ";\n", ISMODELFOR, listAsTTL(dependentVariable),
                         ";\n", paste(HASTERM, listAsTTL(independentFixedTerm), collapse = " ;\n "),
                         ";\n", paste(HASTERM, listAsTTL(independentRandomTerm), collapse = " ;\n "),
@@ -882,7 +872,7 @@ Lmm <- {
 
 Process <- {
   setRefClass("Process",
-              contains = "OntologyEntity",
+              contains = "AnnotatedEntity",
               fields= list(
                 hasInput = "list",
                 hasOutput = "list",

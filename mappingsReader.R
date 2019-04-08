@@ -1,5 +1,5 @@
 # get terms for R objects from specific ontology 'ont' (currently LMM, STATO_SIMPLE, STATO)
-prepareTermsFromOntology <- function(ont = "LMM") {
+prepareAnnotations <- function(ontology = "LMM") {
   
   # list of mappings R names > LMM or STATO terms
   termListCsv <- "/Users/hania/Code/R_oom/modelTerms/modelTerms.csv"
@@ -8,7 +8,7 @@ prepareTermsFromOntology <- function(ont = "LMM") {
   # creating variables for the terms
   # (selecting one of LMM or STATO terms from csv file above and putting it in R file with assignement operation "<-" )
   for (i in 1:dim(terms)[1]) {
-    ontTerm <- terms[i,ont]
+    ontTerm <- terms[i,ontology]
     if (ontTerm == "") {
       warning(paste("No ", ont, " term for the object '", terms[i,1], "' found.", sep=""))
       ontTerm <- toupper(terms[i,1])
@@ -32,4 +32,4 @@ prefixes <- "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 "
 termsEnv <- new.env()
-prepareTermsFromOntology("STATO") #STATO_SIMPLE")
+prepareAnnotations("STATO") #STATO_SIMPLE")
