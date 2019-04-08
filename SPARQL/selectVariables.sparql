@@ -1,0 +1,28 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX stato: <http://purl.obolibrary.org/obo/stato.owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# Which variables were analysed together, and in which datasets?
+# Returns models with dependent variables and independent variables used to explain it (both as fixed and random effect), plus a dataset for which the analysis was done.
+
+select distinct 
+	?Trait ?Variable ?DatasetName ?model
+	(GROUP_CONCAT(distinct ?factor; SEPARATOR = ", ") AS ?Variable)
+where { 
+    ?model rdf:type obo:STATO_0000464. # mixed model
+    ?model stato:is_model_for/rdfs:label ?Trait.
+    ?model obo:BFO_0000051 ?term. # has part
+    ?term obo:IAO_0000136 ?var. # is about
+	?var rdf:type obo:STATO_0000258. # variable
+    ?var rdfs:label ?factor.
+    
+    ?dataset rdfs:label ?DatasetName.
+    ?dataset rdf:type obo:IAO_0000100. #dataset
+    ?modelfitting obo:OBI_0000293 ?dataset. #hasInput
+	?modelfitting rdf:type obo:STATO_0000218. #modelFitting
+    ?modelfitting obo:OBI_0000293 ?model. #hasInput
+    
+}
+group by ?model ?Trait ?DatasetName
+order by ?Trait

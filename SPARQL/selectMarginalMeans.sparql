@@ -1,0 +1,47 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX stato: <http://purl.obolibrary.org/obo/stato.owl#>
+PREFIX fn: <http://www.w3.org/2005/xpath-functions:>
+
+# Find all marginal means for a trait "GW_m2".
+# Returns all marginal means (interval estimates of the expected value) of a specific trait given the levels of independent variables, plus models that served to calculate EMMs based on the estimated model parameters. Ordered by descreasing estimate.
+
+SELECT DISTINCT
+	?Trait
+	(GROUP_CONCAT(?Level; SEPARATOR = ", ") AS ?VariableLevels)
+	(round(100*?value)/100 as ?Estimate)
+	(concat("(", 
+        str(round(100*?CI_low)/100), "; ",
+        str(round(100*?CI_up)/100), ") a=",
+    	str(round(100*?CI_level)/100)) as ?ConfidenceInterval)
+	?model
+WHERE { 
+    
+    FILTER(regex(?Trait, "GW_m2")).  ### <----------- HERE SPEFICY A DEPENDENT VARIABLE
+    
+    ?modelfitting rdf:type obo:STATO_0000218. #model fitting
+    ?modelfitting obo:OBI_0000293 ?model. #has input
+    ?model rdf:type obo:STATO_0000464. #mixed linear model
+    ?model stato:is_model_for/rdfs:label ?Trait.
+    ?modelfitting obo:BFO_0000051 ?emmCalculation. #has part
+    ?emmCalculation rdf:type obo:STATO_0000119. #model param estimation
+    ?emmCalculation obo:OBI_0000299 ?est. #has output
+    ?est rdf:value ?value.
+    ?est obo:STATO_0000403 ?param. #estimator of
+    ?param obo:IAO_0000136 ?level. #is about
+    ?level rdfs:label ?Level.
+    ?param ^obo:IAO_0000136 ?ci.
+    ?ci rdf:type obo:STATO_0000196. #conf inf
+    ?ci obo:BFO_0000051 ?ci_level.
+    ?ci_level rdf:value ?CI_level.
+    ?ci_level rdf:type obo:STATO_0000561. #conf level
+    ?ci obo:BFO_0000051 ?ci_low.
+    ?ci_low rdf:type obo:STATO_0000315. #lower limit
+    ?ci_low rdf:value ?CI_low.
+    ?ci obo:BFO_0000051 ?ci_up.
+    ?ci_up rdf:type obo:STATO_0000314. #upper limit
+    ?ci_up rdf:value ?CI_up.
+    }
+GROUP BY ?model ?param ?Trait ?value ?CI_low ?CI_up ?CI_level
+ORDER BY desc(?Estimate)

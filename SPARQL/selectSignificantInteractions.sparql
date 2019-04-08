@@ -1,0 +1,31 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX stato: <http://purl.obolibrary.org/obo/stato.owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# find interactions of factors that seem significant for explaining a trait
+# i.e. models with fixed terms linked to two independent variables, for which significantly low pvalue has been found
+
+
+SELECT DISTINCT 
+	?Interaction ?Trait 
+	(round(?Pval*1000)/1000 as ?Pvalue)
+	?model
+WHERE { 
+    ?model rdf:type obo:STATO_0000464. #mixed effect model
+    ?model stato:is_model_for/rdfs:label ?Trait.
+    ?model obo:BFO_0000051 ?term. #has part
+    ?term rdfs:label ?Interaction.
+    ?term obo:IAO_0000136 ?var1, ?var2.	# is about
+    	obo:STATO_0000258 ^rdf:type ?var1, ?var2. #categorical variable
+    FILTER (?var1 != ?var2).
+    #?var1 rdfs:label ?Var1.
+    #?var2 rdfs:label ?Var2.
+    ?hypo rdf:type obo:STATO_0000065. #hypothesis
+    ?hypo obo:IAO_0000136 ?term. #is about
+    ?pval obo:IAO_0000136 ?hypo. #is bout
+    ?pval rdf:value ?Pval.
+
+    FILTER (?Pval < 0.05).  ### <-------- HERE SPECIFY P-VALUE
+}
+ORDER BY ?Pvalue

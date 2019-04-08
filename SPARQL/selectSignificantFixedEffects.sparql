@@ -1,0 +1,39 @@
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX stato: <http://purl.obolibrary.org/obo/stato.owl#>
+
+# Find significant fixed effects.
+# Returns fixed effects (relative effects, contrasts, i.e. difference against reference) of variable levels for a specified trait, ordered by the absolute value of its estimate, if corresponding p-value is significant.
+# Input: Trait, p-value (see below)
+
+SELECT DISTINCT 
+	?Trait 
+	#(concat(?Term,": ", ?Effect) as ?TermEffect) 
+	(?Effect as ?EffectOf)
+	(round(?Est*1000)/1000 as ?Estimate)
+	(round(?Pval*1000)/1000 as ?Pvalue)
+	?model 
+WHERE { 
+    
+    FILTER(regex(?Trait, "GW_m2")). ### <------------- HERE SPECIFY THE DEPENDENT VARIABLE
+    
+    ?model rdf:type obo:STATO_0000464. #mixed effect model
+    ?model obo:BFO_0000051 ?term.
+    ?model stato:is_model_for/rdfs:label ?Trait.
+    ?term rdfs:label ?Term.
+    ?term obo:STATO_0000001 ?effect, ?effect2.
+    FILTER(?effect != ?effect2).  # a term has >1 effect (intention: to exclude intercept)
+    ?effect rdf:type obo:STATO_0000307. #treatment contrast
+    ?effect rdfs:label ?Effect.
+    ?est obo:STATO_0000403 ?effect. #estimator of
+    ?est rdf:value ?Est.
+    
+    ?hypo rdf:type obo:STATO_0000065. #hypothesis
+    ?hypo obo:IAO_0000136 ?effect. #is about
+    ?pval obo:IAO_0000136 ?hypo. #is about
+    ?pval rdf:value ?Pval.
+    
+    FILTER (?Pval < 0.01). ### <------------- HERE SPECIFY THE SIGNIFICANCE LEVEL
+}   
+ORDER BY desc(abs(?Est))
