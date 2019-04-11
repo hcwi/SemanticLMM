@@ -1,0 +1,142 @@
+---
+title: "Oats data modelling tests"
+output:
+  html_notebook:
+    toc: yes
+  html_document:
+    code_folding: show
+    df_print: default
+    toc: yes
+---
+# Dataset 
+The Machines data, described in Milliken and Johnson (1992, Chapter 23) and shown below, gives the productivity score for each of six randomly chosen workers tested on each of three different machine types. Each worker used each machine three times so we have three replicates at each set of conditions.
+```{r}
+require(nlme)
+data("Oats")
+str(Oats)
+plot(Oats)
+```
+
+```{r}
+fm1Oats <- lme( yield ~ ordered(nitro) * Variety, data = Oats,
+                random = ~ 1 | Block/Variety )
+fm1Oats
+VarCorr(fm1Oats)
+ranef(fm1Oats)
+
+```
+
+```{r}
+fm2Oats <- update( fm1Oats, yield ~ ordered(nitro) + Variety )
+fm2Oats
+summary( fm2Oats )
+
+```
+
+```{r}
+fm3Oats <- update( fm1Oats, yield ~ ordered( nitro ) )
+summary( fm3Oats )
+
+```
+
+```{r}
+fm4Oats <-
+  lme( yield ~ nitro, data = Oats, random = ~ 1 | Block/Variety )
+summary( fm4Oats )
+VarCorr( fm4Oats )
+intervals( fm4Oats )
+plot(augPred(fm4Oats), aspect = 2.5, layout = c(6, 3),
+     between = list(x = c(0, 0, 0.5, 0, 0))) # produces Figure 1.21
+
+fm4Oats
+
+```
+
+```{r}
+#fm4Oats2 <- update(fm4Oats, random=~Block, control = lmeControl(maxIter = 50, opt="optim"))
+#oatsSim <-  simulate.lme(fm4Oats2, m2 = fm4Oats, method = "ML", nsim = 1000 )
+#plot( oatsSim, df = c(0,1))    # Figure 2.6
+```
+
+```{r}
+fm4OatsB <- lme(yield ~ nitro, data = Oats,
+                random =list(Block = pdCompSymm(~ Variety - 1)))
+fm4OatsB
+VarCorr(fm4OatsB)
+ranef(fm4OatsB)
+summary(fm4OatsB)
+corMatrix(fm4OatsB$modelStruct$reStruct$Block)
+
+```
+```{r}
+fm4OatsX <- lme(yield ~ nitro, data = Oats,
+                random =list(Block = pdDiag(~ Block - 1)))
+fm4OatsX
+VarCorr(fm4OatsX)
+ranef(fm4OatsX)
+corMatrix(fm4OatsX$modelStruct$reStruct$Block)
+#summary(fm4OatsX)
+#anova(fm4OatsX, fm4Oats)
+```
+```{r}
+fm4OatsVar <- lme(yield ~ nitro, data = Oats,
+                random =~1|Block, weights = varIdent(~1|Block))
+fm4OatsVar
+VarCorr(fm4OatsVar)
+ranef(fm4OatsVar)
+corMatrix(fm4OatsVar$modelStruct$reStruct$Block)
+fm4OatsVar$modelStruct$varStruct
+
+summary(fm4OatsVar)
+anova(fm4OatsX, fm4OatsVar)
+```
+
+```{r}
+fm4OatsC <- lme(yield ~ nitro, data = Oats,
+                random=list(Block=pdBlocked(list(pdIdent(~ 1),
+                                                 pdIdent(~ Variety-1)))))
+summary(fm4OatsC)
+```
+
+```{r}
+str(Oats)
+fm4Oats; VarCorr(fm4Oats)
+fm4OatsB; VarCorr(fm4OatsB)
+fm4OatsC; VarCorr(fm4OatsC)
+
+```
+
+```{r}
+fm5Oats <- update(fm4Oats, random = ~1|Block, corr = corSymm(form = ~1|Block/Variety))
+fm5Oats; VarCorr(fm5Oats)
+ranef(fm5Oats)
+intervals(fm5Oats, which = "var-cov")
+
+```
+
+```{r}
+fm6Oats <- lme(yield~nitro, data=Oats, random = ~1|Block, 
+               correlation = corCompSymm(form = ~1|Block/Variety))
+fm6Oats; VarCorr(fm6Oats)
+intervals(fm6Oats)
+anova(fm6Oats, fm5Oats)
+anova(fm6Oats, fm4Oats)
+anova(fm6Oats, fm4OatsB)
+fm4Oats
+fm6Oats
+
+VarCorr(fm6Oats)
+corMatrix(fm6Oats$modelStruct$corStruct)
+coef(fm6Oats$modelStruct$corStruct, unconstrained = F)
+VarCorr(fm4Oats)
+VarCorr(fm4OatsB)
+VarCorr(fm4OatsC)
+#corMatrix(fm4Oats$modelStruct$corStruct)
+
+#fm4::sigma2^2 = fm6::cor * fm6::var
+coef(fm6Oats$modelStruct$corStruct, unconstrained = F) #cor
+VarCorr(fm6Oats) #var
+as.numeric(VarCorr(fm6Oats)[2,1])*coef(fm6Oats$modelStruct$corStruct, unconstrained = F) #var zagniezdzonego
+
+```
+

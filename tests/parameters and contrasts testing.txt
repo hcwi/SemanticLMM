@@ -1,0 +1,18 @@
+<object1> rdfs:label "beta1" ;
+ rdf:type model_parameter, direct_effect ;
+ is_about <level1> .
+<object2> rdfs:label "beta2" ;
+ rdf:type model_parameter, direct_effect ;
+ is_about <level2> .
+
+<object3> rdfs:label "contrast21 = beta2 - beta1" ;
+ rdf:type model_parameter, parametric_function, contrast ;
+ is_function_of <object1>, <object2> ;
+ --- is_about <level2> .
+
+<object4> rdfs:label "beta3" ;
+ rdf:type model_parameter, relative_effect ;
+ is_about <level3> ;
+ is_relative_to <object1>.
+ 
+ 

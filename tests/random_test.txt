@@ -1,0 +1,97 @@
+Positive definite matrix structure of class pdCompSymm representing
+                 VarietyCamB1CI VarietyMaresi VarietyRadek VarietyRGTPlanet VarietySoldo
+VarietyCamB1CI       0.22778854   -0.04716838  -0.04716838      -0.04716838  -0.04716838
+VarietyMaresi       -0.04716838    0.22778854  -0.04716838      -0.04716838  -0.04716838
+VarietyRadek        -0.04716838   -0.04716838   0.22778854      -0.04716838  -0.04716838
+VarietyRGTPlanet    -0.04716838   -0.04716838  -0.04716838       0.22778854  -0.04716838
+VarietySoldo        -0.04716838   -0.04716838  -0.04716838      -0.04716838   0.22778854
+$Block
+       VarietyCamB1CI VarietyMaresi VarietyRadek VarietyRGTPlanet VarietySoldo
+block1       1.409089     -3.264847    11.200465         7.340210   -12.312320
+block2      -3.967066     12.491055    -8.880494       -12.490613     8.907547
+block3       2.557977     -9.226208    -2.319971         5.150403     3.404773
+
+Positive definite matrix structure of class pdCompSymm representing
+              Blockblock1   Blockblock2   Blockblock3
+Blockblock1  8.085814e-09 -6.939406e-14 -6.939406e-14
+Blockblock2 -6.939406e-14  8.085814e-09 -6.939406e-14
+Blockblock3 -6.939406e-14 -6.939406e-14  8.085814e-09
+Positive definite matrix structure of class pdIdent representing
+            (Intercept)
+(Intercept)   0.2277867
+$Block
+        Blockblock1   Blockblock2   Blockblock3
+block1 6.695712e-07 -5.746392e-12 -5.746393e-12
+block2 5.177316e-12 -6.032622e-07  5.177316e-12
+block3 5.690772e-13  5.690769e-13 -6.630903e-08
+
+$Variety
+                 (Intercept)
+block1/CamB1CI     4.2440838
+block1/Maresi      0.1210209
+block1/Radek      12.8814416
+block1/RGTPlanet   9.4761588
+block1/Soldo      -7.8601105
+block2/CamB1CI    -6.2033733
+block2/Maresi      8.3149828
+block2/Radek     -10.5377015
+block2/RGTPlanet -13.7223294
+block2/Soldo       5.1538288
+block3/CamB1CI     1.9592895
+block3/Maresi     -8.4360037
+block3/Radek      -2.3437401
+block3/RGTPlanet   4.2461706
+block3/Soldo       2.7062817
+
+Positive definite matrix structure of class pdCompSymm representing
+              Blockblock1   Blockblock2   Blockblock3
+Blockblock1  5.297962e-09 -2.228500e-14 -2.228500e-14
+Blockblock2 -2.228500e-14  5.297962e-09 -2.228500e-14
+Blockblock3 -2.228500e-14 -2.228500e-14  5.297962e-09
+Positive definite matrix structure of class pdCompSymm representing
+                 VarietyCamB1CI VarietyMaresi VarietyRadek VarietyRGTPlanet VarietySoldo
+VarietyCamB1CI     2.277894e-01  2.807539e-07 2.807539e-07     2.807539e-07 2.807539e-07
+VarietyMaresi      2.807539e-07  2.277894e-01 2.807539e-07     2.807539e-07 2.807539e-07
+VarietyRadek       2.807539e-07  2.807539e-07 2.277894e-01     2.807539e-07 2.807539e-07
+VarietyRGTPlanet   2.807539e-07  2.807539e-07 2.807539e-07     2.277894e-01 2.807539e-07
+VarietySoldo       2.807539e-07  2.807539e-07 2.807539e-07     2.807539e-07 2.277894e-01
+$Block
+        Blockblock1   Blockblock2   Blockblock3
+block1 4.387128e-07 -1.845373e-12 -1.845372e-12
+block2 1.662621e-12 -3.952662e-07  1.662622e-12
+block3 1.827511e-13  1.827516e-13 -4.344664e-08
+
+$Variety
+                 VarietyCamB1CI VarietyMaresi  VarietyRadek VarietyRGTPlanet  VarietySoldo
+block1/CamB1CI     4.244118e+00  5.230940e-06  5.230940e-06     5.230940e-06  5.230940e-06
+block1/Maresi      1.491613e-07  1.210219e-01  1.491613e-07     1.491613e-07  1.491613e-07
+block1/Radek       1.587670e-05  1.587670e-05  1.288154e+01     1.587670e-05  1.587670e-05
+block1/RGTPlanet   1.167960e-05  1.167960e-05  1.167960e-05     9.476234e+00  1.167960e-05
+block1/Soldo      -9.687783e-06 -9.687783e-06 -9.687783e-06    -9.687783e-06 -7.860173e+00
+block2/CamB1CI    -6.203423e+00 -7.645813e-06 -7.645813e-06    -7.645813e-06 -7.645813e-06
+block2/Maresi      1.024842e-05  8.315049e+00  1.024842e-05     1.024842e-05  1.024842e-05
+block2/Radek      -1.298798e-05 -1.298798e-05 -1.053779e+01    -1.298798e-05 -1.298798e-05
+block2/RGTPlanet  -1.691311e-05 -1.691311e-05 -1.691311e-05    -1.372244e+01 -1.691311e-05
+block2/Soldo       6.352223e-06  6.352223e-06  6.352223e-06     6.352223e-06  5.153870e+00
+block3/CamB1CI     1.959305e+00  2.414873e-06  2.414873e-06     2.414873e-06  2.414873e-06
+block3/Maresi     -1.039759e-05 -8.436071e+00 -1.039759e-05    -1.039759e-05 -1.039759e-05
+block3/Radek      -2.888718e-06 -2.888718e-06 -2.343759e+00    -2.888718e-06 -2.888718e-06
+block3/RGTPlanet   5.233512e-06  5.233512e-06  5.233512e-06     4.246204e+00  5.233512e-06
+block3/Soldo       3.335560e-06  3.335560e-06  3.335560e-06     3.335560e-06  2.706303e+00
+
+Positive definite matrix structure of class pdBlocked representing
+                  Blockblock1  Blockblock2  Blockblock3 VarietyCamB1CI VarietyMaresi VarietyRadek VarietyRGTPlanet VarietySoldo
+Blockblock1      5.422514e-20 5.264113e-22 5.264113e-22   0.000000e+00     0.0000000    0.0000000        0.0000000 0.000000e+00
+Blockblock2      5.264113e-22 5.422514e-20 5.264113e-22   0.000000e+00     0.0000000    0.0000000        0.0000000 0.000000e+00
+Blockblock3      5.264113e-22 5.264113e-22 5.422514e-20   0.000000e+00     0.0000000    0.0000000        0.0000000 0.000000e+00
+VarietyCamB1CI   0.000000e+00 0.000000e+00 0.000000e+00   5.344004e-13     0.0000000    0.0000000        0.0000000 0.000000e+00
+VarietyMaresi    0.000000e+00 0.000000e+00 0.000000e+00   0.000000e+00     0.1486836    0.0000000        0.0000000 0.000000e+00
+VarietyRadek     0.000000e+00 0.000000e+00 0.000000e+00   0.000000e+00     0.0000000    0.8058429        0.0000000 0.000000e+00
+VarietyRGTPlanet 0.000000e+00 0.000000e+00 0.000000e+00   0.000000e+00     0.0000000    0.0000000        0.8690052 0.000000e+00
+VarietySoldo     0.000000e+00 0.000000e+00 0.000000e+00   0.000000e+00     0.0000000    0.0000000        0.0000000 2.806844e-07
+$Block
+         Blockblock1   Blockblock2   Blockblock3 VarietyCamB1CI VarietyMaresi VarietyRadek VarietyRGTPlanet  VarietySoldo
+block1  1.687630e-18  1.638251e-20  1.638604e-20   1.449294e-11    0.08862719    25.398008        19.218759 -1.409783e-05
+block2 -1.240268e-20 -1.277586e-18 -1.240562e-20  -2.118363e-11    6.08929941   -20.776915       -27.830489  9.243868e-06
+block3 -3.980756e-21 -3.978618e-21 -4.100561e-19   6.690693e-12   -6.17792660    -4.621092         8.611731  4.853966e-06
+

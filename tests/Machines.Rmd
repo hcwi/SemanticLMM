@@ -1,0 +1,126 @@
+---
+title: "Machines data modelling tests"
+output:
+  html_notebook:
+    toc: yes
+  html_document:
+    df_print: default
+    toc: yes
+    code_folding: show
+---
+# Dataset
+The Machines data, described in Milliken and Johnson (1992, Chapter 23) and shown below, gives the productivity score for each of six randomly chosen workers tested on each of three different machine types. Each worker used each machine three times so we have three replicates at each set of conditions.
+```{r}
+require(nlme)
+data(Machines)
+str(Machines)
+plot(Machines)
+```
+
+# Different random term models
+General model call is `lme(score ~ Machine, data = Machines, random = list(...))` with `...` replaced with below presented declarations of the random effects (or replacement of the whole term *random = ... * with the simplified alternative)
+
+## Worker = pdIdent(~1) or `random = ~ 1 | Worker`
+
+Equal variances of the general mean (intercept) for all levels of random variable (Worker)
+```{r}
+fm1Machine <- lme(score ~ Machine, data = Machines, random = ~ 1 | Worker)
+fm1Machine
+VarCorr(fm1Machine)
+fm1Machine$modelStruct$reStruct$Worker
+corMatrix(fm1Machine$modelStruct$reStruct$Worker)
+ranef(fm1Machine)
+```
+## Worker = pdIdent(~1), Machine = pdIdent(~1) or `random = ~ 1 | Worker/Machine`
+Equal variances of the general mean (intercept) for all levels of outer random variable (Worker) and combinations of both (Worker:Machine)
+
+```{r}
+fm2Machine <- update( fm1Machine, random = list(Worker = pdIdent(~1), Machine = pdIdent(~1)) )
+#fm2Machine <- update( fm1Machine, random = ~ 1 | Worker/Machine )
+fm2Machine
+VarCorr(fm2Machine)
+fm2Machine$modelStruct$reStruct$Worker
+fm2Machine$modelStruct$reStruct$Machine
+corMatrix(fm2Machine$modelStruct$reStruct)
+
+ranef(fm2Machine)
+```
+
+## Worker = pdSymm(~Machine-1)
+Equivalent to `random = ~Machine-1|Worker`
+Different variances of the Machine effects for all levels of outer random variable (Worker) and combinations of both (Worker:Machine)
+
+```{r}  
+  fm3Machine <- update(fm1Machine, random = pdSymm(~Machine-1))
+  # same as fm3Machine2 <- update(fm1Machine, random = ~Machine-1|Worker)
+  fm3Machine # == fm3Machine2
+  VarCorr(fm3Machine)
+  fm3Machine$modelStruct$reStruct$Worker
+  corMatrix(fm3Machine$modelStruct$reStruct$Worker)
+  ranef(fm3Machine)
+```
+## Worker = pdCompSymm(~Machine-1) 
+
+```{r}
+  fm4Machine <- update(fm3Machine, random = pdCompSymm(~Machine-1))
+  fm4Machine
+  fm4Machine$modelStruct$reStruct$Worker
+  ranef(fm4Machine)
+```
+## Worker = pdIdent(~Machine-1))
+```{r}
+  fm4Machine_ID <- update(fm3Machine, random = pdIdent(~Machine-1))
+  fm4Machine_ID
+  fm4Machine_ID$modelStruct$reStruct$Worker
+  ranef(fm4Machine_ID)
+```
+##  Worker = pdIdent(~Worker-1)
+```{r}
+  fm4Machine_W <- update(fm3Machine, random = pdIdent(~Worker-1))
+  fm4Machine_W
+  fm4Machine_W$modelStruct$reStruct$Worker
+  VarCorr(fm4Machine_W)
+  ranef(fm4Machine_W)
+  coef(fm4Machine_W)
+```
+## Worker = pdCompSymm(~Worker-1)
+```{r}
+  fm4Machine_WCS <- update(fm3Machine, random = pdCompSymm(~Worker-1))
+  fm4Machine_WCS
+  fm4Machine_WCS$modelStruct$reStruct$Worker
+  VarCorr(fm4Machine_WCS)
+  ranef(fm4Machine_WCS)
+  coef(fm4Machine_WCS)
+```
+## Worker = pdDiag(~Worker-1)
+```{r}
+  fm4Machine_WDiag <- update(fm3Machine, random = pdDiag(~Worker-1))
+  fm4Machine_WDiag
+  fm4Machine_WDiag$modelStruct$reStruct$Worker
+  VarCorr(fm4Machine_WDiag)
+  ranef(fm4Machine_WDiag)
+  coef(fm4Machine_WDiag)
+```
+## Comparison of models for Workers
+The models fm4Machine_W (ident) and fm4Machine_WCS (CS) and equal - the non-zero non-diagonal coefficients are meaningless
+The model fm4Machine_WDiag is slightly better
+```{r}
+  plot(resid(fm4Machine_WDiag)~fitted(fm4Machine_WDiag))
+  points(resid(fm4Machine_W)~fitted(fm4Machine_W), col="red")
+  points(resid(fm4Machine_WCS)~fitted(fm4Machine_WCS), col="green", pch=3)
+  anova(fm4Machine_W, fm4Machine_WCS, fm4Machine_WDiag)
+```
+
+## Worker = pdBlocked(list(pdDiag(~Worker-1), pdSymm(~Machine-1)))
+
+```{r}
+  fm4Machine_Blocked <- lme(score ~ Machine, data = Machines, random = list(Worker = pdBlocked(list( pdDiag(~Machine-1), pdDiag(~Worker-1)))))
+  fm4Machine_Blocked
+  fm4Machine_Blocked$modelStruct$reStruct$Worker
+  VarCorr(fm4Machine_Blocked)
+  ranef(fm4Machine_Blocked)
+  coef(fm4Machine_Blocked)
+  fm4Machine_Blocked$coefficients$fixed
+  fm4Machine_Blocked$coefficients$random
+  
+```

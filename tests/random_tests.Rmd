@@ -1,0 +1,41 @@
+---
+title: "Random effect model tests"
+output:html_notebook
+---
+
+```{r echo=TRUE}
+est_mixed <- lme(Yield ~ Variety*Infection, 
+                   random=list(Block=pdCompSymm(~Variety-1)), 
+                   data = dataFus)
+test_mixed$modelStruct$reStruct$Block
+test_mixed$coefficients$random
+```
+
+```{r}
+test_nested <- lme(Yield ~ Variety*Infection, 
+                   random=list(Block=pdCompSymm(~Block-1), 
+                               Variety=pdIdent(~1)), 
+                   data = dataFus)
+test_nested$modelStruct$reStruct$Block
+test_nested$modelStruct$reStruct$Variety
+test_nested$coefficients$random
+```
+
+```{r}
+test_nested2 <- lme(Yield ~ Variety*Infection, 
+                   random=list(Block=pdCompSymm(~Block-1), 
+                               Variety=pdCompSymm(~Variety-1)), 
+                   data = dataFus)
+test_nested2$modelStruct$reStruct$Block
+test_nested2$modelStruct$reStruct$Variety
+test_nested2$coefficients$random
+```
+
+```{r}
+test_blocked <- lme(Yield ~ Variety*Infection, 
+            random=list(Block=pdBlocked(list(pdCompSymm(~Block-1), 
+                                             pdDiag(~Variety-1)))), 
+            data = dataFus)
+test_blocked$modelStruct$reStruct$Block
+test_blocked$coefficients$random
+```
