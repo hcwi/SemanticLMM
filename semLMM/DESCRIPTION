@@ -1,0 +1,19 @@
+Package: semLMM
+Type: Package
+Title: Semantics of linear mixed models
+Version: 0.0.0.9000
+Author: HCK
+Maintainer: HCK <hcwi@igr.poznan.pl>
+Description: Allows to build a semantic model of a linear mixed model (LMM) analysis.
+    Provides classes that represent the basic components of a linear mixed model. Allows to export 
+    the semantic model of LMM as RDF, and save to TriG files. For LMM data analysis done with lme4 
+    and nlme packages, parses the resulting model object and builds the semantic model. 
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    lmerTest,
+    lme4 (>= 1.1-19),
+    nlme (>= 3.1-137),
+    assertthat (>= 0.2.0),
+    emmeans
