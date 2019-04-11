@@ -1,0 +1,40 @@
+---
+title: "Linear mixed models to RDF"
+output: html_notebook
+---
+
+This is a demo instruction on how to produce a semantic model in the form of RDF triples from a result of statistical modelling with R packages: lme4 and nlme.
+The code used for graph generation supports a subset of modelling cases possible in these packages.
+
+# R lme4
+
+### Define a dataset
+
+```{r}
+y <- as.numeric(c(6, 4, 5, 6, 9, 3))
+Treatment <- as.factor(c("T1","T1","T2","T2","T3","T3"))
+Block <- as.factor(c("B1","B2","B1","B2","B1","B2"))
+
+df <- data.frame(y, Treatment, Block)
+print(df)
+
+```
+### Define a statistical model of type lmer (from lme4 package)
+```{r}
+require(lme4)
+mod <- lmer(y ~ 0 + Treatment + (1|Block), data = df)
+summary(mod)
+```
+
+### Build an annotated model from a statistical model
+```{r}
+getwd()
+source("../lmm_classes.R")
+modelFitting <- exportModelToRDF(mod)
+```
+
+### Serialize the annotated model as RDF triples, forming a semantic model of the lmer analysis
+```{r}
+modelFitting$saveTriples()
+```
+
