@@ -1,0 +1,18 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix stato: <http://purl.obolibrary.org/obo/stato.owl#> .
+@prefix obi: <http://purl.obolibrary.org/obo/obi.owl#> .
+@prefix iao: <http://purl.obolibrary.org/obo/iao.owl#> .
+@prefix bfo: <http://purl.obolibrary.org/obo/bfo.owl#> .
+@prefix ro: <http://purl.obolibrary.org/obo/ro.owl#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix xxx: <UNKNOWN_TO_BE_REPLACED#> .
+@prefix : <http://igr.poznan.pl/lmm/> .
+
+<graphs/graph_153364570280727> {
+<Process_modelFitting0_153364570730381> rdfs:label "modelFitting0" ;
+ rdf:type obo:STATO_0000218 ;
+ obo:OBI_0000293 <Lmm_153364570280727_153364570280801> ;
+ obo:BFO_0000051 <Process_paramEstimation_153364571747067>, <Process_testing_153364571848208>, <Process_varCompEstimation_153364620065460>, <Process_paramPrediction_153364620268376>, <Process_EmmCalculation_153364620470190>, <Process_confIntCalculation_153364620470349> .

@@ -1,0 +1,814 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix stato: <http://purl.obolibrary.org/obo/stato.owl#> .
+@prefix obi: <http://purl.obolibrary.org/obo/obi.owl#> .
+@prefix iao: <http://purl.obolibrary.org/obo/iao.owl#> .
+@prefix bfo: <http://purl.obolibrary.org/obo/bfo.owl#> .
+@prefix ro: <http://purl.obolibrary.org/obo/ro.owl#> .
+@prefix obo: <http://purl.obolibrary.org/obo/> .
+@prefix lmm: <http://igr.poznan.pl/lmm#> .
+
+<graphs/graph_Lmm_model_y1y2y3y4-0.Treatment_155407160138384> {
+<Process_modelFittingGenstat_155407160138466> rdfs:label "modelFittingGenstat" ;
+ rdfs:comment "Results from software Genstat 19.1 (VSNi Ltd.)" ;
+ rdf:type obo:STATO_0000218 ;
+ obo:OBI_0000293 <Lmm_model_y1y2y3y4-0.Treatment_155407160138384>, <Dataset_Dataset_example2_155407160137036> ;
+ obo:BFO_0000051 <Process_varCompEstimation_155407160138642>, <Process_paramPrediction_155407160140315>, <Process_paramEstimation_155407160141799>, <Process_testing_155407160141922> .
+<Lmm_model_y1y2y3y4-0.Treatment_155407160138384> rdfs:label "model_y1y2y3y4-0.Treatment"   ;
+ rdf:type obo:STATO_0000464 ;
+ obo:STATO_0000205 <ObjProperty_formula_155407160164433> ;
+ <http://purl.obolibrary.org/obo/stato.owl#is_model_for>  <ContinuousVariable_y1_155407160137288>, <ContinuousVariable_y2_155407160137452>, <ContinuousVariable_y3_155407160137615>, <ContinuousVariable_y4_155407160137756> ;
+ obo:BFO_0000051 <FixedModelTerm_multiY.Treatment_155407160138563> ;
+ obo:BFO_0000051 <RandomModelTerm_multiY.Block_155407160138722> ;
+ obo:BFO_0000051 <RandomModelTerm_multiY_155407160139328> ;
+ obo:STATO_0000205 <DesignMatrix_dm_155407160164280> .
+<Dataset_Dataset_example2_155407160137036> rdfs:label "Dataset_example2"  ;
+ rdf:value "
+Treatment,Block,y1,y2,y3,y4;
+T1,B1,6,2,6,4;
+T1,B2,4,3,4,6;
+T2,B1,5,5,7,2;
+T2,B2,6,1,3,4;
+T3,B1,9,7,6,8;
+T3,B2,3,8,7,9;" ;
+ rdf:type obo:IAO_0000100  ;
+ dc:creator "HCK" ;
+ obo:BFO_0000051 <CategoricalVariable_Treatment_155407160137897>, <CategoricalVariable_Block_155407160138156>, <ContinuousVariable_y1_155407160137288>, <ContinuousVariable_y2_155407160137452>, <ContinuousVariable_y3_155407160137615>, <ContinuousVariable_y4_155407160137756> .
+<Process_varCompEstimation_155407160138642> rdfs:label "varCompEstimation" ;
+ rdf:type obo:STATO_0000427 ;
+ rdf:type obo:STATO_0000119 ;
+ obo:OBI_0000299 <Estimate_phi_multiY_155407160138978>, <Estimate_sigma2_multiY.Block_155407160139158>, <Estimate_sigma2_multiY1_155407160139578>, <Estimate_sigma2_multiY2_155407160139753>, <Estimate_sigma2_multiY3_155407160139940>, <Estimate_sigma2_multiY4_155407160140117>  .
+<Process_paramPrediction_155407160140315> rdfs:label "paramPrediction" ;
+ rdf:type <http://purl.obolibrary.org/obo/stato.owl#best_linear_unbiased_predictor> ;
+ rdf:type obo:STATO_0000119 ;
+ obo:OBI_0000299 <Estimate_y1.B1_155407160140476>, <Estimate_y1.B2_155407160140659>, <Estimate_y2.B1_155407160140836>, <Estimate_y2.B2_155407160141010>, <Estimate_y3.B1_155407160141185>, <Estimate_y3.B2_155407160141360>, <Estimate_y4.B1_155407160141543>, <Estimate_y4.B2_155407160141716>  .
+<Process_paramEstimation_155407160141799> rdfs:label "paramEstimation" ;
+ rdf:type <http://purl.obolibrary.org/obo/stato.owl#best_linear_unbiaised_estimator> ;
+ rdf:type obo:STATO_0000119 ;
+ obo:OBI_0000299 <Estimate_y1.T1_155407160142106>, <Estimate_y1.T2_155407160142302>, <Estimate_y1.T3_155407160142485>, <Estimate_y2.T1_155407160142673>, <Estimate_y2.T2_155407160142855>, <Estimate_y2.T3_155407160143038>, <Estimate_y3.T1_155407160143220>, <Estimate_y3.T2_155407160143403>, <Estimate_y3.T3_155407160143586>, <Estimate_y4.T1_155407160143768>, <Estimate_y4.T2_155407160143958>, <Estimate_y4.T3_155407160144140> ;
+ obo:BFO_0000051 <Process_covEstimation_155407160144215> .
+<Process_testing_155407160141922> rdfs:label "testing" ;
+ rdf:type obo:OBI_0000673 ;
+ obo:BFO_0000051 <Process_dfCalculation_155407160141860>, <Process_testingTerm_multiY.Treatment_155407160163950> .
+<ObjProperty_formula_155407160164433> rdfs:label "formula"  ;
+ rdf:type lmm:formula  ;
+ rdf:value "VCOMPONENTS [FIXED=%_multiY.%_Treatment; CONSTANT=omit];
+random = %_multiY.%_Block + %_multiY.%_units;CONSTRAINTS=positive;
+VSTRUCTURE [TERMS=%_multiY.%_Treatment] FACTOR=%_multiY; MODEL=ar;
+VSTRUCTURE [TERMS=%_multiY.%_units] FACTOR=%_multiY; MODEL=diag;" ;
+ obo:IAO_0000219 <Lmm_model_y1y2y3y4-0.Treatment_155407160138384> .
+<ContinuousVariable_y1_155407160137288> rdfs:label "y1"  ;
+ rdf:type obo:OBI_0000751  ;
+ rdf:type obo:STATO_0000251 ;
+ obo:OBI_0001938 <ValueSpecification_y1=1_155407160137359> .
+<ContinuousVariable_y2_155407160137452> rdfs:label "y2"  ;
+ rdf:type obo:OBI_0000751  ;
+ rdf:type obo:STATO_0000251 ;
+ obo:OBI_0001938 <ValueSpecification_y2=1_155407160137524> .
+<ContinuousVariable_y3_155407160137615> rdfs:label "y3"  ;
+ rdf:type obo:OBI_0000751  ;
+ rdf:type obo:STATO_0000251 ;
+ obo:OBI_0001938 <ValueSpecification_y3=1_155407160137678> .
+<ContinuousVariable_y4_155407160137756> rdfs:label "y4"  ;
+ rdf:type obo:OBI_0000751  ;
+ rdf:type obo:STATO_0000251 ;
+ obo:OBI_0001938 <ValueSpecification_y4=1_155407160137818> .
+<FixedModelTerm_multiY.Treatment_155407160138563> rdfs:label "multiY:Treatment"   ;
+ <http://purl.obolibrary.org/obo/stato.owl#has_order>  "0" ;
+ obo:IAO_0000136 <CompoundVariable_multiY_155407160137220>, <CategoricalVariable_Treatment_155407160137897> ;
+ obo:STATO_0000001 <Parameter_y1.T1_155407160142000>, <Parameter_y1.T2_155407160142197>, <Parameter_y1.T3_155407160142382>, <Parameter_y2.T1_155407160142564>, <Parameter_y2.T2_155407160142752>, <Parameter_y2.T3_155407160142934>, <Parameter_y3.T1_155407160143118>, <Parameter_y3.T2_155407160143298>, <Parameter_y3.T3_155407160143483>, <Parameter_y4.T1_155407160143666>, <Parameter_y4.T2_155407160143852>, <Parameter_y4.T3_155407160144038> ;
+ rdf:type obo:STATO_0000468 .
+<RandomModelTerm_multiY.Block_155407160138722> rdfs:label "multiY:Block"   ;
+ <http://purl.obolibrary.org/obo/stato.owl#has_order>  "NA" ;
+ obo:IAO_0000136 <CompoundVariable_multiY_155407160137220>, <CategoricalVariable_Block_155407160138156> ;
+ obo:STATO_0000001 <Parameter_y1.B1_155407160140388>, <Parameter_y1.B2_155407160140567>, <Parameter_y2.B1_155407160140748>, <Parameter_y2.B2_155407160140924>, <Parameter_y3.B1_155407160141099>, <Parameter_y3.B2_155407160141273>, <Parameter_y4.B1_155407160141452>, <Parameter_y4.B2_155407160141630> ;
+ rdf:type obo:STATO_0000467 ;
+ obo:BFO_0000051 <CovarianceStructure_multiY_155407160138801>, <CovarianceStructure_Block_155407160139239> .
+<RandomModelTerm_multiY_155407160139328> rdfs:label "multiY"  ;
+ rdf:type obo:STATO_0000470  ;
+ <http://purl.obolibrary.org/obo/stato.owl#has_order>  "NA" ;
+ obo:IAO_0000136 <CompoundVariable_multiY_155407160137220>  ;
+ rdf:type obo:STATO_0000467 ;
+ obo:BFO_0000051 <CovarianceStructure_multiY_155407160139404>, <CovarianceStructure_Residual_155407160140200> .
+<DesignMatrix_dm_155407160164280> rdfs:label "dm"   ;
+ rdf:type obo:STATO_0000289 ;
+ dc:description "binary" ;
+ obo:IAO_0000219 <StudyDesign_sd_155407160164341> .
+<CategoricalVariable_Treatment_155407160137897> rdfs:label "Treatment"  ;
+ rdf:type obo:OBI_0000750  ;
+ rdf:type obo:STATO_0000252 ;
+ obo:OBI_0001938 <VariableLevel_T1_155407160137958>, <VariableLevel_T2_155407160138023>, <VariableLevel_T3_155407160138087> .
+<CategoricalVariable_Block_155407160138156> rdfs:label "Block"  ;
+ rdf:type obo:OBI_0000750  ;
+ rdf:type obo:STATO_0000252 ;
+ obo:OBI_0001938 <VariableLevel_B1_155407160138215>, <VariableLevel_B2_155407160138280> .
+<Estimate_phi_multiY_155407160138978> rdfs:label "phi_multiY"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "-0.995"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_phi_multiY_155407160138881> .
+<Estimate_sigma2_multiY.Block_155407160139158> rdfs:label "sigma2_multiY:Block"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "1.175"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_sigma2_multiY.Block_155407160139064> .
+<Estimate_sigma2_multiY1_155407160139578> rdfs:label "sigma2_multiY1"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "3.987"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_sigma2_multiY1_155407160139481> .
+<Estimate_sigma2_multiY2_155407160139753> rdfs:label "sigma2_multiY2"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "6.697"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_sigma2_multiY2_155407160139661> .
+<Estimate_sigma2_multiY3_155407160139940> rdfs:label "sigma2_multiY3"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "2.146"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_sigma2_multiY3_155407160139845> .
+<Estimate_sigma2_multiY4_155407160140117> rdfs:label "sigma2_multiY4"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "0.1677"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_sigma2_multiY4_155407160140024> .
+<Estimate_y1.B1_155407160140476> rdfs:label "y1:B1"   ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "6.276"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y1.B1_155407160140388> .
+<Estimate_y1.B2_155407160140659> rdfs:label "y1:B2"   ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "4.724"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y1.B2_155407160140567> .
+<Estimate_y2.B1_155407160140836> rdfs:label "y2:B1"   ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "3.557"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y2.B1_155407160140748> .
+<Estimate_y2.B2_155407160141010> rdfs:label "y2:B2"   ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "5.11"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y2.B2_155407160140924> .
+<Estimate_y3.B1_155407160141185> rdfs:label "y3:B1"   ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "6.283"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y3.B1_155407160141099> .
+<Estimate_y3.B2_155407160141360> rdfs:label "y3:B2"   ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "4.717"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y3.B2_155407160141273> .
+<Estimate_y4.B1_155407160141543> rdfs:label "y4:B1"   ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "4.712"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y4.B1_155407160141452> .
+<Estimate_y4.B2_155407160141716> rdfs:label "y4:B2"   ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "6.288"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y4.B2_155407160141630> .
+<Estimate_y1.T1_155407160142106> rdfs:label "y1:T1"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "5"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y1.T1_155407160142000> .
+<Estimate_y1.T2_155407160142302> rdfs:label "y1:T2"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "5.5"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y1.T2_155407160142197> .
+<Estimate_y1.T3_155407160142485> rdfs:label "y1:T3"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "6"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y1.T3_155407160142382> .
+<Estimate_y2.T1_155407160142673> rdfs:label "y2:T1"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "2.5"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y2.T1_155407160142564> .
+<Estimate_y2.T2_155407160142855> rdfs:label "y2:T2"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "3"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y2.T2_155407160142752> .
+<Estimate_y2.T3_155407160143038> rdfs:label "y2:T3"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "7.5"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y2.T3_155407160142934> .
+<Estimate_y3.T1_155407160143220> rdfs:label "y3:T1"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "5"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y3.T1_155407160143118> .
+<Estimate_y3.T2_155407160143403> rdfs:label "y3:T2"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "5"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y3.T2_155407160143298> .
+<Estimate_y3.T3_155407160143586> rdfs:label "y3:T3"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "6.5"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y3.T3_155407160143483> .
+<Estimate_y4.T1_155407160143768> rdfs:label "y4:T1"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "5"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y4.T1_155407160143666> .
+<Estimate_y4.T2_155407160143958> rdfs:label "y4:T2"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "3"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y4.T2_155407160143852> .
+<Estimate_y4.T3_155407160144140> rdfs:label "y4:T3"  ;
+ rdf:type obo:STATO_0000144  ;
+ rdf:type obo:STATO_0000144 ;
+ rdf:value "8.5"^^xsd:float ;
+ obo:STATO_0000403 <Parameter_y4.T3_155407160144038> .
+<Process_covEstimation_155407160144215> rdfs:label "covEstimation" ;
+ rdf:type obo:STATO_0000119 ;
+ obo:OBI_0000299 <Statistic_se_y1.T1_155407160144543>, <Statistic_covariance_y1.T2_y1.T1_155407160144865>, <Statistic_se_y1.T2_155407160145061>, <Statistic_covariance_y1.T3_y1.T1_155407160145373>, <Statistic_covariance_y1.T3_y1.T2_155407160145568>, <Statistic_se_y1.T3_155407160145766>, <Statistic_covariance_y2.T1_y1.T1_155407160146083>, <Statistic_covariance_y2.T1_y1.T2_155407160146286>, <Statistic_covariance_y2.T1_y1.T3_155407160146487>, <Statistic_se_y2.T1_155407160146690>, <Statistic_covariance_y2.T2_y1.T1_155407160147030>, <Statistic_covariance_y2.T2_y1.T2_155407160147229>, <Statistic_covariance_y2.T2_y1.T3_155407160147430>, <Statistic_covariance_y2.T2_y2.T1_155407160147632>, <Statistic_se_y2.T2_155407160147849>, <Statistic_covariance_y2.T3_y1.T1_155407160148176>, <Statistic_covariance_y2.T3_y1.T2_155407160148384>, <Statistic_covariance_y2.T3_y1.T3_155407160148591>, <Statistic_covariance_y2.T3_y2.T1_155407160148872>, <Statistic_covariance_y2.T3_y2.T2_155407160149119>, <Statistic_se_y2.T3_155407160149458>, <Statistic_covariance_y3.T1_y1.T1_155407160149846>, <Statistic_covariance_y3.T1_y1.T2_155407160150064>, <Statistic_covariance_y3.T1_y1.T3_155407160150301>, <Statistic_covariance_y3.T1_y2.T1_155407160151160>, <Statistic_covariance_y3.T1_y2.T2_155407160151376>, <Statistic_covariance_y3.T1_y2.T3_155407160151589>, <Statistic_se_y3.T1_155407160151828>, <Statistic_covariance_y3.T2_y1.T1_155407160152266>, <Statistic_covariance_y3.T2_y1.T2_155407160152584>, <Statistic_covariance_y3.T2_y1.T3_155407160152788>, <Statistic_covariance_y3.T2_y2.T1_155407160153001>, <Statistic_covariance_y3.T2_y2.T2_155407160153215>, <Statistic_covariance_y3.T2_y2.T3_155407160153433>, <Statistic_covariance_y3.T2_y3.T1_155407160153673>, <Statistic_se_y3.T2_155407160153903>, <Statistic_covariance_y3.T3_y1.T1_155407160154252>, <Statistic_covariance_y3.T3_y1.T2_155407160154453>, <Statistic_covariance_y3.T3_y1.T3_155407160154653>, <Statistic_covariance_y3.T3_y2.T1_155407160154856>, <Statistic_covariance_y3.T3_y2.T2_155407160155066>, <Statistic_covariance_y3.T3_y2.T3_155407160155277>, <Statistic_covariance_y3.T3_y3.T1_155407160155499>, <Statistic_covariance_y3.T3_y3.T2_155407160155721>, <Statistic_se_y3.T3_155407160155949>, <Statistic_covariance_y4.T1_y1.T1_155407160156290>, <Statistic_covariance_y4.T1_y1.T2_155407160156497>, <Statistic_covariance_y4.T1_y1.T3_155407160156697>, <Statistic_covariance_y4.T1_y2.T1_155407160156902>, <Statistic_covariance_y4.T1_y2.T2_155407160157115>, <Statistic_covariance_y4.T1_y2.T3_155407160157327>, <Statistic_covariance_y4.T1_y3.T1_155407160157541>, <Statistic_covariance_y4.T1_y3.T2_155407160157757>, <Statistic_covariance_y4.T1_y3.T3_155407160157978>, <Statistic_se_y4.T1_155407160158200>, <Statistic_covariance_y4.T2_y1.T1_155407160158554>, <Statistic_covariance_y4.T2_y1.T2_155407160158758>, <Statistic_covariance_y4.T2_y1.T3_155407160158961>, <Statistic_covariance_y4.T2_y2.T1_155407160159167>, <Statistic_covariance_y4.T2_y2.T2_155407160159380>, <Statistic_covariance_y4.T2_y2.T3_155407160159592>, <Statistic_covariance_y4.T2_y3.T1_155407160159812>, <Statistic_covariance_y4.T2_y3.T2_155407160160042>, <Statistic_covariance_y4.T2_y3.T3_155407160160264>, <Statistic_covariance_y4.T2_y4.T1_155407160160492>, <Statistic_se_y4.T2_155407160160729>, <Statistic_covariance_y4.T3_y1.T1_155407160161082>, <Statistic_covariance_y4.T3_y1.T2_155407160161288>, <Statistic_covariance_y4.T3_y1.T3_155407160161490>, <Statistic_covariance_y4.T3_y2.T1_155407160161693>, <Statistic_covariance_y4.T3_y2.T2_155407160161900>, <Statistic_covariance_y4.T3_y2.T3_155407160162109>, <Statistic_covariance_y4.T3_y3.T1_155407160162326>, <Statistic_covariance_y4.T3_y3.T2_155407160162549>, <Statistic_covariance_y4.T3_y3.T3_155407160162778>, <Statistic_covariance_y4.T3_y4.T1_155407160163003>, <Statistic_covariance_y4.T3_y4.T2_155407160163237>, <Statistic_se_y4.T3_155407160163471>  .
+<Process_dfCalculation_155407160141860> rdfs:label "dfCalculation" ;
+ rdf:type obo:STATO_0000472 ;
+ obo:BFO_0000051 <Process_dfCalculation_multiY.Treatment_155407160163880> .
+<Process_testingTerm_multiY.Treatment_155407160163950> rdfs:label "testingTerm_multiY:Treatment" ;
+ rdf:type obo:STATO_0000559 ;
+ rdf:type obo:STATO_0000558 ;
+ rdf:type obo:OBI_0000673 ;
+ obo:OBI_0000293 <Statistic_df_multiY.Treatment_155407160163738>, <Hypothesis_multiY.Treatment_155407160163564>, <Statistic_Wald-stat_multiY.Treatment_155407160163667> ;
+ obo:OBI_0000299 <Statistic_pvalue_multiY.Treatment_155407160163807>  .
+<ValueSpecification_y1=1_155407160137359> rdfs:label "y1=1"   ;
+ rdf:type obo:OBI_0001933 ;
+ rdf:value "1"^^xsd:float .
+<ValueSpecification_y2=1_155407160137524> rdfs:label "y2=1"   ;
+ rdf:type obo:OBI_0001933 ;
+ rdf:value "1"^^xsd:float .
+<ValueSpecification_y3=1_155407160137678> rdfs:label "y3=1"   ;
+ rdf:type obo:OBI_0001933 ;
+ rdf:value "1"^^xsd:float .
+<ValueSpecification_y4=1_155407160137818> rdfs:label "y4=1"   ;
+ rdf:type obo:OBI_0001933 ;
+ rdf:value "1"^^xsd:float .
+<CompoundVariable_multiY_155407160137220> rdfs:label "multiY"   ;
+ rdf:type obo:STATO_0000251 ;
+ rdf:type lmm:compound_variable ;
+ obo:BFO_0000051 <ContinuousVariable_y1_155407160137288>, <ContinuousVariable_y2_155407160137452>, <ContinuousVariable_y3_155407160137615>, <ContinuousVariable_y4_155407160137756> .
+<Parameter_y1.T1_155407160142000> rdfs:label "y1:T1"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y1_155407160137288>, <VariableLevel_T1_155407160137958>   .
+<Parameter_y1.T2_155407160142197> rdfs:label "y1:T2"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y1_155407160137288>, <VariableLevel_T2_155407160138023>   .
+<Parameter_y1.T3_155407160142382> rdfs:label "y1:T3"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y1_155407160137288>, <VariableLevel_T3_155407160138087>   .
+<Parameter_y2.T1_155407160142564> rdfs:label "y2:T1"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y2_155407160137452>, <VariableLevel_T1_155407160137958>   .
+<Parameter_y2.T2_155407160142752> rdfs:label "y2:T2"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y2_155407160137452>, <VariableLevel_T2_155407160138023>   .
+<Parameter_y2.T3_155407160142934> rdfs:label "y2:T3"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y2_155407160137452>, <VariableLevel_T3_155407160138087>   .
+<Parameter_y3.T1_155407160143118> rdfs:label "y3:T1"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y3_155407160137615>, <VariableLevel_T1_155407160137958>   .
+<Parameter_y3.T2_155407160143298> rdfs:label "y3:T2"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y3_155407160137615>, <VariableLevel_T2_155407160138023>   .
+<Parameter_y3.T3_155407160143483> rdfs:label "y3:T3"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y3_155407160137615>, <VariableLevel_T3_155407160138087>   .
+<Parameter_y4.T1_155407160143666> rdfs:label "y4:T1"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y4_155407160137756>, <VariableLevel_T1_155407160137958>   .
+<Parameter_y4.T2_155407160143852> rdfs:label "y4:T2"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y4_155407160137756>, <VariableLevel_T2_155407160138023>   .
+<Parameter_y4.T3_155407160144038> rdfs:label "y4:T3"  ;
+ rdf:type lmm:fixed_effect ;
+ rdf:type lmm:marginal_mean  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y4_155407160137756>, <VariableLevel_T3_155407160138087>   .
+<Parameter_y1.B1_155407160140388> rdfs:label "y1:B1"  ;
+ rdf:type lmm:random_effect  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y1_155407160137288>, <VariableLevel_B1_155407160138215>  ;
+ rdf:type lmm:random_effect  .
+<Parameter_y1.B2_155407160140567> rdfs:label "y1:B2"  ;
+ rdf:type lmm:random_effect  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y1_155407160137288>, <VariableLevel_B2_155407160138280>  ;
+ rdf:type lmm:random_effect  .
+<Parameter_y2.B1_155407160140748> rdfs:label "y2:B1"  ;
+ rdf:type lmm:random_effect  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y2_155407160137452>, <VariableLevel_B1_155407160138215>  ;
+ rdf:type lmm:random_effect  .
+<Parameter_y2.B2_155407160140924> rdfs:label "y2:B2"  ;
+ rdf:type lmm:random_effect  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y2_155407160137452>, <VariableLevel_B2_155407160138280>  ;
+ rdf:type lmm:random_effect  .
+<Parameter_y3.B1_155407160141099> rdfs:label "y3:B1"  ;
+ rdf:type lmm:random_effect  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y3_155407160137615>, <VariableLevel_B1_155407160138215>  ;
+ rdf:type lmm:random_effect  .
+<Parameter_y3.B2_155407160141273> rdfs:label "y3:B2"  ;
+ rdf:type lmm:random_effect  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y3_155407160137615>, <VariableLevel_B2_155407160138280>  ;
+ rdf:type lmm:random_effect  .
+<Parameter_y4.B1_155407160141452> rdfs:label "y4:B1"  ;
+ rdf:type lmm:random_effect  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y4_155407160137756>, <VariableLevel_B1_155407160138215>  ;
+ rdf:type lmm:random_effect  .
+<Parameter_y4.B2_155407160141630> rdfs:label "y4:B2"  ;
+ rdf:type lmm:random_effect  ;
+ rdf:type obo:STATO_0000034 ;
+ obo:IAO_0000136 <ContinuousVariable_y4_155407160137756>, <VariableLevel_B2_155407160138280>  ;
+ rdf:type lmm:random_effect  .
+<CovarianceStructure_multiY_155407160138801> rdfs:label "multiY"   ;
+ rdf:type obo:STATO_0000346 ;
+ rdf:type obo:STATO_0000365 ;
+ obo:BFO_0000051 <Parameter_phi_multiY_155407160138881>, <Parameter_sigma2_multiY.Block_155407160139064> ;
+ obo:IAO_0000136 <CompoundVariable_multiY_155407160137220> .
+<CovarianceStructure_Block_155407160139239> rdfs:label "Block"   ;
+ rdf:type obo:STATO_0000346 ;
+ rdf:type obo:STATO_0000588 ;
+ obo:BFO_0000051 <Parameter_sigma2_multiY.Block_155407160139064> ;
+ obo:IAO_0000136 <CategoricalVariable_Block_155407160138156> .
+<CovarianceStructure_multiY_155407160139404> rdfs:label "multiY"   ;
+ rdf:type obo:STATO_0000346 ;
+ rdf:type lmm:diagonal_covariance_structure ;
+ obo:BFO_0000051 <Parameter_sigma2_multiY1_155407160139481>, <Parameter_sigma2_multiY2_155407160139661>, <Parameter_sigma2_multiY3_155407160139845>, <Parameter_sigma2_multiY4_155407160140024> ;
+ obo:IAO_0000136 <CompoundVariable_multiY_155407160137220> .
+<CovarianceStructure_Residual_155407160140200> rdfs:label "Residual"   ;
+ rdf:type obo:STATO_0000346 ;
+ rdf:type obo:STATO_0000588 ;
+ obo:BFO_0000051 <Parameter_sigma2_multiY1_155407160139481>, <Parameter_sigma2_multiY2_155407160139661>, <Parameter_sigma2_multiY3_155407160139845>, <Parameter_sigma2_multiY4_155407160140024>  .
+<StudyDesign_sd_155407160164341> rdfs:label "sd"   ;
+ rdf:type obo:OBI_0500000 ;
+ obo:STATO_0000001 <CompoundVariable_multiY_155407160137220>, <CategoricalVariable_Treatment_155407160137897>, <CategoricalVariable_Block_155407160138156>, <ContinuousVariable_y1_155407160137288>, <ContinuousVariable_y2_155407160137452>, <ContinuousVariable_y3_155407160137615>, <ContinuousVariable_y4_155407160137756> .
+<VariableLevel_T1_155407160137958> rdfs:label "T1"   ;
+ rdf:type obo:OBI_0001933  ;
+ rdf:type obo:STATO_0000265 ;
+ rdf:type obo:OBI_0001930 .
+<VariableLevel_T2_155407160138023> rdfs:label "T2"   ;
+ rdf:type obo:OBI_0001933  ;
+ rdf:type obo:STATO_0000265 ;
+ rdf:type obo:OBI_0001930 .
+<VariableLevel_T3_155407160138087> rdfs:label "T3"   ;
+ rdf:type obo:OBI_0001933  ;
+ rdf:type obo:STATO_0000265 ;
+ rdf:type obo:OBI_0001930 .
+<VariableLevel_B1_155407160138215> rdfs:label "B1"   ;
+ rdf:type obo:OBI_0001933  ;
+ rdf:type obo:STATO_0000265 ;
+ rdf:type obo:OBI_0001930 .
+<VariableLevel_B2_155407160138280> rdfs:label "B2"   ;
+ rdf:type obo:OBI_0001933  ;
+ rdf:type obo:STATO_0000265 ;
+ rdf:type obo:OBI_0001930 .
+<Parameter_phi_multiY_155407160138881> rdfs:label "phi_multiY"  ;
+ rdf:type obo:STATO_0000142 ;
+ rdf:type lmm:variance_parameter  ;
+ rdf:type obo:STATO_0000034    .
+<Statistic_se_sigma2_multiY.Block_155407160166135> rdfs:label "se_sigma2_multiY:Block"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.65"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_sigma2_multiY.Block_155407160139158>  .
+<Parameter_sigma2_multiY.Block_155407160139064> rdfs:label "sigma2_multiY:Block"  ;
+ rdf:type obo:STATO_0000113 ;
+ rdf:type lmm:variance_parameter ;
+ rdf:type obo:STATO_0000034 ;
+ rdf:type lmm:variance_parameter  ;
+ rdf:type obo:STATO_0000034    .
+<Statistic_se_sigma2_multiY1_155407160166304> rdfs:label "se_sigma2_multiY1"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "3.1"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_sigma2_multiY1_155407160139578>  .
+<Parameter_sigma2_multiY1_155407160139481> rdfs:label "sigma2_multiY1"  ;
+ rdf:type obo:STATO_0000113 ;
+ rdf:type lmm:variance_parameter ;
+ rdf:type obo:STATO_0000034 ;
+ rdf:type lmm:variance_parameter  ;
+ rdf:type obo:STATO_0000034    .
+<Statistic_se_sigma2_multiY2_155407160166476> rdfs:label "se_sigma2_multiY2"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "6.226"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_sigma2_multiY2_155407160139753>  .
+<Parameter_sigma2_multiY2_155407160139661> rdfs:label "sigma2_multiY2"  ;
+ rdf:type obo:STATO_0000113 ;
+ rdf:type lmm:variance_parameter ;
+ rdf:type obo:STATO_0000034 ;
+ rdf:type lmm:variance_parameter  ;
+ rdf:type obo:STATO_0000034    .
+<Statistic_se_sigma2_multiY3_155407160166632> rdfs:label "se_sigma2_multiY3"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.764"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_sigma2_multiY3_155407160139940>  .
+<Parameter_sigma2_multiY3_155407160139845> rdfs:label "sigma2_multiY3"  ;
+ rdf:type obo:STATO_0000113 ;
+ rdf:type lmm:variance_parameter ;
+ rdf:type obo:STATO_0000034 ;
+ rdf:type lmm:variance_parameter  ;
+ rdf:type obo:STATO_0000034    .
+<Statistic_se_sigma2_multiY4_155407160166801> rdfs:label "se_sigma2_multiY4"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.168"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_sigma2_multiY4_155407160140117>  .
+<Parameter_sigma2_multiY4_155407160140024> rdfs:label "sigma2_multiY4"  ;
+ rdf:type obo:STATO_0000113 ;
+ rdf:type lmm:variance_parameter ;
+ rdf:type obo:STATO_0000034 ;
+ rdf:type lmm:variance_parameter  ;
+ rdf:type obo:STATO_0000034    .
+<Statistic_se_y1.B1_155407160166963> rdfs:label "se_y1:B1"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.8378"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y1.B1_155407160140476>  .
+<Statistic_se_y1.B2_155407160167122> rdfs:label "se_y1:B2"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.8378"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y1.B2_155407160140659>  .
+<Statistic_se_y2.B1_155407160167277> rdfs:label "se_y2:B1"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.0718"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.B1_155407160140836>  .
+<Statistic_se_y2.B2_155407160167438> rdfs:label "se_y2:B2"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.0718"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.B2_155407160141010>  .
+<Statistic_se_y3.B1_155407160168226> rdfs:label "se_y3:B1"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.6207"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.B1_155407160141185>  .
+<Statistic_se_y3.B2_155407160168404> rdfs:label "se_y3:B2"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.6207"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.B2_155407160141360>  .
+<Statistic_se_y4.B1_155407160168560> rdfs:label "se_y4:B1"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.227"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.B1_155407160141543>  .
+<Statistic_se_y4.B2_155407160168716> rdfs:label "se_y4:B2"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.227"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.B2_155407160141716>  .
+<Statistic_se_y1.T1_155407160144543> rdfs:label "se_y1:T1"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.60651797375566"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y1.T2_y1.T1_155407160144865> rdfs:label "covariance_y1:T2_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y1.T2_155407160142302>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_se_y1.T2_155407160145061> rdfs:label "se_y1:T2"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.60651797375566"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y1.T3_y1.T1_155407160145373> rdfs:label "covariance_y1:T3_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y1.T3_155407160142485>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y1.T3_y1.T2_155407160145568> rdfs:label "covariance_y1:T3_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y1.T3_155407160142485>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_se_y1.T3_155407160145766> rdfs:label "se_y1:T3"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.60651797375566"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y1.T3_155407160142485>  .
+<Statistic_covariance_y2.T1_y1.T1_155407160146083> rdfs:label "covariance_y2:T1_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T1_155407160142673>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y2.T1_y1.T2_155407160146286> rdfs:label "covariance_y2:T1_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T1_155407160142673>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y2.T1_y1.T3_155407160146487> rdfs:label "covariance_y2:T1_y1:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T1_155407160142673>, <Estimate_y1.T3_155407160142485>  .
+<Statistic_se_y2.T1_155407160146690> rdfs:label "se_y2:T1"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.98391028022943"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T1_155407160142673>  .
+<Statistic_covariance_y2.T2_y1.T1_155407160147030> rdfs:label "covariance_y2:T2_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T2_155407160142855>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y2.T2_y1.T2_155407160147229> rdfs:label "covariance_y2:T2_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T2_155407160142855>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y2.T2_y1.T3_155407160147430> rdfs:label "covariance_y2:T2_y1:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T2_155407160142855>, <Estimate_y1.T3_155407160142485>  .
+<Statistic_covariance_y2.T2_y2.T1_155407160147632> rdfs:label "covariance_y2:T2_y2:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T2_155407160142855>, <Estimate_y2.T1_155407160142673>  .
+<Statistic_se_y2.T2_155407160147849> rdfs:label "se_y2:T2"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.98391028022943"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T2_155407160142855>  .
+<Statistic_covariance_y2.T3_y1.T1_155407160148176> rdfs:label "covariance_y2:T3_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T3_155407160143038>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y2.T3_y1.T2_155407160148384> rdfs:label "covariance_y2:T3_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T3_155407160143038>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y2.T3_y1.T3_155407160148591> rdfs:label "covariance_y2:T3_y1:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T3_155407160143038>, <Estimate_y1.T3_155407160142485>  .
+<Statistic_covariance_y2.T3_y2.T1_155407160148872> rdfs:label "covariance_y2:T3_y2:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T3_155407160143038>, <Estimate_y2.T1_155407160142673>  .
+<Statistic_covariance_y2.T3_y2.T2_155407160149119> rdfs:label "covariance_y2:T3_y2:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T3_155407160143038>, <Estimate_y2.T2_155407160142855>  .
+<Statistic_se_y2.T3_155407160149458> rdfs:label "se_y2:T3"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.98391028022943"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y2.T3_155407160143038>  .
+<Statistic_covariance_y3.T1_y1.T1_155407160149846> rdfs:label "covariance_y3:T1_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T1_155407160143220>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y3.T1_y1.T2_155407160150064> rdfs:label "covariance_y3:T1_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T1_155407160143220>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y3.T1_y1.T3_155407160150301> rdfs:label "covariance_y3:T1_y1:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T1_155407160143220>, <Estimate_y1.T3_155407160142485>  .
+<Statistic_covariance_y3.T1_y2.T1_155407160151160> rdfs:label "covariance_y3:T1_y2:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T1_155407160143220>, <Estimate_y2.T1_155407160142673>  .
+<Statistic_covariance_y3.T1_y2.T2_155407160151376> rdfs:label "covariance_y3:T1_y2:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T1_155407160143220>, <Estimate_y2.T2_155407160142855>  .
+<Statistic_covariance_y3.T1_y2.T3_155407160151589> rdfs:label "covariance_y3:T1_y2:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T1_155407160143220>, <Estimate_y2.T3_155407160143038>  .
+<Statistic_se_y3.T1_155407160151828> rdfs:label "se_y3:T1"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.28844867961436"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T1_155407160143220>  .
+<Statistic_covariance_y3.T2_y1.T1_155407160152266> rdfs:label "covariance_y3:T2_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T2_155407160143403>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y3.T2_y1.T2_155407160152584> rdfs:label "covariance_y3:T2_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T2_155407160143403>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y3.T2_y1.T3_155407160152788> rdfs:label "covariance_y3:T2_y1:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T2_155407160143403>, <Estimate_y1.T3_155407160142485>  .
+<Statistic_covariance_y3.T2_y2.T1_155407160153001> rdfs:label "covariance_y3:T2_y2:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T2_155407160143403>, <Estimate_y2.T1_155407160142673>  .
+<Statistic_covariance_y3.T2_y2.T2_155407160153215> rdfs:label "covariance_y3:T2_y2:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T2_155407160143403>, <Estimate_y2.T2_155407160142855>  .
+<Statistic_covariance_y3.T2_y2.T3_155407160153433> rdfs:label "covariance_y3:T2_y2:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T2_155407160143403>, <Estimate_y2.T3_155407160143038>  .
+<Statistic_covariance_y3.T2_y3.T1_155407160153673> rdfs:label "covariance_y3:T2_y3:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T2_155407160143403>, <Estimate_y3.T1_155407160143220>  .
+<Statistic_se_y3.T2_155407160153903> rdfs:label "se_y3:T2"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.28844867961436"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T2_155407160143403>  .
+<Statistic_covariance_y3.T3_y1.T1_155407160154252> rdfs:label "covariance_y3:T3_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T3_155407160143586>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y3.T3_y1.T2_155407160154453> rdfs:label "covariance_y3:T3_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T3_155407160143586>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y3.T3_y1.T3_155407160154653> rdfs:label "covariance_y3:T3_y1:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T3_155407160143586>, <Estimate_y1.T3_155407160142485>  .
+<Statistic_covariance_y3.T3_y2.T1_155407160154856> rdfs:label "covariance_y3:T3_y2:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T3_155407160143586>, <Estimate_y2.T1_155407160142673>  .
+<Statistic_covariance_y3.T3_y2.T2_155407160155066> rdfs:label "covariance_y3:T3_y2:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T3_155407160143586>, <Estimate_y2.T2_155407160142855>  .
+<Statistic_covariance_y3.T3_y2.T3_155407160155277> rdfs:label "covariance_y3:T3_y2:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T3_155407160143586>, <Estimate_y2.T3_155407160143038>  .
+<Statistic_covariance_y3.T3_y3.T1_155407160155499> rdfs:label "covariance_y3:T3_y3:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T3_155407160143586>, <Estimate_y3.T1_155407160143220>  .
+<Statistic_covariance_y3.T3_y3.T2_155407160155721> rdfs:label "covariance_y3:T3_y3:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T3_155407160143586>, <Estimate_y3.T2_155407160143403>  .
+<Statistic_se_y3.T3_155407160155949> rdfs:label "se_y3:T3"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "1.28844867961436"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y3.T3_155407160143586>  .
+<Statistic_covariance_y4.T1_y1.T1_155407160156290> rdfs:label "covariance_y4:T1_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5785"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y4.T1_y1.T2_155407160156497> rdfs:label "covariance_y4:T1_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5785"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y4.T1_y1.T3_155407160156697> rdfs:label "covariance_y4:T1_y1:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5785"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>, <Estimate_y1.T3_155407160142485>  .
+<Statistic_covariance_y4.T1_y2.T1_155407160156902> rdfs:label "covariance_y4:T1_y2:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>, <Estimate_y2.T1_155407160142673>  .
+<Statistic_covariance_y4.T1_y2.T2_155407160157115> rdfs:label "covariance_y4:T1_y2:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>, <Estimate_y2.T2_155407160142855>  .
+<Statistic_covariance_y4.T1_y2.T3_155407160157327> rdfs:label "covariance_y4:T1_y2:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>, <Estimate_y2.T3_155407160143038>  .
+<Statistic_covariance_y4.T1_y3.T1_155407160157541> rdfs:label "covariance_y4:T1_y3:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>, <Estimate_y3.T1_155407160143220>  .
+<Statistic_covariance_y4.T1_y3.T2_155407160157757> rdfs:label "covariance_y4:T1_y3:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>, <Estimate_y3.T2_155407160143403>  .
+<Statistic_covariance_y4.T1_y3.T3_155407160157978> rdfs:label "covariance_y4:T1_y3:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>, <Estimate_y3.T3_155407160143586>  .
+<Statistic_se_y4.T1_155407160158200> rdfs:label "se_y4:T1"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.819206933564408"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T1_155407160143768>  .
+<Statistic_covariance_y4.T2_y1.T1_155407160158554> rdfs:label "covariance_y4:T2_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5785"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y4.T2_y1.T2_155407160158758> rdfs:label "covariance_y4:T2_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5785"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y4.T2_y1.T3_155407160158961> rdfs:label "covariance_y4:T2_y1:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5785"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y1.T3_155407160142485>  .
+<Statistic_covariance_y4.T2_y2.T1_155407160159167> rdfs:label "covariance_y4:T2_y2:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y2.T1_155407160142673>  .
+<Statistic_covariance_y4.T2_y2.T2_155407160159380> rdfs:label "covariance_y4:T2_y2:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y2.T2_155407160142855>  .
+<Statistic_covariance_y4.T2_y2.T3_155407160159592> rdfs:label "covariance_y4:T2_y2:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y2.T3_155407160143038>  .
+<Statistic_covariance_y4.T2_y3.T1_155407160159812> rdfs:label "covariance_y4:T2_y3:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y3.T1_155407160143220>  .
+<Statistic_covariance_y4.T2_y3.T2_155407160160042> rdfs:label "covariance_y4:T2_y3:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y3.T2_155407160143403>  .
+<Statistic_covariance_y4.T2_y3.T3_155407160160264> rdfs:label "covariance_y4:T2_y3:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y3.T3_155407160143586>  .
+<Statistic_covariance_y4.T2_y4.T1_155407160160492> rdfs:label "covariance_y4:T2_y4:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>, <Estimate_y4.T1_155407160143768>  .
+<Statistic_se_y4.T2_155407160160729> rdfs:label "se_y4:T2"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.819206933564408"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T2_155407160143958>  .
+<Statistic_covariance_y4.T3_y1.T1_155407160161082> rdfs:label "covariance_y4:T3_y1:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5785"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y1.T1_155407160142106>  .
+<Statistic_covariance_y4.T3_y1.T2_155407160161288> rdfs:label "covariance_y4:T3_y1:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5785"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y1.T2_155407160142302>  .
+<Statistic_covariance_y4.T3_y1.T3_155407160161490> rdfs:label "covariance_y4:T3_y1:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5785"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y1.T3_155407160142485>  .
+<Statistic_covariance_y4.T3_y2.T1_155407160161693> rdfs:label "covariance_y4:T3_y2:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y2.T1_155407160142673>  .
+<Statistic_covariance_y4.T3_y2.T2_155407160161900> rdfs:label "covariance_y4:T3_y2:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y2.T2_155407160142855>  .
+<Statistic_covariance_y4.T3_y2.T3_155407160162109> rdfs:label "covariance_y4:T3_y2:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5814"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y2.T3_155407160143038>  .
+<Statistic_covariance_y4.T3_y3.T1_155407160162326> rdfs:label "covariance_y4:T3_y3:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y3.T1_155407160143220>  .
+<Statistic_covariance_y4.T3_y3.T2_155407160162549> rdfs:label "covariance_y4:T3_y3:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y3.T2_155407160143403>  .
+<Statistic_covariance_y4.T3_y3.T3_155407160162778> rdfs:label "covariance_y4:T3_y3:T3"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "-0.5843"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y3.T3_155407160143586>  .
+<Statistic_covariance_y4.T3_y4.T1_155407160163003> rdfs:label "covariance_y4:T3_y4:T1"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y4.T1_155407160143768>  .
+<Statistic_covariance_y4.T3_y4.T2_155407160163237> rdfs:label "covariance_y4:T3_y4:T2"  ;
+ rdf:type obo:STATO_0000301  ;
+ rdf:value "0.5873"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>, <Estimate_y4.T2_155407160143958>  .
+<Statistic_se_y4.T3_155407160163471> rdfs:label "se_y4:T3"  ;
+ rdf:type obo:STATO_0000562  ;
+ rdf:value "0.819206933564408"^^xsd:float ;
+ obo:IAO_0000136 <Estimate_y4.T3_155407160144140>  .
+<Process_dfCalculation_multiY.Treatment_155407160163880> rdfs:label "dfCalculation_multiY:Treatment" ;
+ rdf:type obo:STATO_0000472 ;
+ obo:OBI_0000299 <Statistic_df_multiY.Treatment_155407160163738>  .
+<Statistic_df_multiY.Treatment_155407160163738> rdfs:label "df_multiY:Treatment"  ;
+ rdf:type obo:STATO_0000069  ;
+ rdf:value "12"^^xsd:float   .
+<Hypothesis_multiY.Treatment_155407160163564> rdfs:label "multiY:Treatment"   ;
+ rdf:type obo:STATO_0000065 ;
+ obo:IAO_0000136 <FixedModelTerm_multiY.Treatment_155407160138563> .
+<Statistic_Wald-stat_multiY.Treatment_155407160163667> rdfs:label "Wald-stat_multiY:Treatment"  ;
+ rdf:type obo:STATO_0000584  ;
+ rdf:value "671.31"^^xsd:float   .
+<Statistic_pvalue_multiY.Treatment_155407160163807> rdfs:label "pvalue_multiY:Treatment"  ;
+ rdf:type obo:OBI_0000175  ;
+ rdf:value "0.001"^^xsd:float ;
+ obo:IAO_0000136 <Hypothesis_multiY.Treatment_155407160163564>  .
+}
