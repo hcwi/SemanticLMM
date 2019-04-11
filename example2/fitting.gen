@@ -1,0 +1,39 @@
+job
+"przyklad do papieru LMM dla przykladu 2"
+import 'dane_wielo.xlsx';is=names
+print names[]
+
+FACTOR [LEVELS=6] %_units;!((1...6)4)
+FACTOR [LEVELS=4; LABELS=!t('y[1]','y[2]','y[3]','y[4]')] %_variable;!(6(1...4))
+APPEND [NEW=_Data] y[1],y[2],y[3],y[4]
+APPEND [NEW=%_Fact] 4(Fact)
+APPEND [NEW=%_Block] 4(Block)
+
+"vec(dane) czyli dane do lmm" 
+print _Data,%_variable,%_Fact,%_Block
+
+"Fit Multivariate Linear Mixed Model"
+VCOMPONENTS [FIXED=%_Fact.%_variable; CONSTANT=omit] \
+  random = %_Block.%_variable + %_units.%_variable;CONSTRAINTS=positive
+
+"struktura dla bloków"
+VSTRUCTURE [TERMS=%_Block.%_variable] FACTOR=%_variable; MODEL="diag"ar
+
+"dla b³êdu unstructured nie chodzi bo ma³o obserwacji, banded daje ujemny"
+VSTRUCTURE [TERMS=%_units.%_variable] FACTOR=%_variable; MODEL=diag
+
+REML [PRINT=model,components,waldTests,eff; MAXCYCLE=30; FMETHOD=automatic; \
+  MVINCLUDE=explanatory,\
+  yvariate; METHOD=AI; pse=est] _Data
+
+"oceny efektów sta³ych"
+vkeep %_Fact.%_variable;eff=eff;vareff=vareff
+print eff
+calc se = sqrt(vareff)
+print vareff
+print se
+
+"BLUP efektów losowych bloków"
+vpred [pred=pred; se=sep] class=%_Block,%_variable
+print pred,sep
+

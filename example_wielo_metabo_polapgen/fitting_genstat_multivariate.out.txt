@@ -1,0 +1,238 @@
+Analysis in reference to Estimation of parameters under the mixed effects extended growth curve model
+Data from przyklad_polapgen_metabo_2.xlsx
+Fixed factor: Variety, Random factor: Drought_treatment
+
+                                    ncech
+Number of traits for analysis       104.0
+
+Data for this analysis: restricted to T3, first replication:
+
+Drought_treatment   Timepoint     Variety Replication   vtrait[1]   vtrait[2]   vtrait[3]   vtrait[4]
+                I          T3       CamB1         R01       22.15       26.01       23.07       23.79
+                I          T3     Georgia         R01       23.83       22.72       26.44       26.38
+                I          T3      Harmal         R01       22.61       23.07       23.73       25.80
+                I          T3     Lubuski         R01       22.08       22.61       23.32       25.27
+                I          T3      Maresi         R01       22.21       24.27       22.90       24.27
+                I          T3      MDingo         R01       22.67       21.44       23.69       27.54
+                I          T3       Morex         R01       23.81       21.72       24.49       27.53
+                I          T3   Sebastian         R01       21.92       23.13       24.91       25.43
+                I          T3     Stratus         R01       21.33       23.72       23.92       25.40
+             I+II          T3       CamB1         R01       22.65       23.23       24.30       25.57
+             I+II          T3     Georgia         R01       22.65       23.23       24.30       25.57
+             I+II          T3      Harmal         R01       22.65       23.23       24.30       25.57
+             I+II          T3     Lubuski         R01       22.65       23.23       24.30       25.57
+             I+II          T3      Maresi         R01       22.65       23.23       24.30       25.57
+             I+II          T3      MDingo         R01       22.65       23.23       24.30       25.57
+             I+II          T3       Morex         R01       22.65       23.23       24.30       25.57
+             I+II          T3   Sebastian         R01       22.65       23.23       24.30       25.57
+             I+II          T3     Stratus         R01       22.65       23.23       24.30       25.57
+               II          T3       CamB1         R01       22.65       23.23       24.30       25.57
+               II          T3     Georgia         R01       22.65       23.23       24.30       25.57
+               II          T3      Harmal         R01       22.65       23.23       24.30       25.57
+               II          T3     Lubuski         R01       22.65       23.23       24.30       25.57
+               II          T3      Maresi         R01       22.65       23.23       24.30       25.57
+               II          T3      MDingo         R01       22.65       23.23       24.30       25.57
+               II          T3       Morex         R01       22.65       23.23       24.30       25.57
+               II          T3   Sebastian         R01       22.65       23.23       24.30       25.57
+               II          T3     Stratus         R01       22.65       23.23       24.30       25.57
+                K          T3       CamB1         R01       21.56       22.79       22.18       26.01
+                K          T3     Georgia         R01       23.88       20.91       24.48       28.32
+                K          T3      Harmal         R01       21.40       22.35       23.60       25.96
+                K          T3     Lubuski         R01       21.88       21.80       23.40       27.10
+                K          T3      Maresi         R01       21.58       23.08       23.70       26.53
+                K          T3      MDingo         R01       21.35       21.66       23.40       26.88
+                K          T3       Morex         R01       23.03       22.14       24.65       26.85
+                K          T3   Sebastian         R01       23.31       22.75       23.99       27.26
+                K          T3     Stratus         R01       23.54       22.13       23.81       26.13
+
+
+
+************************** Covariance structure model identity for blocks x variable
+
+
+43......................................................................................................................................................................................................
+
+
+REML variance components analysis
+=================================
+
+Response variate:  _Data
+Fixed model:       %_variable.%_Fact
+Random model:      %_Block.%_variable + %_variable.%_units
+Number of units:   3744
+
+%_variable.%_units used as residual term
+
+Sparse algorithm with AI optimisation
+
+
+Estimated variance components
+-----------------------------
+
+Random term               component        s.e.
+%_Block.%_variable           0.1591      0.0169
+
+
+Residual variance model
+-----------------------
+
+Term                           Model(order)  Parameter        Estimate      s.e.
+%_variable.%_units             Identity      Sigma2              0.462    0.0131
+
+
+Wald tests for fixed effects
+----------------------------
+
+Sequentially adding terms to fixed model
+
+Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
+%_variable.%_Fact              1172172.49     936       1252.32  <0.001
+
+Dropping individual terms from full fixed model
+
+Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
+%_variable.%_Fact              1172172.49     936       1252.32  <0.001
+
+* MESSAGE: chi-square distribution for Wald tests is an asymptotic approximation (i.e. for large samples) and underestimates the probabilities in other cases.
+
+
+
+************************** Covariance structure model identity x autoregressive for blocks x variable
+
+
+
+************************** (as example 2 in the semantic paper)
+
+
+49......................................................................................................................................................................................................
+
+
+REML variance components analysis
+=================================
+
+Response variate:  _Data
+Fixed model:       %_variable.%_Fact
+Random model:      %_Block.%_variable + %_variable.%_units
+Number of units:   3744
+
+%_variable.%_units used as residual term
+
+Sparse algorithm with AI optimisation
+
+
+Covariance structures defined for random model
+----------------------------------------------
+
+Covariance structures defined within terms:
+
+Term                    Factor      Model                        Order  No. rows
+%_Block.%_variable      %_Block     Identity                         1         4
+                        %_variable  Auto-regressive                  1       104
+
+
+Estimated parameters for covariance models
+------------------------------------------
+
+Random term(s)   Factor        Model(order)  Parameter        Estimate      s.e.
+%_Block.%_variable
+                 %_Block       Identity      Scalar             0.3437    0.0397
+                 %_variable    AR(1)         phi_1              0.2393    0.0668
+
+Note: the covariance matrix for each term is calculated as G or R where
+      var(y) = Sigma2( ZGZ'+R ), i.e. relative to the residual variance, Sigma2.
+
+
+Residual variance model
+-----------------------
+
+Term                           Model(order)  Parameter        Estimate      s.e.
+%_variable.%_units             Identity      Sigma2              0.462    0.0131
+
+
+Wald tests for fixed effects
+----------------------------
+
+Sequentially adding terms to fixed model
+
+Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
+%_variable.%_Fact               803120.68     936        858.03  <0.001
+
+Dropping individual terms from full fixed model
+
+Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
+%_variable.%_Fact               803120.68     936        858.03  <0.001
+
+* MESSAGE: chi-square distribution for Wald tests is an asymptotic approximation (i.e. for large samples) and underestimates the probabilities in other cases.
+
+
+
+************************** Covariance structure model identity x banded(1) for blocks x variable
+
+
+54......................................................................................................................................................................................................
+
+
+REML variance components analysis
+=================================
+
+Response variate:  _Data
+Fixed model:       %_variable.%_Fact
+Random model:      %_Block.%_variable + %_variable.%_units
+Number of units:   3744
+
+%_variable.%_units used as residual term
+
+Sparse algorithm with AI optimisation
+
+
+Covariance structures defined for random model
+----------------------------------------------
+
+Covariance structures defined within terms:
+
+Term                    Factor      Model                        Order  No. rows
+%_Block.%_variable      %_Block     Identity                         1         4
+                        %_variable  Banded                           1       104
+
+
+Estimated parameters for covariance models
+------------------------------------------
+
+Random term(s)   Factor        Model(order)  Parameter        Estimate      s.e.
+%_Block.%_variable
+                 %_Block       Identity      Scalar             0.3423    0.0389
+                 %_variable    Banded(1)     theta_1            0.1539    0.0656
+
+Note: the covariance matrix for each term is calculated as G or R where
+      var(y) = Sigma2( ZGZ'+R ), i.e. relative to the residual variance, Sigma2.
+
+
+Residual variance model
+-----------------------
+
+Term                           Model(order)  Parameter        Estimate      s.e.
+%_variable.%_units             Identity      Sigma2              0.462    0.0131
+
+
+Wald tests for fixed effects
+----------------------------
+
+Sequentially adding terms to fixed model
+
+Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
+%_variable.%_Fact               960012.13     936       1025.65  <0.001
+
+Dropping individual terms from full fixed model
+
+Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
+%_variable.%_Fact               960012.13     936       1025.65  <0.001
+
+* MESSAGE: chi-square distribution for Wald tests is an asymptotic approximation (i.e. for large samples) and underestimates the probabilities in other cases.
+
+
+********* End of job.
+
+Genstat 64-bit Release 19.1  (PC/Windows 7)       23 October 2018 12:58:14
+Copyright 2018, VSN International Ltd.
+Registered to: IPG PAS
+

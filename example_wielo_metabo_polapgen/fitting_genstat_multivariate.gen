@@ -1,0 +1,69 @@
+job
+"przyklad do papieru LMM dla przykladu 2"
+import [p=*] 'przyklad_polapgen_metabo_2.xlsx';is=names
+subset [cond=Timepoint.eq.3] names[]
+subset [cond=Replication.eq.1] names[]
+facprod !p(Drought_treatment,Variety);komb
+"print names[1...5],komb"
+
+calc nn=nvalues(names[1])
+scalar ncech;104
+
+print 'Analysis in reference to Estimation of parameters under the mixed effects extended growth curve model'
+print 'Data from przyklad_polapgen_metabo_2.xlsx'
+print 'Fixed factor: Variety, Random factor: Drought_treatment'
+print 'Number of traits for analysis', ncech
+print 'Data for this analysis: restricted to T3, first replication:'
+print names[1...8]
+
+FACTOR [LEVELS=nn] %_units;!((1...nn)#ncech)
+FACTOR [LEVELS=ncech"; LABELS=!t('y[1]','y[2]','y[3]','y[4]','y[5]','y[6]','y[7]','y[8]','y[9]','y[10]')"] \
+	%_variable;!(#nn(1...ncech))
+APPEND [NEW=_Data] vtrait[1...ncech]
+APPEND [NEW=%_Fact] #ncech(Variety)
+APPEND [NEW=%_Block] #ncech(Drought_treatment)
+
+"APPEND [NEW=%_Block] 4(Drought_treatment)"
+
+"vec(dane) czyli dane do lmm" 
+"print _Data,%_variable,%_Fact,%_Block"
+
+"Fit Multivariate Linear Mixed Model"
+VCOMPONENTS [FIXED=%_Fact.%_variable; CONSTANT=omit] \
+  random = %_Block.%_variable + %_units.%_variable;CONSTRAINTS=positive
+
+"struktura dla bloków"
+"VSTRUCTURE [TERMS=%_Block.%_variable] FACTOR=%_Block,%_variable; MODEL=id,band; ord=*,2"
+
+"dla b³êdu unstructured nie chodzi bo ma³o obserwacji, banded daje ujemny"
+"VSTRUCTURE [TERMS=%_units.%_variable] FACTOR=%_variable; MODEL=diag"
+
+print '************************** Covariance structure model identity for blocks x variable'
+VSTRUCTURE [TERMS=%_Block.%_variable] FACTOR=%_Block; MODEL=id
+REML [PRINT=model,components,waldTests",eff"; MAXCYCLE=30; FMETHOD=automatic; \
+  MVINCLUDE=explanatory,yvariate; METHOD=AI; pse=est] _Data
+
+print '************************** Covariance structure model identity x autoregressive for blocks x variable'
+print '************************** (as example 2 in the semantic paper)'
+VSTRUCTURE [TERMS=%_Block.%_variable] FACTOR=%_Block,%_variable; MODEL=id,ar
+REML [PRINT=model,components,waldTests",eff"; MAXCYCLE=30; FMETHOD=automatic; \
+  MVINCLUDE=explanatory,yvariate; METHOD=AI; pse=est] _Data
+
+print '************************** Covariance structure model identity x banded(1) for blocks x variable'
+VSTRUCTURE [TERMS=%_Block.%_variable] FACTOR=%_Block,%_variable; MODEL=id,band
+REML [PRINT=model,components,waldTests",eff"; MAXCYCLE=30; FMETHOD=automatic; \
+  MVINCLUDE=explanatory,yvariate; METHOD=AI; pse=est] _Data
+
+stop
+
+"oceny efektów sta³ych"
+vkeep %_Fact.%_variable;eff=eff;vareff=vareff
+print eff
+calc se = sqrt(vareff)
+"print vareff"
+"print se"
+
+"BLUP efektów losowych bloków"
+vpred [pred=pred; se=sep] class=%_Block,%_variable
+print pred,sep
+
