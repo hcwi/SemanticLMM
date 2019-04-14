@@ -1,5 +1,7 @@
 ########################## aux functions ##########################
 
+# local working environment
+lenv <- new.env()
 
 # whole graph - list of registered objects
 graph <- new.env(parent = emptyenv())
@@ -72,14 +74,9 @@ listOfStringsToObjects <- function(objClass = "Level", objNames) {
 
 }
 
-#getID <- function(o) {
-#  l <- o$label
-#  id <- format(as.numeric(Sys.time())*100000, digits=15) #format(Sys.time(), "%y%m%d%H%M%S")
-#  c <- as.character(class(o))
-#  paste(c, l, id, sep="_")
-#}
-
-init <- function() {}
+init <- function() {
+  newGraph()
+}
 
 
 ########################## LMM model classes ##########################
@@ -109,16 +106,16 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                     return(fullID)
                                   },
                                   show = function() {
-                                    queue <<- list()
-                                    queue[.self$id] <<- FALSE
+                                    assign("queue", list(), envir = lenv)
+                                    lenv$queue[.self$id] <- FALSE
                                     cat(asTTL())
                                     i <- 1
                                     while (TRUE) {
-                                      if (i <= length(queue)) {
-                                        key <- names(queue)[i]
+                                      if (i <= length(lenv$queue)) {
+                                        key <- names(lenv$queue)[i]
                                         #print(paste("Checking", key, "==", queue[key], "(", i, "/", length(queue), ")"))
-                                        if (queue[key] == TRUE) {
-                                          queue[key] <<- FALSE # sets a key to be printed (if still ahead);
+                                        if (lenv$queue[key] == TRUE) {
+                                          lenv$queue[key] <- FALSE # sets a key to be printed (if still ahead);
                                           # if the object has been put in the queue before the current one (and thus already printed),
                                           # the change to 'FALSE' doesn't make any difference, as the loop doesn't go back
                                           obj <- graph[[key]]
@@ -130,7 +127,7 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                         break
                                       }
                                     }
-                                    queue <<- NULL
+                                    lenv$queue <- NULL
                                   },
                                   ident = function(identifier) {
                                     paste0("<", gsub(identifier, pattern=":", replacement ="."), ">")
@@ -176,10 +173,10 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                     for (o in oo) {
                                       assertthat::assert_that(is(o, "AnnotatedEntity"))
                                       ids <- paste(ids, ident(o$id), sep=", ") # add ID to the string
-                                      if (!exists("queue") || is.null(queue)) {
-                                        queue <<- list()
+                                      if (!exists("queue", envir = lenv) || is.null(lenv$queue)) {
+                                        lenv$queue <- list()
                                       }
-                                      queue[o$id] <<- TRUE # add to the queue and / or set printing (if already exists)
+                                      lenv$queue[o$id] <- TRUE # add to the queue and / or set printing (if already exists)
                                     }
                                     substring(ids,3) # return concatenated without initial separators ', '
                                   },
