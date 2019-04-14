@@ -1,31 +1,37 @@
 ########################## aux functions ##########################
 
-getID <- function(o) {
-  l <- o$label
-  id <- format(as.numeric(Sys.time())*100000, digits=15) #format(Sys.time(), "%y%m%d%H%M%S")
-  c <- as.character(class(o))
-  paste(c, l, id, sep="_")
+
+# whole graph - list of registered objects
+graph <- new.env(parent = emptyenv())
+newGraph <- function() {
+  rm(list = ls(graph), envir = graph)
 }
 
 register <- function(o) {
-  o$id <- getID(o)
-  reg[o$id] <<- list(o)
+  assign(x = o$id, value = o, envir = graph)
 }
 
 getEntity <- function(className, label) {
-  for (r in reg) {
-    classOk <- grepl(class(r), pattern = className, ignore.case = T)
-    if (classOk & r$label == label)
-      return(r)
+  classMatch <- grepl(sapply(mget(ls(graph), envir = graph), class), pattern=className, ignore.case = T)
+  labelMatch <- sapply(mget(ls(graph), envir = graph), function(x) x$label) == label
+
+  matchingIndices <- classMatch & labelMatch
+  matchingEntity <- NULL
+  if (sum(matchingIndices) == 1) {
+    matchingEntity <- get(ls(graph)[[which(matchingIndices)]], envir = graph)
+  } else if (sum(matchingIndices) > 1) {
+    stop(paste("Error getting an entity. More than one matching entity found for ", className, label))
   }
-  return(NULL)
+  return(matchingEntity)
 }
 
 
 listEntities <- function() {
-  for (r in reg) {
-    cat(sprintf("%20s %20s\n", class(r), r$label))
-  }
+
+  entities <- mget(ls(graph), envir = graph)
+  printableList <- sapply(mget(ls(graph), envir = graph), function(o) sprintf("%20s %20s\n", class(o), o$label))
+  cat(printableList)
+
 }
 #getEntity("AnnotatedEntity", "eoLabel")
 
@@ -66,18 +72,14 @@ listOfStringsToObjects <- function(objClass = "Level", objNames) {
 
 }
 
+#getID <- function(o) {
+#  l <- o$label
+#  id <- format(as.numeric(Sys.time())*100000, digits=15) #format(Sys.time(), "%y%m%d%H%M%S")
+#  c <- as.character(class(o))
+#  paste(c, l, id, sep="_")
+#}
 
-init <- function() {
-  reg <<- list()
-  reg2 <<- new.env(parent = emptyenv())
-  reg2$test <<- "test"
-  print(environmentName(parent.env(reg2)))
-  reg3 <- new.env()
-}
-
-init()
-
-#reg #list registered objects
+init <- function() {}
 
 
 ########################## LMM model classes ##########################
@@ -98,7 +100,13 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                     }
                                     .self$type <- tmp
                                     .self$comments <- comments
+                                    .self$id <- setID()
                                     register(.self)
+                                  },
+                                  setID = function() {
+                                    id <- format(as.numeric(Sys.time())*100000, digits=15) #format(Sys.time(), "%y%m%d%H%M%S")
+                                    fullID <- paste(as.character(class(.self)), .self$label, id, sep="_")
+                                    return(fullID)
                                   },
                                   show = function() {
                                     queue <<- list()
@@ -113,8 +121,8 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                           queue[key] <<- FALSE # sets a key to be printed (if still ahead);
                                           # if the object has been put in the queue before the current one (and thus already printed),
                                           # the change to 'FALSE' doesn't make any difference, as the loop doesn't go back
-                                          obj <- reg[[key]]
-                                          assertthat::assert_that(is(obj, "AnnotatedEntity"), msg = paste("No reg object for key: ", key))
+                                          obj <- graph[[key]]
+                                          assertthat::assert_that(is(obj, "AnnotatedEntity"), msg = paste("No object in graph for key: ", key))
                                           cat(obj$asTTL())
                                         }
                                         i <- i + 1
@@ -184,7 +192,8 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                                    cat(" {\n"),
                                                    .self,
                                                    cat("}"),
-                                                   file = paste0("out", .Platform$file.sep, graphName, ".trig"))
+                                                   file = paste0(#"out", .Platform$file.sep,
+                                                                 graphName, ".trig"))
                                     print(paste0("Exported to ", graphName, ".trig"))
                                   }
                                 )
@@ -222,7 +231,7 @@ ObjProperty <- {setRefClass("ObjProperty",
                               }
                             )
 )}
-(op <- ObjProperty(label="REML", type="critREML", pred="isAbout", value=98765, obj=AnnotatedEntity("testEntity")))
+#(op <- ObjProperty(label="REML", type="critREML", pred="isAbout", value=98765, obj=AnnotatedEntity("testEntity")))
 
 Hypothesis <- {setRefClass("Hypothesis",
                            contains = "AnnotatedEntity",

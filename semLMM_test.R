@@ -47,11 +47,12 @@ usethis::use_data(example3)
 
 
 ##### test package
+library(semLMM)
 
 require(lmerTest)
 mod <- lmer(y ~ 0 + Treatment + (1|Block), data = example1)
 modelFitting <- exportModelToRDF(mod, example1)
-
+modelFitting$saveTriples()
 
 require(nlme)
 mod <- lme(y ~ 0 + Treatment, random = ~1|Block, data = example1)
