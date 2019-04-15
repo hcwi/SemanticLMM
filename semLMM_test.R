@@ -50,16 +50,32 @@ usethis::use_data(example3)
 ##### test package
 library(semLMM)
 
+#example1 lmer
 require(lmerTest)
 mod <- lmer(y ~ 0 + Treatment + (1|Block), data = example1)
 modelFitting <- exportModelToRDF(mod, example1)
 modelFitting$saveTriples()
 
+#example1 nlme
 require(nlme)
 mod <- lme(y ~ 0 + Treatment, random = ~1|Block, data = example1)
 modelFitting <- exportModelToRDF_2(mod, example1)
 modelFitting$saveTriples()
 
+
+#example3
+ds <- example3
+subset <- list()
+subset$data <- ds[as.numeric(ds$InfraspecificName) < 5, ]
+subset$label <- "Dataset_example3_Polapgen-subset"
+subset$url <- paste("http://cropnet.pl/plantphenodb/index.php?id=250")
+subset$dataset <- Dataset(label = ifelse(!is.null(subset[["label"]]), subset[["label"]], "Dataset"),
+                      url = ifelse(!is.null(subset[["url"]]), subset[["url"]], "url unavailable"),
+                      comments = {if (!is.null(subset[["comments"]])) subset[["comments"]] else list()})
+
+mod <- lme(GW_m2 ~ InfraspecificName*StudyStart + HD, random = ~1|Replication, data = subset$data)
+modelFitting <- exportModelToRDF_2(mod, ds = subset)
+modelFitting$saveTriples()
 
 #"Verbosity threshold (5=DEBUG, 4=INFO 3=WARN, 2=ERROR, 1=FATAL)"))
 # logger <- create.logger(logfile = "", level = verbosity(5))
