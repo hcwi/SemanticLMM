@@ -14,6 +14,7 @@ graph <- new.env(parent = emptyenv())
 newGraph <- function() {
   log4r::debug(lenv$logger, match.call())
   rm(list = ls(graph), envir = graph)
+  graph
 }
 
 register <- function(o) {
@@ -119,13 +120,11 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                     while (TRUE) {
                                       if (i <= length(lenv$queue)) {
                                         key <- names(lenv$queue)[i]
-                                        #print(paste("Checking", key, "==", queue[key], "(", i, "/", length(queue), ")"))
-                                        if (lenv$queue[key] == TRUE) {
-                                          lenv$queue[key] <- FALSE # sets a key to be printed (if still ahead);
-                                          # if the object has been put in the queue before the current one (and thus already printed),
-                                          # the change to 'FALSE' doesn't make any difference, as the loop doesn't go back
-                                          obj <- graph[[key]]
+                                        obj <- lenv$queue[[i]]
+                                        log4r::info(lenv$logger, paste("Showing", key, "==", lenv$queue[key], "(", i, "/", length(lenv$queue), ")"))
+                                        if (!isFALSE(obj)) {
                                           assertthat::assert_that(is(obj, "AnnotatedEntity"), msg = paste("No object in graph for key: ", key))
+                                          lenv$queue[[i]] <- FALSE # being processed, not queuing for printing any more (if still ahead);
                                           cat(obj$asTTL())
                                         }
                                         i <- i + 1
@@ -182,7 +181,7 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                       if (!exists("queue", envir = lenv) || is.null(lenv$queue)) {
                                         lenv$queue <- list()
                                       }
-                                      lenv$queue[o$id] <- TRUE # add to the queue and / or set printing (if already exists)
+                                      lenv$queue[o$id] <- list(o) # add to the queue and / or set printing (if already exists)
                                     }
                                     substring(ids,3) # return concatenated without initial separators ', '
                                   },
