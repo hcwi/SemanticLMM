@@ -16,4 +16,5 @@ Imports:
     lme4 (>= 1.1-19),
     nlme (>= 3.1-137),
     assertthat (>= 0.2.0),
-    emmeans
+    emmeans,
+    log4r (>= 0.2.0)

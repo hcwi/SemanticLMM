@@ -3,9 +3,16 @@
 # local working environment
 lenv <- new.env()
 
+# logging setup
+assign("logger", log4r::create.logger(logfile = "", level = "WARN"), envir = lenv)
+setLogger <- function(logfile = "", level = "DEBUG") {
+  assign("logger", log4r::create.logger(logfile = logfile, level = level), envir = lenv)
+}
+
 # whole graph - list of registered objects
 graph <- new.env(parent = emptyenv())
 newGraph <- function() {
+  log4r::debug(lenv$logger, match.call())
   rm(list = ls(graph), envir = graph)
 }
 
@@ -29,7 +36,6 @@ getEntity <- function(className, label) {
 
 
 listEntities <- function() {
-
   entities <- mget(ls(graph), envir = graph)
   printableList <- sapply(mget(ls(graph), envir = graph), function(o) sprintf("%20s %20s\n", class(o), o$label))
   cat(printableList)
@@ -191,7 +197,9 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                                    cat("}"),
                                                    file = paste0(#"out", .Platform$file.sep,
                                                                  graphName, ".trig"))
-                                    print(paste0("Exported to ", graphName, ".trig"))
+                                    result <- paste0("Exported to ", graphName, ".trig")
+                                    log4r::info(lenv$logger, result)
+                                    result
                                   }
                                 )
 )}

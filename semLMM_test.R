@@ -6,6 +6,7 @@ package_aux <- function() {
   usethis::use_package("lmerTest")
   usethis::use_package("assertthat")
   usethis::use_package("emmeans")
+  usethis::use_package("log4r")
 
   usethis::use_data(example1)
   usethis::use_data(example3)
@@ -58,3 +59,14 @@ require(nlme)
 mod <- lme(y ~ 0 + Treatment, random = ~1|Block, data = example1)
 modelFitting <- exportModelToRDF_2(mod, example1)
 modelFitting$saveTriples()
+
+
+#"Verbosity threshold (5=DEBUG, 4=INFO 3=WARN, 2=ERROR, 1=FATAL)"))
+# logger <- create.logger(logfile = "", level = verbosity(5))
+#
+# fatal(logger, "Fatal message")
+# error(logger, "Error message")
+# warn(logger, "Warning message")
+# info(logger, "Informational message")
+# debug(logger, "Debugging message")
+

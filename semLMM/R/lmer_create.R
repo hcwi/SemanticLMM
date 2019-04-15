@@ -613,53 +613,55 @@ exportModelToRDF <- function(mod, ds=list()) {
   modelFitting
 }
 
-run <- function() {
+# run <- function() {
+#
+#   tmp <-  models[1:1]
+#
+#   for (mod in tmp) {
+#     #mod <- m0 #m_cov_noint #m_cov_noint #m0  #m_cov
+#     #modelName <- deparse(quote(model))
+#     #mod <- get(modelName)
+#     init()
+#     print(formula(mod))
+#     modelFitting <- exportModelToRDF(mod)
+#     graphName <- modelFitting$hasInput[[1]]$id
+#     print(graphName)
+#     capture.output(cat(prefixes),
+#                    cat("<graphs/graph_", graphName, ">", sep=""),
+#                    cat(" {\n"),
+#                    modelFitting,
+#                    cat("}"),
+#                    file = paste0("out", .Platform$file.sep, graphName, ".trig"))
+#   }
+# }
 
-  tmp <-  models[1:1]
+# TODO
+#summary(m)$vcov
 
-  for (mod in tmp) {
-    #mod <- m0 #m_cov_noint #m_cov_noint #m0  #m_cov
-    #modelName <- deparse(quote(model))
-    #mod <- get(modelName)
-    init()
-    print(formula(mod))
-    modelFitting <- exportModelToRDF(mod)
-    graphName <- modelFitting$hasInput[[1]]$id
-    print(graphName)
-    capture.output(cat(prefixes),
-                   cat("<graphs/graph_", graphName, ">", sep=""),
-                   cat(" {\n"),
-                   modelFitting,
-                   cat("}"),
-                   file = paste0("out", .Platform$file.sep, graphName, ".trig"))
-  }
-}
-
-#summary(m)$vcov # TODO
-run <- function() {
-
-  mod <- example1()
-  init()
-  print(formula(mod))
-  modelFitting <- exportModelToRDF(mod)
-  modelFitting$hasInput[[2]]$label <- "example1"
-  modelFitting$hasInput[[2]]$url <- "
-  y Treatment Block
-  1 1.5        T1    B1
-  2 1.7        T1    B2
-  3 2.1        T2    B1
-  4 2.1        T2    B2
-  5 1.9        T3    B1
-  6 2.2        T3    B2
-"
-  graphName <- modelFitting$hasInput[[1]]$id
-  print(graphName)
-  capture.output(cat(prefixes),
-                 cat("<graphs/graph_", graphName, ">", sep=""),
-                 cat(" {\n"),
-                 modelFitting,
-                 cat("}"),
-                 file = paste0("out", .Platform$file.sep, graphName, ".trig"))
-
-}
-
+# run <- function() {
+#
+#   mod <- example1()
+#   init()
+#   print(formula(mod))
+#   modelFitting <- exportModelToRDF(mod)
+#   modelFitting$hasInput[[2]]$label <- "example1"
+#   modelFitting$hasInput[[2]]$url <- "
+#   y Treatment Block
+#   1 1.5        T1    B1
+#   2 1.7        T1    B2
+#   3 2.1        T2    B1
+#   4 2.1        T2    B2
+#   5 1.9        T3    B1
+#   6 2.2        T3    B2
+# "
+#   graphName <- modelFitting$hasInput[[1]]$id
+#   print(graphName)
+#   capture.output(cat(prefixes),
+#                  cat("<graphs/graph_", graphName, ">", sep=""),
+#                  cat(" {\n"),
+#                  modelFitting,
+#                  cat("}"),
+#                  file = paste0("out", .Platform$file.sep, graphName, ".trig"))
+#
+# }
+#

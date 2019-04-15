@@ -1,13 +1,13 @@
-run <- function() {
-  m_lmer <- example1_lmer()
-  m_lme <- example1_lme()
-
-  mod <- m_lme
-  print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod)
-  saveTriples(modelFitting)
-
-}
+# run <- function() {
+#   m_lmer <- example1_lmer()
+#   m_lme <- example1_lme()
+#
+#   mod <- m_lme
+#   print(formula(mod))
+#   modelFitting <- exportModelToRDF_2(mod)
+#   saveTriples(modelFitting)
+#
+# }
 #run()
 
 
@@ -42,18 +42,18 @@ exportModelToRDF_2 <- function(mod, ds=list()) {
 
 }
 
-saveTriples <- function(modelFitting, graphName = NULL) {
-  if(is.null(graphName)) {
-    graphName <- modelFitting$hasInput[[1]]$id
-  }
-  capture.output(cat(prefixes),
-                 cat("<graphs/graph_", graphName, ">", sep=""),
-                 cat(" {\n"),
-                 modelFitting,
-                 cat("}"),
-                 file = paste0("out", .Platform$file.sep, graphName, ".trig"))
-  print(paste0("Exported to ", graphName, ".trig"))
-}
+# saveTriples <- function(modelFitting, graphName = NULL) {
+#   if(is.null(graphName)) {
+#     graphName <- modelFitting$hasInput[[1]]$id
+#   }
+#   capture.output(cat(prefixes),
+#                  cat("<graphs/graph_", graphName, ">", sep=""),
+#                  cat(" {\n"),
+#                  modelFitting,
+#                  cat("}"),
+#                  file = paste0("out", .Platform$file.sep, graphName, ".trig"))
+#   print(paste0("Exported to ", graphName, ".trig"))
+# }
 
 
 getModel_2 <- function(mod) {
