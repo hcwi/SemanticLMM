@@ -1,228 +1,243 @@
-########################## aux functions ########################## 
-require(assertthat)
+########################## aux functions ##########################
+
+# local working environment
+lenv <- new.env()
+
+# logging setup
+assign("logger", log4r::create.logger(logfile = "", level = "WARN"), envir = lenv)
+setLogger <- function(logfile = "", level = "DEBUG") {
+  assign("logger", log4r::create.logger(logfile = logfile, level = level), envir = lenv)
+}
+
+# whole graph - list of registered objects
+graph <- new.env(parent = emptyenv())
+newGraph <- function() {
+  log4r::debug(lenv$logger, match.call())
+  rm(list = ls(graph), envir = graph)
+  graph
+}
+
+register <- function(o) {
+  assign(x = o$id, value = o, envir = graph)
+}
+
+getEntity <- function(className, label) {
+  classMatch <- grepl(sapply(mget(ls(graph), envir = graph), class), pattern=className, ignore.case = T)
+  labelMatch <- sapply(mget(ls(graph), envir = graph), function(x) x$label) == label
+
+  matchingIndices <- classMatch & labelMatch
+  matchingEntity <- NULL
+  if (sum(matchingIndices) == 1) {
+    matchingEntity <- get(ls(graph)[[which(matchingIndices)]], envir = graph)
+  } else if (sum(matchingIndices) > 1) {
+    stop(paste("Error getting an entity. More than one matching entity found for ", className, label))
+  }
+  return(matchingEntity)
+}
+
+
+listEntities <- function() {
+  entities <- mget(ls(graph), envir = graph)
+  printableList <- sapply(mget(ls(graph), envir = graph), function(o) sprintf("%20s %20s\n", class(o), o$label))
+  cat(printableList)
+
+}
+#getEntity("AnnotatedEntity", "eoLabel")
+
+listOfStringsToObjects <- function(objClass = "Level", objNames) {
+
+  if (is(objNames,"character")) {
+
+    objs <- list()
+    for (objName in objNames) {
+      obj <- getEntity(objClass, objName)
+      if (is.null(obj)) {
+        print(paste0("Haven't found '", objClass, "' for the name: ", objName))
+      } else {
+        objs <- append(objs, obj)
+      }
+    }
+    return(objs)
+
+  } else {
+
+    if (is.null(objNames)) {
+      return(list())
+    }
+    if (is(objNames, "list")) {
+      if (length(objNames) == 0 || is(objNames[[1]], "AnnotatedEntity")) {
+        return(objNames)
+      } else {
+        if (is(objNames[[1]], "character")) {
+          return(listOfStringsToObjects(objClass, unlist(objNames)))
+        }
+      }
+      stop(paste("objNames is a list of unknown type: ", class(objNames[[1]]),
+                 "Should be a list of OntologyEntities or a Vector of characters"))
+    }
+
+    stop("Unknown type of objNames")
+  }
+
+}
 
 init <- function() {
-  
-  source("mappingsReader.R")
-  
-  getID <<- function(o) {
-    l <- o$label
-    id <- format(as.numeric(Sys.time())*100000, digits=15) #format(Sys.time(), "%y%m%d%H%M%S")
-    c <- as.character(class(o))
-    paste(c, l, id, sep="_")
-  }
-  
-  reg <<- list()
-  
-  register <<- function(o) {
-    o$id <- getID(o)
-    reg[o$id] <<- list(o)
-  }
-  
-  getEntity <<- function(className, label) {
-    for (r in reg) {
-      classOk <- grepl(class(r), pattern = className, ignore.case = T)
-      if (classOk & r$label == label)
-        return(r)
-    }
-    return(NULL)
-  }
-  
-  listEntities <<- function() {
-    for (r in reg) {
-      cat(sprintf("%20s %20s\n", class(r), r$label))
-    }
-  }
-  #getEntity("AnnotatedEntity", "eoLabel")
-  
-  listOfStringsToObjects <<- function(objClass = "Level", objNames) {
-    
-    if (is(objNames,"character")) {
-      
-      objs <- list()
-      for (objName in objNames) {
-        obj <- getEntity(objClass, objName)
-        if (is.null(obj)) {
-          print(paste0("Haven't found '", objClass, "' for the name: ", objName))
-        } else {
-          objs <- append(objs, obj)
-        }
-      }
-      return(objs)
-      
-    } else {
-      
-      if (is.null(objNames)) {
-        return(list())
-      }
-      if (is(objNames, "list")) {
-        if (length(objNames) == 0 || is(objNames[[1]], "AnnotatedEntity")) {
-          return(objNames)
-        } else {
-          if (is(objNames[[1]], "character")) {
-            return(listOfStringsToObjects(objClass, unlist(objNames)))
-          }
-        }
-        stop(paste("objNames is a list of unknown type: ", class(objNames[[1]]),
-                   "Should be a list of OntologyEntities or a Vector of characters"))
-      } 
-      
-      stop("Unknown type of objNames")
-    }
-    
-  }
-  
+  newGraph()
 }
-init()
-
-#reg #list registered objects
 
 
-########################## LMM model classes ########################## 
+########################## LMM model classes ##########################
 
 AnnotatedEntity <- {setRefClass("AnnotatedEntity",
-                              fields = list(
-                                id = "character",
-                                label = "character",
-                                type = "list",
-                                comments = "list"
-                              ),
-                              methods = list(
-                                initialize = function(label, type = list(), comments = list()) {
-                                  .self$label <- label
-                                  tmp <- type
-                                  if (is.character(tmp)) {
-                                    tmp <- as.list(tmp)
-                                  }
-                                  .self$type <- tmp
-                                  .self$comments <- comments
-                                  register(.self)
-                                },
-                                show = function() {
-                                  queue <<- list()
-                                  queue[.self$id] <<- FALSE
-                                  cat(asTTL())
-                                  i <- 1
-                                  while (TRUE) {
-                                    if (i <= length(queue)) {
-                                      key <- names(queue)[i]
-                                      #print(paste("Checking", key, "==", queue[key], "(", i, "/", length(queue), ")"))
-                                      if (queue[key] == TRUE) {
-                                        queue[key] <<- FALSE # sets a key to be printed (if still ahead); 
-                                        # if the object has been put in the queue before the current one (and thus already printed), 
-                                        # the change to 'FALSE' doesn't make any difference, as the loop doesn't go back
-                                        obj <- reg[[key]]
-                                        assert_that(is(obj, "AnnotatedEntity"), msg = paste("No reg object for key: ", key))
-                                        cat(obj$asTTL())
+                                fields = list(
+                                  id = "character",
+                                  label = "character",
+                                  type = "list",
+                                  comments = "list"
+                                ),
+                                methods = list(
+                                  initialize = function(label, type = list(), comments = list()) {
+                                    .self$label <- label
+                                    tmp <- type
+                                    if (is.character(tmp)) {
+                                      tmp <- as.list(tmp)
+                                    }
+                                    .self$type <- tmp
+                                    .self$comments <- comments
+                                    .self$id <- setID()
+                                    register(.self)
+                                  },
+                                  setID = function() {
+                                    id <- format(as.numeric(Sys.time())*100000, digits=15) #format(Sys.time(), "%y%m%d%H%M%S")
+                                    fullID <- paste(as.character(class(.self)), .self$label, id, sep="_")
+                                    return(fullID)
+                                  },
+                                  show = function() {
+                                    assign("queue", list(), envir = lenv)
+                                    lenv$queue[.self$id] <- FALSE
+                                    cat(asTTL())
+                                    i <- 1
+                                    while (TRUE) {
+                                      if (i <= length(lenv$queue)) {
+                                        key <- names(lenv$queue)[i]
+                                        obj <- lenv$queue[[i]]
+                                        log4r::info(lenv$logger, paste("Showing", key, "==", lenv$queue[key], "(", i, "/", length(lenv$queue), ")"))
+                                        if (!isFALSE(obj)) {
+                                          assertthat::assert_that(is(obj, "AnnotatedEntity"), msg = paste("No object in graph for key: ", key))
+                                          lenv$queue[[i]] <- FALSE # being processed, not queuing for printing any more (if still ahead);
+                                          cat(obj$asTTL())
+                                        }
+                                        i <- i + 1
+                                      } else {
+                                        break
                                       }
-                                      i <- i + 1
+                                    }
+                                    lenv$queue <- NULL
+                                  },
+                                  ident = function(identifier) {
+                                    paste0("<", gsub(identifier, pattern=":", replacement ="."), ">")
+                                  },
+                                  lit = function(literal) {
+                                    paste0("\"", literal, "\"")
+                                  },
+                                  num = function(number) {
+                                    if (length(number) == 0 || number == "") {
+                                      paste0("\"", number, "\"")
                                     } else {
-                                      break
+                                      paste0("\"", number, "\"^^xsd:float")
                                     }
-                                  }
-                                  queue <<- NULL
-                                },
-                                ident = function(identifier) {
-                                  paste0("<", gsub(identifier, pattern=":", replacement ="."), ">")
-                                },
-                                lit = function(literal) {
-                                  paste0("\"", literal, "\"")
-                                },
-                                num = function(number) {
-                                  if (length(number) == 0 || number == "") {
-                                     paste0("\"", number, "\"")  
-                                  } else {
-                                    paste0("\"", number, "\"^^xsd:float")  
-                                  }
-                                },
-                                mapping = function(type) {
-                                  paste0(get(toupper(type)))
-                                },
-                                asTTL = function() {
-                                  paste(getTTL(), ".\n")
-                                },
-                                getTTL = function() {
-                                  attach(termsEnv)
-                                  res <- innerGetTTL()
-                                  detach(termsEnv)
-                                  res
-                                },
-                                innerGetTTL = function() {
-                                  types <- ""
-                                  for (t in .self$type) {
-                                    types <- paste(types, ";\n", TYPE, mapping(t))
-                                  }  
-                                  comments <- ""
-                                  if (length(.self$comments)>0) {
-                                    comments <- paste(";\n", .self$comments, collapse = "")
-                                  }
-                                  paste(ident(id), LABEL, lit(label),
-                                        types,
-                                        comments
-                                  )
-                                },
-                                listAsTTL = function(oo) {
-                                  ids = "" # concatenated IDs from the 'oo' list
-                                  for (o in oo) {
-                                    assert_that(is(o, "AnnotatedEntity"))
-                                    ids <- paste(ids, ident(o$id), sep=", ") # add ID to the string
-                                    if (!exists("queue") || is.null(queue)) {
-                                      queue <<- list()
+                                  },
+                                  mapping = function(type) {
+                                    paste0(get(toupper(type)))
+                                  },
+                                  asTTL = function() {
+                                    paste(getTTL(), ".\n")
+                                  },
+                                  getTTL = function() {
+                                    attach(termsEnv)
+                                    res <- innerGetTTL()
+                                    detach(termsEnv)
+                                    res
+                                  },
+                                  innerGetTTL = function() {
+                                    types <- ""
+                                    for (t in .self$type) {
+                                      types <- paste(types, ";\n", TYPE, mapping(t))
                                     }
-                                    queue[o$id] <<- TRUE # add to the queue and / or set printing (if already exists)
+                                    comments <- ""
+                                    if (length(.self$comments)>0) {
+                                      comments <- paste(";\n", .self$comments, collapse = "")
+                                    }
+                                    paste(ident(id), LABEL, lit(label),
+                                          types,
+                                          comments
+                                    )
+                                  },
+                                  listAsTTL = function(oo) {
+                                    ids = "" # concatenated IDs from the 'oo' list
+                                    for (o in oo) {
+                                      assertthat::assert_that(is(o, "AnnotatedEntity"))
+                                      ids <- paste(ids, ident(o$id), sep=", ") # add ID to the string
+                                      if (!exists("queue", envir = lenv) || is.null(lenv$queue)) {
+                                        lenv$queue <- list()
+                                      }
+                                      lenv$queue[o$id] <- list(o) # add to the queue and / or set printing (if already exists)
+                                    }
+                                    substring(ids,3) # return concatenated without initial separators ', '
+                                  },
+                                  saveTriples = function(graphName = NULL) {
+                                    if(is.null(graphName)) {
+                                      graphName <- .self$id
+                                    }
+                                    capture.output(cat(prefixes),
+                                                   cat("<graphs/graph_", graphName, ">", sep=""),
+                                                   cat(" {\n"),
+                                                   .self,
+                                                   cat("}"),
+                                                   file = paste0(#"out", .Platform$file.sep,
+                                                                 graphName, ".trig"))
+                                    result <- paste0("Exported to ", graphName, ".trig")
+                                    log4r::info(lenv$logger, result)
+                                    result
                                   }
-                                  substring(ids,3) # return concatenated without initial separators ', '
-                                },
-                                saveTriples = function(graphName = NULL) {
-                                  if(is.null(graphName)) {
-                                    graphName <- .self$id
-                                  }
-                                  capture.output(cat(prefixes), 
-                                                 cat("<graphs/graph_", graphName, ">", sep=""), 
-                                                 cat(" {\n"),
-                                                 .self, 
-                                                 cat("}"),
-                                                 file = paste0("out", .Platform$file.sep, graphName, ".trig"))
-                                  print(paste0("Exported to ", graphName, ".trig"))
-                                }
-                              )
+                                )
 )}
 # oe <- AnnotatedEntity(label = "eoLabel", type="ModelParameter")
 # oe
 #str(oe)
 
-ObjProperty <- {setRefClass("ObjProperty", 
-                        contains = "AnnotatedEntity",
-                        fields = list(
-                          pred = "character",
-                          obj = "list", #list of objects this entity is about, e.g. AIC isAbout model, df is about AIC
-                          value = "ANY"
-                        ),
-                        methods = list(
-                          initialize = function(... , pred, obj, value) {
-                            if (any(sapply(as.list(match.call()), is.null))) {
-                              warning("NULL argument of a function", match.call())
-                            }
-                            callSuper(...)
-                            .self$pred <- pred
-                            .self$obj <- ifelse(is.list(obj), obj, list(obj))
-                            .self$value <- value
-                          },
-                          innerGetTTL = function() {
-                            paste(callSuper(),
-                                  if (is.number(value)) {
-                                    paste(";\n", VALUE, num(value)) 
-                                  } else {
-                                    paste(";\n", VALUE, lit(value)) 
-                                  },
-                                  ";\n", get(toupper(pred)), listAsTTL(obj)
+ObjProperty <- {setRefClass("ObjProperty",
+                            contains = "AnnotatedEntity",
+                            fields = list(
+                              pred = "character",
+                              obj = "list", #list of objects this entity is about, e.g. AIC isAbout model, df is about AIC
+                              value = "ANY"
+                            ),
+                            methods = list(
+                              initialize = function(... , pred, obj, value) {
+                                if (any(sapply(as.list(match.call()), is.null))) {
+                                  warning("NULL argument of a function", match.call())
+                                }
+                                callSuper(...)
+                                .self$pred <- pred
+                                .self$obj <- ifelse(is.list(obj), obj, list(obj))
+                                .self$value <- value
+                              },
+                              innerGetTTL = function() {
+                                paste(callSuper(),
+                                      if (is.numeric(value) && length(value)==1) {
+                                        paste(";\n", VALUE, num(value))
+                                      } else {
+                                        paste(";\n", VALUE, lit(value))
+                                      },
+                                      ";\n", get(toupper(pred)), listAsTTL(obj)
+                                )
+                              }
                             )
-                          }
-                        )
 )}
-(op <- ObjProperty(label="REML", type="critREML", pred="isAbout", value=98765, obj=AnnotatedEntity("testEntity")))
+#(op <- ObjProperty(label="REML", type="critREML", pred="isAbout", value=98765, obj=AnnotatedEntity("testEntity")))
 
-Hypothesis <- {setRefClass("Hypothesis", 
+Hypothesis <- {setRefClass("Hypothesis",
                            contains = "AnnotatedEntity",
                            fields = list(
                              pvalue = "numeric",
@@ -246,31 +261,31 @@ Hypothesis <- {setRefClass("Hypothesis",
                            )
 )}
 
-Dataset <- {setRefClass("Dataset", 
-                           contains = "AnnotatedEntity",
-                           fields = list(
-                             url = "character",
-                             variables = "list"
-                           ),
-                           methods = list(
-                             initialize = function(... , url=character(0), variables = list()) {
-                               callSuper(...)
-                               .self$url <- url
-                               .self$variables <- variables
-                             },
-                             innerGetTTL = function() {
-                               paste(callSuper(),
-                                     ";\n", TYPE, DATASET,
-                                     if (length(url)>0) {paste(";\n", DESCRIPTION, lit(url))},
-                                     ";\n", CREATOR, lit("HCK"),
-                                     if (length(variables) > 0) {
-                                       paste(";\n", paste(HASPART, listAsTTL(variables), collapse = " ;\n ")) }
-                                     
-                               )
-                             }
-                           )
+Dataset <- {setRefClass("Dataset",
+                        contains = "AnnotatedEntity",
+                        fields = list(
+                          url = "character",
+                          variables = "list"
+                        ),
+                        methods = list(
+                          initialize = function(... , url=character(0), variables = list()) {
+                            callSuper(...)
+                            .self$url <- url
+                            .self$variables <- variables
+                          },
+                          innerGetTTL = function() {
+                            paste(callSuper(),
+                                  ";\n", TYPE, DATASET,
+                                  if (length(url)>0) {paste(";\n", DESCRIPTION, lit(url))},
+                                  ";\n", CREATOR, lit("HCK"),
+                                  if (length(variables) > 0) {
+                                    paste(";\n", paste(HASPART, listAsTTL(variables), collapse = " ;\n ")) }
+
+                            )
+                          }
+                        )
 )}
-Statistic <- {setRefClass("Statistic", 
+Statistic <- {setRefClass("Statistic",
                           contains = "AnnotatedEntity",
                           fields = list(
                             value = "numeric",
@@ -287,7 +302,7 @@ Statistic <- {setRefClass("Statistic",
                             innerGetTTL = function() {
                               paste(callSuper(),
                                     #";\n", TYPE, STATISTIC,
-                                    if (is.number(value)) {
+                                    if (is.numeric(value) && length(value)==1) {
                                       paste(";\n", VALUE, num(value)) },
                                     if (length(isAbout) > 0) {
                                       paste(";\n", paste(ISABOUT, listAsTTL(isAbout), collapse = " ;\n ")) },
@@ -302,66 +317,66 @@ Statistic <- {setRefClass("Statistic",
 #ttest <- StatisticalTest(label="t-test", df=20, pvalue=0.0023, testStatistic = list(tstat), hypothesis = list(hypo1))
 #ttest
 
-Estimate <- {setRefClass("Estimate", 
-                        contains = "AnnotatedEntity",
-                        fields = list(
-                          value = "numeric",
-                          se = "numeric",
-                          conflev = "numeric",
-                          ucl = "numeric",
-                          lcl = "numeric",
-                          isEstimateOf = "ANY" #ModelParameter
-                        ),
-                        methods = list(
-                          initialize = function(... , value, parameter, se = NULL) {
-                            callSuper(...)
-                            .self$value <- value
-                            .self$isEstimateOf <- parameter
-                            if (!is.null(se)) {.self$se <- se}
-                          },
-                          innerGetTTL = function() {
-                            if(!is.na(se) && length(se) == 1 && se != "") {
-                              listAsTTL(list(
-                              Statistic(paste0("se_", label), type=list("se"), value=se, isAbout = list(.self))
-                              ))
-                            }
-                            paste(callSuper(),
-                                  ";\n", TYPE, ESTIMATE,
-                                  ";\n", VALUE, num(value),
-                                  ";\n", ISESTIMATEOF, listAsTTL(list(isEstimateOf)))
-                          }
-                        )
+Estimate <- {setRefClass("Estimate",
+                         contains = "AnnotatedEntity",
+                         fields = list(
+                           value = "numeric",
+                           se = "numeric",
+                           conflev = "numeric",
+                           ucl = "numeric",
+                           lcl = "numeric",
+                           isEstimateOf = "ANY" #ModelParameter
+                         ),
+                         methods = list(
+                           initialize = function(... , value, parameter, se = NULL) {
+                             callSuper(...)
+                             .self$value <- value
+                             .self$isEstimateOf <- parameter
+                             if (!is.null(se)) {.self$se <- se}
+                           },
+                           innerGetTTL = function() {
+                             if(!is.na(se) && length(se) == 1 && se != "") {
+                               listAsTTL(list(
+                                 Statistic(paste0("se_", label), type=list("se"), value=se, isAbout = list(.self))
+                               ))
+                             }
+                             paste(callSuper(),
+                                   ";\n", TYPE, ESTIMATE,
+                                   ";\n", VALUE, num(value),
+                                   ";\n", ISESTIMATEOF, listAsTTL(list(isEstimateOf)))
+                           }
+                         )
 )}
 #est <- Estimate(label = "est1", value = 222, parameter = param1)
 #est
 #cat(est$asTTL())
 
 ValueSpecification <- {setRefClass("ValueSpecification",
-                              contains = "AnnotatedEntity",
-                              fields = list(
-                                variable = "ANY",
-                                value = "ANY"
-                              ),
-                              methods = list(
-                                initialize = function(..., variable, value = NULL) {
-                                  callSuper(...)
-                                  .self$variable <- variable
-                                  .self$value <- value
-                                },
-                                innerGetTTL = function() {
-                                  paste(callSuper(),
-                                        ";\n", TYPE, VALUESPECIFICATION,
-                                        if (!is.null(value)) {
-                                          if (is.number(value)) {
-                                            paste(";\n", VALUE, num(value)) 
-                                          } else {
-                                            paste(";\n", VALUE, lit(value)) 
-                                          }
-                                        }
-                                        #, ";\n", SPECIFIESVALUEOF, listAsTTL(list(variable))
-                                        )
-                                }
-                              )
+                                   contains = "AnnotatedEntity",
+                                   fields = list(
+                                     variable = "ANY",
+                                     value = "ANY"
+                                   ),
+                                   methods = list(
+                                     initialize = function(..., variable, value = NULL) {
+                                       callSuper(...)
+                                       .self$variable <- variable
+                                       .self$value <- value
+                                     },
+                                     innerGetTTL = function() {
+                                       paste(callSuper(),
+                                             ";\n", TYPE, VALUESPECIFICATION,
+                                             if (!is.null(value)) {
+                                               if (is.numeric(value) && length(value)==1) {
+                                                 paste(";\n", VALUE, num(value))
+                                               } else {
+                                                 paste(";\n", VALUE, lit(value))
+                                               }
+                                             }
+                                             #, ";\n", SPECIFIESVALUEOF, listAsTTL(list(variable))
+                                       )
+                                     }
+                                   )
 )}
 
 VariableLevel <- {setRefClass("VariableLevel",
@@ -385,7 +400,7 @@ Variable <- {setRefClass("Variable",
                              paste(callSuper()
                                    #,
                                    #";\n", TYPE, VARIABLE
-                                   )
+                             )
                            }
                          )
 )}
@@ -401,7 +416,7 @@ ContinuousVariable <- {setRefClass("ContinuousVariable",
                                        .self$levels <- list()
                                        for (l in levels){
                                          lab = paste0(.self$label, "=", as.character(l))
-                                         .self$levels <- append(.self$levels, 
+                                         .self$levels <- append(.self$levels,
                                                                 ValueSpecification(label=lab, value=as.numeric(l), variable=.self))
                                        }
                                      },
@@ -414,50 +429,50 @@ ContinuousVariable <- {setRefClass("ContinuousVariable",
 )}
 
 CategoricalVariable <- {setRefClass("CategoricalVariable",
-                         contains = "Variable",
-                         fields = list(
-                           levels = "list" # of VariableLevel
-                         ),
-                         methods = list(
-                           initialize = function(... , levels=character()) {
-                             callSuper(...)
-                             .self$levels <- list()
-                             for (l in levels){
-                              .self$levels <- append(.self$levels, 
-                                                     VariableLevel(label=l, variable=.self))
-                             }
-                           },
-                           innerGetTTL = function() {
-                             paste(callSuper(),
-                                   ";\n", TYPE, CATEGORICALVARIABLE,
-                                   ";\n", HASVALUESPECIFICATION, listAsTTL(levels))
-                           }
-                         )
+                                    contains = "Variable",
+                                    fields = list(
+                                      levels = "list" # of VariableLevel
+                                    ),
+                                    methods = list(
+                                      initialize = function(... , levels=character()) {
+                                        callSuper(...)
+                                        .self$levels <- list()
+                                        for (l in levels){
+                                          .self$levels <- append(.self$levels,
+                                                                 VariableLevel(label=l, variable=.self))
+                                        }
+                                      },
+                                      innerGetTTL = function() {
+                                        paste(callSuper(),
+                                              ";\n", TYPE, CATEGORICALVARIABLE,
+                                              ";\n", HASVALUESPECIFICATION, listAsTTL(levels))
+                                      }
+                                    )
 )}
 
 CompoundVariable <- {setRefClass("CompoundVariable",
-                                contains = "Variable",
-                                fields = list(
-                                  levels = "list" # of Variables
-                                ),
-                                methods = list(
-                                  initialize = function(... , levels=list()) {
-                                    callSuper(...)
-                                    .self$levels <- list()
-                                    for (l in levels){
-                                      if (!is(l, "Variable")) {
-                                        l <- ContinuousVariable(l, levels=list(1), type=list("DependentVariable"))
-                                      }
-                                      .self$levels <- append(.self$levels, l)
-                                    }
-                                  },
-                                  innerGetTTL = function() {
-                                    paste(callSuper(),
-                                          ";\n", TYPE, CONTINUOUSVARIABLE,
-                                          ";\n", TYPE, COMPOUNDVARIABLE,
-                                          ";\n", HASPART, listAsTTL(levels))
-                                  }
-                                )
+                                 contains = "Variable",
+                                 fields = list(
+                                   levels = "list" # of Variables
+                                 ),
+                                 methods = list(
+                                   initialize = function(... , levels=list()) {
+                                     callSuper(...)
+                                     .self$levels <- list()
+                                     for (l in levels){
+                                       if (!is(l, "Variable")) {
+                                         l <- ContinuousVariable(l, levels=list(1), type=list("DependentVariable"))
+                                       }
+                                       .self$levels <- append(.self$levels, l)
+                                     }
+                                   },
+                                   innerGetTTL = function() {
+                                     paste(callSuper(),
+                                           ";\n", TYPE, CONTINUOUSVARIABLE,
+                                           ";\n", TYPE, COMPOUNDVARIABLE,
+                                           ";\n", HASPART, listAsTTL(levels))
+                                   }
+                                 )
 )}
 #tmp <- CompoundVariable("CompoundVar", levels=list("y1", "y2", "y3"))
 
@@ -475,13 +490,13 @@ CompoundVariable <- {setRefClass("CompoundVariable",
 #                                                 }
 #                                               )
 #                                               )}
-                                              
+
 #v1 <- CategoricalVariable(label="infection", levels = c("infected", "non-infected"))
 #v2 <- CategoricalVariable(label="infraname", levels = c("CamB1", "Maresi", "Soldo"))
 #t1 <- Variable(label="plantHeight")
 #camB1 <- VariableLevel(label="CamB1", variable=v2)
 #camB1
-#v3 <- CategoricalIndependentVariable(label="infraname", levels = c("CamB1", "Maresi", "Soldo")) 
+#v3 <- CategoricalIndependentVariable(label="infraname", levels = c("CamB1", "Maresi", "Soldo"))
 #####
 
 ModelTerm <- {
@@ -509,7 +524,7 @@ ModelTerm <- {
                         if (length(effect) > 0) {
                           paste(";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n "))
                         }
-                )}
+                  )}
               )
   )}
 
@@ -518,13 +533,13 @@ RandomModelTerm <- {
               contains = "ModelTerm",
               fields = list(
                 covarianceStructure = "list" #of CovarianceStructure #TODO change to "ANY" and remove lists
-                ),
+              ),
               methods = list(
                 innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, RANDOMMODELTERM,
                         ";\n", paste(HASPART, listAsTTL(covarianceStructure), collapse = " ;\n ")
-                        )
+                  )
                 }
               )
   )}
@@ -536,7 +551,7 @@ ErrorModelTerm <- {
                 innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, ERRORMODELTERM
-                        )
+                  )
                 }
               )
   )}
@@ -548,7 +563,7 @@ FixedModelTerm <- {
                 innerGetTTL = function() {
                   paste(callSuper(),
                         ";\n", TYPE, FIXEDMODELTERM
-                        )
+                  )
                 }
               )
   )}
@@ -695,7 +710,7 @@ Parameter <- {
                                   ";\n", paste(HASEFFECTON, listAsTTL(specifiesValueOf), collapse = " ;\n "))
                           }
                         }
-                      )
+                  )
                 }
               )
   )}
@@ -803,7 +818,7 @@ Lmm <- {
               contains = "AnnotatedEntity",
               fields = list(
                 formula = "character",
-                dependentVariable = "list", 
+                dependentVariable = "list",
                 independentFixedTerm = "list", # of ModelTerm
                 independentRandomTerm = "list", # of ModelTerm
                 errorTerm = "list", # of ModelTerm
@@ -827,7 +842,7 @@ Lmm <- {
                 },
                 getQuality = function() {
                   if (length(.self$quality) == 0) {
-                    props <- list() # get model props 
+                    props <- list() # get model props
                     if (length(criterionREML)) {
                       props <- append(props, ObjProperty(label="REML", type="critREML", pred="isAbout", value=criterionREML, obj=.self))
                     }
@@ -859,8 +874,8 @@ Lmm <- {
                         ";\n", paste(HASTERM, listAsTTL(independentRandomTerm), collapse = " ;\n "),
                         ";\n", paste(HASTERM, listAsTTL(errorTerm), collapse = " ;\n "),
                         ";\n", paste(ISDENOTEDBY, listAsTTL(designMatrix), collapse = " ;\n ")
-                        )
-                  
+                  )
+
                 }
               )
   )}
@@ -886,18 +901,18 @@ Process <- {
                 },
                 innerGetTTL = function() {
                   gsub(pattern=" +", rep=" ",
-                    paste(callSuper(),
-                        ";\n", TYPE, mapping(processType),
-                        if (length(hasInput) > 0) {
-                          paste(";\n", paste(HASINPUT, listAsTTL(hasInput), collapse = " ;\n "))
-                        },
-                        if (length(hasOutput) > 0) {
-                          paste(";\n", paste(HASOUTPUT, listAsTTL(hasOutput), collapse = " ;\n "))
-                        },
-                        if (length(hasPart) > 0) {
-                          paste(";\n", paste(HASPART, listAsTTL(hasPart), collapse = " ;\n "))
-                        }
-                        )
+                       paste(callSuper(),
+                             ";\n", TYPE, mapping(processType),
+                             if (length(hasInput) > 0) {
+                               paste(";\n", paste(HASINPUT, listAsTTL(hasInput), collapse = " ;\n "))
+                             },
+                             if (length(hasOutput) > 0) {
+                               paste(";\n", paste(HASOUTPUT, listAsTTL(hasOutput), collapse = " ;\n "))
+                             },
+                             if (length(hasPart) > 0) {
+                               paste(";\n", paste(HASPART, listAsTTL(hasPart), collapse = " ;\n "))
+                             }
+                       )
                   )}
               )
   )}

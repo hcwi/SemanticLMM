@@ -1,10 +1,11 @@
 # get terms for R objects from specific ontology 'ont' (currently LMM, STATO_SIMPLE, STATO)
 prepareAnnotations <- function(ontology = "LMM") {
-  
+
   # list of mappings R names > LMM or STATO terms
-  termListCsv <- "/Users/hania/Code/R_oom/modelTerms/modelTerms.csv"
+  termListCsv <- system.file("extdata", "modelTerms.csv", package = "semLMM", mustWork = TRUE)
+  #termListCsv <- "modelTerms.csv"
   terms <- read.table(termListCsv, sep=";", header = TRUE, comment.char = "", stringsAsFactors = FALSE)
-  
+
   # creating variables for the terms
   # (selecting one of LMM or STATO terms from csv file above and putting it in R file with assignement operation "<-" )
   for (i in 1:dim(terms)[1]) {
