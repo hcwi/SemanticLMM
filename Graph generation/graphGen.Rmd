@@ -1,40 +1,148 @@
 ---
 title: "Linear mixed models to RDF"
-output: html_notebook
+output:
+  html_notebook: 
+    theme: readable
+    toc: yes
+  html_document:
+    toc: true
+    toc_float: true
+    warning: false
+    message: false
+    df_print: paged
+editor_options: 
+  chunk_output_type: inline
 ---
 
 This is a demo instruction on how to produce a semantic model in the form of RDF triples from a result of statistical modelling with R packages: lme4 and nlme.
-The code used for graph generation supports a subset of modelling cases possible in these packages.
+The code for graph generation supports a subset of modelling cases available in these packages.
 
-# R lme4
-
-### Define a dataset
+### Library semLMM
+The code for genaration of RDF graphs from R linear mixed models, is being developed as an R package _semLMM_. To use is, get, compile and attach _semLMM_ library, which is contained in the Github repository 'SemanticLMM'.
 
 ```{r}
-y <- as.numeric(c(6, 4, 5, 6, 9, 3))
-Treatment <- as.factor(c("T1","T1","T2","T2","T3","T3"))
-Block <- as.factor(c("B1","B2","B1","B2","B1","B2"))
-
-df <- data.frame(y, Treatment, Block)
-print(df)
-
+library(semLMM)
 ```
-### Define a statistical model of type lmer (from lme4 package)
+
+#### Example datasets
+Two exemplary datasets, used in the paper that describes this work, are attached to this library. *Example 1* is a toy dataset of 6 observations of a variable 'y' for objects characterised by variables 'Treatment' and 'Block'.
 ```{r}
-require(lme4)
-mod <- lmer(y ~ 0 + Treatment + (1|Block), data = df)
+example1
+```
+*Example 3* is a real dataset, obtained from a [plant experiment](http://cropnet.pl/plantphenodb/index.php?id=250), in which 10 variables
+(TGW, GW_m2, GW_MS, HD, main_spike, main_stem, G_MS, TL, Wvpd, Precipitation) were observed for 611 objects, characterised by 3 variables (InfraspecificName, StudyStart, Replication).
+```{r}
+example3
+```
+
+
+
+### Generating graphs for R lmer models
+Generating RDF graphs for R models of type lmer (from *lme4* package, attached through *lmerTest* package to include testing for effects):
+```{r}
+require(lmerTest)
+#require(lme4)
+```
+
+#### Modelling for Example 1
+
+Define a statistical model of type lmer for example1 dataset. Here, we declare a model with no intercept, single fixed term Treatment, and single random term for Block:
+```{r warning=FALSE}
+mod <- lmer(y ~ 0 + Treatment + (1|Block), data = example1)
 summary(mod)
+anova(mod)
 ```
 
-### Build an annotated model from a statistical model
-```{r}
-getwd()
-source("../lmm_classes.R")
+Build an annotated model from a statistical model:
+```{r warning = FALSE}
 modelFitting <- exportModelToRDF(mod)
 ```
 
-### Serialize the annotated model as RDF triples, forming a semantic model of the lmer analysis
+Serialize the annotated model as RDF triples:
 ```{r}
 modelFitting$saveTriples()
+```
+
+Preview RDF for the main object (without expanding linked entities):
+```{r}
+cat(modelFitting$asTTL())
+```
+
+Preview the whole graph for the main object (expanding to all related entities): 
+```{r}
+print(modelFitting)
+```
+
+
+### Generating graphs for R lme models
+Generating RDF graphs for R models of type lme (from *nlme* package):
+```{r message=FALSE, warning=FALSE}
+require(nlme)
+```
+
+#### Modelling for Example 1
+
+Specify the model according to lme syntactics. Here, we assume the same model as above: no intercept term, single fixed term for Treatment, single random terms for Block. 
+```{r}
+require(nlme)
+mod <- lme(y ~ 0 + Treatment, random = ~1|Block, data = example1)
+```
+
+Build an annotated model from a statistical model, and serialise the RDF to a file.
+```{r warning=FALSE}
+modelFitting <- exportModelToRDF_2(mod, example1)
+modelFitting$saveTriples()
+```
+
+
+#### Modelling for Example 3
+In the models below we use a subset of example3 data (by selecting 4 initial values of the categorical variable InfraspecificName) to enable analysis of the RDF triples (the size of which is )
+
+##### Model with single fixed term and single random term
+```{r warning=FALSE}
+mod <- lme(TGW ~ InfraspecificName, random = ~1|Replication, 
+           data = example3, subset = as.numeric(InfraspecificName) < 5)
+summary(mod)
+anova(mod)
+modelFitting <- exportModelToRDF_2(mod, ds = example3)
+modelFitting$saveTriples()
+```
+
+##### Model with two fixed terms for StudyStart and HD (regressive), and signle random terms for Replication.
+```{r warning=FALSE}
+mod <- lme(GW_m2 ~ 0 + StudyStart + HD, random = ~1|Replication, 
+           data = example3, subset = as.numeric(InfraspecificName) < 5)
+summary(mod)
+anova(mod)
+modelFitting <- exportModelToRDF_2(mod, ds = example3)
+modelFitting$saveTriples()
+```
+
+##### Model with two fixed terms, interaction, regression and single random term
+The full interaction (denoted in R shortcut notation as 'InfraspecificName*StudyStart') is unfolded to three terms: InfraspecificName + StudyStart + InfraspecificName:StudyStart. This is reflected in the semantic model. 
+
+```{r warning=FALSE}
+mod <- lme(GW_m2 ~ InfraspecificName*StudyStart + HD, random = ~1|Replication, 
+           data = example3, subset = as.numeric(InfraspecificName) < 5)
+summary(mod)
+anova(mod)
+modelFitting <- exportModelToRDF_2(mod, ds = example3)
+modelFitting$saveTriples()
+```
+
+### Generating graphs manually
+Generating RDF graphs for other models, whose automated processing is not supported by semLMM library, requires manual parsing of the model outputs, and calling semLMM functions to create LMM entities and link them together. After such a model is built, saveTriples() function can be used to serialize it the RDF graph in .trig file.
+
+Custom parsing and model creation has been used to process models obtained from Genstat software (see example2 in the paper).
+
+```{r}
+# code sample, not run
+modelFitting <- Process("modelFittingGenstat", processType="ModelFitting", 
+                        comments = list("rdfs:comment \"Results from software Genstat 19.1 (VSNi Ltd.)\""))
+lmm <- Lmm(label="model_y1y2y3y4-0.Treatment", 
+           formula = "VCOMPONENTS [FIXED=%_multiY.%_Treatment; CONSTANT=omit]; random = %_multiY.%_Block + %_multiY.%_units;CONSTRAINTS=positive; VSTRUCTURE [TERMS=%_multiY.%_Treatment] FACTOR=%_multiY; MODEL=ar; VSTRUCTURE [TERMS=%_multiY.%_units] FACTOR=%_multiY; MODEL=diag;")
+
+modelFitting$hasInput <- append(modelFitting$hasInput, lmm)
+# {...}
 ```
 
