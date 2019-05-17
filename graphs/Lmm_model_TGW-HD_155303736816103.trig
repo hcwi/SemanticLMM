@@ -9,7 +9,7 @@
 @prefix bfo: <http://purl.obolibrary.org/obo/bfo.owl#> .
 @prefix ro: <http://purl.obolibrary.org/obo/ro.owl#> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
-@prefix lmm: <http://igr.poznan.pl/lmm#> .
+@prefix lmm: <http://purl.org/stato-lmm#> .
 
 <graphs/graph_Lmm_model_TGW-HD_155303736816103> {
 <Process_modelFitting_155303736871812> rdfs:label "modelFitting" ;

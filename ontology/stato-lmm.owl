@@ -1,0 +1,446 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://purl.org/stato-lmm#"
+     xml:base="http://purl.org/stato-lmm"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#"
+     xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:doap="http://usefulinc.com/ns/doap#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:obo="http://purl.obolibrary.org/obo/"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://purl.org/stato-lmm">
+        <owl:imports rdf:resource="http://purl.obolibrary.org/obo/obi/2018-05-23/obi.owl"/>
+        <owl:imports rdf:resource="http://purl.obolibrary.org/obo/stato.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/stato-lmm#is_relative_to -->
+
+    <owl:ObjectProperty rdf:about="http://purl.org/stato-lmm#is_relative_to"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/stato-lmm#REML_criterion -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#REML_criterion">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+        <obo:IAO_0000115 xml:lang="en">REML criterion at convergence</obo:IAO_0000115>
+        <obo:IAO_0000119 xml:lang="en">Pinheiro, J.C., and Bates, D.M. (2000) &quot;Mixed-Effects Models in S and S-PLUS&quot;, Springer. pp. 75-76.</obo:IAO_0000119>
+        <dc:description xml:lang="en">REML criterion is a model quality measure that is fixed-effect dependent. Thus, it allows to compare models differing in their random effects structure, provided that the fixed-effects structure remains unchanged.</dc:description>
+        <rdfs:label xml:lang="en">REML criterion</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#compund_variable -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#compund_variable">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/STATO_0000258"/>
+        <obo:IAO_0000115 xml:lang="en">Compound variable is variable created from multiple other variables, according to a specific operation and/or formula.</obo:IAO_0000115>
+        <rdfs:label xml:lang="en">compound variable</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#containment_calculation -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#containment_calculation">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/STATO_0000585"/>
+        <rdfs:label xml:lang="en">containment calculation</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#diagonal_covariance_structure -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#diagonal_covariance_structure">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/STATO_0000346"/>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000120"/>
+        <obo:IAO_0000115 xml:lang="en">This covariance structure has heterogenous variances and zero correlation between elements.</obo:IAO_0000115>
+        <obo:IAO_0000118 xml:lang="en">UN(1)</obo:IAO_0000118>
+        <obo:IAO_0000118 xml:lang="en">banded main diagonal covariance structure</obo:IAO_0000118>
+        <obo:IAO_0000119 xml:lang="en">http://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_mixed_sect019.htm#statug.mixed.mixedcovstruct</obo:IAO_0000119>
+        <rdfs:label xml:lang="en">diagonal covariance structure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#direct_effect -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#direct_effect">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#effect"/>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000115 xml:lang="en">A direct effect represents an expected value of the dependent variable Y for for the i-th level of independent variable X or the whole population. That is, a direct effect corresponds to either a group-specific marginal expected value (marginal mean) of the dependent variable Y, or the overall expected value (overall mean) of Y.</obo:IAO_0000115>
+        <rdfs:label xml:lang="en">direct effect</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#effect -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#effect">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/IAO_0000027"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000136"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://purl.obolibrary.org/obo/OBI_0000751"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/OBI_0001927"/>
+                                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/OBI_0000750"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000115 xml:lang="en">In a mixed model, an effect is a quantification of the consequence of application of particular value of independent variable X (or a combination of values of multiple independent variables) on the distribution of dependent variable Y. 
+Effects describing the expected value of Y are called fixed effects, and those related to the variance of Y are called random effects. 
+In the mathematical formulation of a mixed model in matrix notation 
+y = X * beta + Z * u + e,
+beta and u are vectors of fixed and random effects, respectively.</obo:IAO_0000115>
+        <rdfs:label xml:lang="en">effect</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#error_effect -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#error_effect">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#effect"/>
+        <obo:IAO_0000115 xml:lang="en">the variability not accounted for in the model</obo:IAO_0000115>
+        <obo:STATO_0000404 xml:lang="en">e</obo:STATO_0000404>
+        <rdfs:label xml:lang="en">error effect</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#fixed_effect -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#fixed_effect">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#effect"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000345"/>
+                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/OBI_0000751"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000115 xml:lang="en">A fixed (non-random) quantity representing a group-specific expected value of the dependent variable Y for i-th level of independent variable X, or a group-specific deviation from a reference expected value of Y.</obo:IAO_0000115>
+        <obo:STATO_0000404 xml:lang="en">beta_i</obo:STATO_0000404>
+        <rdfs:label xml:lang="en">fixed effect</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#formula -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#formula">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/IAO_0000104"/>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000115 xml:lang="en">A formal instruction defining an entity, provided in a specific formal notation, such as: 
+- an algebraic equation defining a mathematical operation, 
+- an expression in a computer scripting language defining a function</obo:IAO_0000115>
+        <rdfs:label xml:lang="en">formula</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#goodness_of_fit_measure -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#goodness_of_fit_measure">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0001755"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000136"/>
+                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/STATO_0000464"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000118 xml:lang="en">quality criterion</obo:IAO_0000118>
+        <rdfs:label xml:lang="en">goodness of fit measure</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#marginal_mean -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#marginal_mean">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0001934"/>
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/STATO_0000230"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000136"/>
+                <owl:someValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://purl.obolibrary.org/obo/OBI_0000751"/>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/OBI_0001927"/>
+                                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/OBI_0000750"/>
+                            </owl:Restriction>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000115 xml:lang="en">Least square means are means for groups that are adjusted for means of other factors in the model. I.e., means of the means, allowing to reduce the effect of inbalanced groups.
+R Emmeans package: Estimated marginal means or EMMs (sometimes called  “least-squares means” or “predicted marginal means”) are predictions from a linear model over a reference grid; or marginal averages thereof.</obo:IAO_0000115>
+        <obo:IAO_0000118 xml:lang="en">least square mean</obo:IAO_0000118>
+        <obo:IAO_0000118 xml:lang="en">marginal mean</obo:IAO_0000118>
+        <rdfs:label xml:lang="en">marginal mean</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#mathematical_function -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#mathematical_function">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/IAO_0000030"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000205"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#formula"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000115 xml:lang="en">A function is a process or a relation that associates each element x of a set X, the domain of the function, to a single element y of another set Y (possibly the same set), the codomain (range) of the function. If the function is called f, this relation is denoted y = f (x), the element x is the argument or input of the function, and y is the value of the function, the output, or the image of x by f.</obo:IAO_0000115>
+        <obo:IAO_0000119>https://en.wikipedia.org/wiki/Function_(mathematics)</obo:IAO_0000119>
+        <rdfs:label xml:lang="en">mathematical function</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#parametric_function -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#parametric_function">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://purl.org/stato-lmm#mathematical_function"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000136"/>
+                        <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/STATO_0000034"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/STATO_0000034"/>
+        <obo:IAO_0000115 xml:lang="en">A mathematical function of model parameters</obo:IAO_0000115>
+        <rdfs:label xml:lang="en">parametric function</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#random_effect -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#random_effect">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#effect"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000381"/>
+                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/OBI_0000751"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000115 xml:lang="en">An unobservable random variable representing the influence of the i-th level of independent variable X on variances and covariances of dependent variable Y.</obo:IAO_0000115>
+        <obo:STATO_0000404 xml:lang="en">b_i</obo:STATO_0000404>
+        <obo:STATO_0000404 xml:lang="en">u_i</obo:STATO_0000404>
+        <rdfs:label xml:lang="en">random effect</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/stato-lmm#relative_effect -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#relative_effect">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#effect"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.org/stato-lmm#is_relative_to"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#direct_effect"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000115 xml:lang="en">A relative effect represents a deviation from the expected value of the dependent variable Y for a specific level of independent variable X. That is, the effect of choosing i-th level of the independent variable X is to shift the expected value of the dependent variable Y from (beta) to (beta + b_i).</obo:IAO_0000115>
+        <obo:IAO_0000119 xml:lang="en">Pinheiro, J.C., and Bates, D.M. (2000) &quot;Mixed-Effects Models in S and S-PLUS&quot;, Springer. p.8</obo:IAO_0000119>
+        <rdfs:label xml:lang="en">relative effect</rdfs:label>
+    </owl:Class>
+        
+
+
+    <!-- http://purl.org/stato-lmm#variance_parameter -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#variance_parameter">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/STATO_0000034"/>
+        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000428"/>
+        <obo:IAO_0000115 xml:lang="en">A model parameter that characterizes a variance-covariance structure model, and allows to determine the elements of the variance-covariance matrix (i.e. individual variances and covariances/correlations) according to that model. E.g. 
+- scaled identity structure (sigma^2 * I) is characterised by a single parameter sigma, corresponding to a square root of the variances,
+- autoregression structure (sigma^2 * rho^(i-j)) is characterised by two parameters: sigma and rho,
+- compound symmentry structure (sigma^2 * I + sigma_1) is characterised by two parameters: sigma and sigma_1.</obo:IAO_0000115>
+        <obo:IAO_0000119>Adapted from http://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_mixed_sect019.htm#statug.mixed.mixedcovstruct</obo:IAO_0000119>
+        <rdfs:label xml:lang="en">variance parameter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000258 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000258">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000381"/>
+                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/OBI_0000751"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000266 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000266">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000325 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000325">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000327 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000327">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+        <obo:IAO_0000118 xml:lang="en">SBC</obo:IAO_0000118>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000346 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000346">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/BFO_0000051"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#variance_parameter"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000378 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000378">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000379 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000379">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000466 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000466">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000219"/>
+                <owl:someValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/BFO_0000050"/>
+                        <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/STATO_0000289"/>
+                    </owl:Restriction>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000001"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#effect"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000467 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000467">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000001"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#random_effect"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000468 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000468">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000001"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#fixed_effect"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000550 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000550">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+
