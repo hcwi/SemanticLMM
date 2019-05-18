@@ -1,5 +1,5 @@
-# get terms for R objects from specific ontology 'ont' (currently LMM, STATO_SIMPLE, STATO)
-prepareAnnotations <- function(ontology = "LMM") {
+# get terms for R objects (as simple ONTOLOGY_ID or full ONTOLOGY_URI)
+prepareAnnotations <- function(annotationType="ONTOLOGY_ID") {
 
   # list of mappings R names > LMM or STATO terms
   termListCsv <- system.file("extdata", "modelTerms.csv", package = "semLMM", mustWork = TRUE)
@@ -9,9 +9,9 @@ prepareAnnotations <- function(ontology = "LMM") {
   # creating variables for the terms
   # (selecting one of LMM or STATO terms from csv file above and putting it in R file with assignement operation "<-" )
   for (i in 1:dim(terms)[1]) {
-    ontTerm <- terms[i,ontology]
+    ontTerm <- terms[i, annotationType]
     if (ontTerm == "") {
-      warning(paste("No ", ont, " term for the object '", terms[i,1], "' found.", sep=""))
+      warning(paste("No ontology term for the object '", terms[i,1], "' found.", sep=""))
       ontTerm <- toupper(terms[i,1])
     }
     assign(toupper(terms[i,1]), ontTerm, envir = termsEnv)
@@ -29,8 +29,8 @@ prefixes <- "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix bfo: <http://purl.obolibrary.org/obo/bfo.owl#> .
 @prefix ro: <http://purl.obolibrary.org/obo/ro.owl#> .
 @prefix obo: <http://purl.obolibrary.org/obo/> .
-@prefix lmm: <http://igr.poznan.pl/lmm#> .
+@prefix lmm: <http://purl.org/stato-lmm#> .
 
 "
 termsEnv <- new.env()
-prepareAnnotations("STATO") #STATO_SIMPLE")
+prepareAnnotations()
