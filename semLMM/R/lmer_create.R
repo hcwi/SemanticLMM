@@ -379,19 +379,18 @@ getRandomTerms_lmer <- function(mod) {
 
     assertthat::assert_that(length(termVarNames) == length(termVariables))
     randomTerm <- RandomModelTerm(termName, variable = termVariables)
-    #cat(randomTerm$asTTL())
 
     randomTerm$covarianceStructure <- list(CovarianceStructure(termName))
 
     effects <- list()
-    termEffectNames <- levels(mod@flist[[i]]) # get effects and assign levels to them
-    for (termEffectName in termEffectNames) {
-      termEffectLevelNames <- unlist(strsplit(termEffectName,":"))
+    termEffectNames <- strsplit(levels(mod@flist[[i]]),":") # get effects and assign levels to them
+    for (termEffectLevelNames in termEffectNames) {
       effLevels <- list()
       for (j in 1:length(termEffectLevelNames)) {
         tvn <- termEffectLevelNames[j]
         tvar <- getEntity("Level", tvn)
         if (is.null(tvar)) {
+          warning(paste(tvn, "No variable level, adding"))
           var <- termVariables[[j]]
           tvar <- VariableLevel(tvn, value=tvn, variable=var)
           var$levels <- append(var$levels, tvar)
@@ -399,7 +398,7 @@ getRandomTerms_lmer <- function(mod) {
         effLevels <- append(effLevels, tvar)
       }
       assertthat::assert_that(length(effLevels) == length(termEffectLevelNames))
-      eff <- Parameter(termEffectName, levels = effLevels, type=list("Effect")) #ModelParameter X, then what? #TODO eBLUP?
+      eff <- Parameter(paste0(termEffectLevelNames, collapse =":"), levels = effLevels, type=list("Effect")) #ModelParameter X, then what? #TODO eBLUP?
       effects <- append(effects, eff)
     }
     effects
@@ -562,8 +561,9 @@ getDependentVariables <- function(mod) {
 getModel <- function(mod) {
 
   vars <- getVariables(mod)
-  lab <- gsub(deparse(formula(mod)),pattern = " ", rep="")
+  lab <- paste(trimws(deparse(formula(mod))), collapse = "")
   lab <- gsub(lab, pattern = "~", rep="-")
+  lab <- gsub(lab, pattern = " ", rep="")
   lab <- gsub(lab, pattern = "*", rep="", fixed=T)
   lab <- gsub(lab, pattern = "+", rep=".", fixed=T)
   lab <- substr(lab, 1, grepRaw(lab, pat="(", fixed=T)-2)
@@ -612,6 +612,8 @@ exportModelToRDF <- function(mod, ds=list()) {
 
   modelFitting
 }
+
+
 
 # run <- function() {
 #

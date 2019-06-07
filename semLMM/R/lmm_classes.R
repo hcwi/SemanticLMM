@@ -19,6 +19,7 @@ newGraph <- function() {
 
 register <- function(o) {
   key = o$label
+  #print(paste("Adding", key, o$id))
   assign(x = key, value = c(graph[[key]], o), envir = graph)
 }
 
@@ -27,7 +28,7 @@ getEntity <- function(className, label) {
   classMatch <- grepl(lapply(labelMatch, class), pattern=className, ignore.case = T)
   matchingEntity <- NULL
   if (sum(classMatch) == 1) {
-    matchingEntity <- labelMatch[classMatch]
+    matchingEntity <- labelMatch[classMatch][[1]]
   } else if (sum(classMatch) > 1) {
     stop(paste("Error getting an entity. More than one matching entity found for ", className, label))
   }
@@ -147,28 +148,26 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                       paste0("\"", number, "\"^^xsd:float")
                                     }
                                   },
-                                  mapping = function(type) {
-                                    paste0(get(toupper(type)))
+                                  ont = function(type) {
+                                    paste0(get(toupper(type), envir = termsEnv))
                                   },
                                   asTTL = function() {
                                     paste(getTTL(), ".\n")
                                   },
-                                  getTTL = function() {
-                                    attach(termsEnv)
+                                  getTTL = function() { #TODO simplify, after refactoring the structure is too complex!
                                     res <- innerGetTTL()
-                                    detach(termsEnv)
                                     res
                                   },
                                   innerGetTTL = function() {
                                     types <- ""
                                     for (t in .self$type) {
-                                      types <- paste(types, ";\n", TYPE, mapping(t))
+                                      types <- paste(types, ";\n", ont("TYPE"), ont(t))
                                     }
                                     comments <- ""
                                     if (length(.self$comments)>0) {
                                       comments <- paste(";\n", .self$comments, collapse = "")
                                     }
-                                    paste(ident(id), LABEL, lit(label),
+                                    paste(ident(id), ont("LABEL"), lit(label),
                                           types,
                                           comments
                                     )
@@ -226,11 +225,11 @@ ObjProperty <- {setRefClass("ObjProperty",
                               innerGetTTL = function() {
                                 paste(callSuper(),
                                       if (is.numeric(value) && length(value)==1) {
-                                        paste(";\n", VALUE, num(value))
+                                        paste(";\n", ont("VALUE"), num(value))
                                       } else {
-                                        paste(";\n", VALUE, lit(value))
+                                        paste(";\n", ont("VALUE"), lit(value))
                                       },
-                                      ";\n", get(toupper(pred)), listAsTTL(obj)
+                                      ";\n", ont(pred), listAsTTL(obj)
                                 )
                               }
                             )
@@ -252,10 +251,10 @@ Hypothesis <- {setRefClass("Hypothesis",
                              },
                              innerGetTTL = function() {
                                paste(callSuper(),
-                                     ";\n", TYPE, HYPOTHESIS,
-                                     #";\n", PVALUE, num(pvalue),
-                                     #";\n", QVALUE, num(qvalue),
-                                     ";\n", ISABOUT, listAsTTL(modelParams)
+                                     ";\n", ont("TYPE"), ont("HYPOTHESIS"),
+                                     #";\n", ont("PVALUE"), num(pvalue),
+                                     #";\n", ont("QVALUE"), num(qvalue),
+                                     ";\n", ont("ISABOUT"), listAsTTL(modelParams)
                                )
                              }
                            )
@@ -276,11 +275,11 @@ Dataset <- {setRefClass("Dataset",
                           },
                           innerGetTTL = function() {
                             paste(callSuper(),
-                                  ";\n", TYPE, DATASET,
-                                  if (length(url)>0) {paste(";\n", DESCRIPTION, lit(url))},
-                                  ";\n", CREATOR, lit("HCK"),
+                                  ";\n", ont("TYPE"), ont("DATASET"),
+                                  if (length(url)>0) {paste(";\n", ont("DESCRIPTION"), lit(url))},
+                                  ";\n", ont("CREATOR"), lit("HCK"),
                                   if (length(variables) > 0) {
-                                    paste(";\n", paste(HASPART, listAsTTL(variables), collapse = " ;\n ")) }
+                                    paste(";\n", paste(ont("HASPART"), listAsTTL(variables), collapse = " ;\n ")) }
 
                             )
                           }
@@ -306,11 +305,11 @@ Statistic <- {setRefClass("Statistic",
                               paste(callSuper(),
                                     #";\n", TYPE, STATISTIC,
                                     if (is.numeric(value) && length(value)==1) {
-                                      paste(";\n", VALUE, num(value)) },
+                                      paste(";\n", ont("VALUE"), num(value)) },
                                     if (length(isAbout) > 0) {
-                                      paste(";\n", paste(ISABOUT, listAsTTL(isAbout), collapse = " ;\n ")) },
+                                      paste(";\n", paste(ont("ISABOUT"), listAsTTL(isAbout), collapse = " ;\n ")) },
                                     if (length(hasPart) > 0) {
-                                      paste(";\n", paste(HASPART, listAsTTL(hasPart), collapse = " ;\n ")) }
+                                      paste(";\n", paste(ont("HASPART"), listAsTTL(hasPart), collapse = " ;\n ")) }
                               )}
                           )
 )}
@@ -344,9 +343,9 @@ Estimate <- {setRefClass("Estimate",
                                ))
                              }
                              paste(callSuper(),
-                                   ";\n", TYPE, ESTIMATE,
-                                   ";\n", VALUE, num(value),
-                                   ";\n", ISESTIMATEOF, listAsTTL(list(isEstimateOf)))
+                                   ";\n", ont("TYPE"), ont("ESTIMATE"),
+                                   ";\n", ont("VALUE"), num(value),
+                                   ";\n", ont("ISESTIMATEOF"), listAsTTL(list(isEstimateOf)))
                            }
                          )
 )}
@@ -368,15 +367,15 @@ ValueSpecification <- {setRefClass("ValueSpecification",
                                      },
                                      innerGetTTL = function() {
                                        paste(callSuper(),
-                                             ";\n", TYPE, VALUESPECIFICATION,
+                                             ";\n", ont("TYPE"), ont("VALUESPECIFICATION"),
                                              if (!is.null(value)) {
                                                if (is.numeric(value) && length(value)==1) {
-                                                 paste(";\n", VALUE, num(value))
+                                                 paste(";\n", ont("VALUE"), num(value))
                                                } else {
-                                                 paste(";\n", VALUE, lit(value))
+                                                 paste(";\n", ont("VALUE"), lit(value))
                                                }
                                              }
-                                             #, ";\n", SPECIFIESVALUEOF, listAsTTL(list(variable))
+                                             #, ";\n", ont("SPECIFIESVALUEOF"), listAsTTL(list(variable))
                                        )
                                      }
                                    )
@@ -387,8 +386,8 @@ VariableLevel <- {setRefClass("VariableLevel",
                               methods = list(
                                 innerGetTTL = function() {
                                   paste(callSuper(),
-                                        ";\n", TYPE, VARIABLELEVEL,
-                                        ";\n", TYPE, CATEGORICALVALUESPECIFICATION)
+                                        ";\n", ont("TYPE"), ont("VARIABLELEVEL"),
+                                        ";\n", ont("TYPE"), ont("CATEGORICALVALUESPECIFICATION"))
                                 }
                               )
 )}
@@ -402,7 +401,7 @@ Variable <- {setRefClass("Variable",
                            innerGetTTL = function() {
                              paste(callSuper()
                                    #,
-                                   #";\n", TYPE, VARIABLE
+                                   #";\n", ont("TYPE"), ont("VARIABLE")
                              )
                            }
                          )
@@ -425,8 +424,8 @@ ContinuousVariable <- {setRefClass("ContinuousVariable",
                                      },
                                      innerGetTTL = function() {
                                        paste(callSuper(),
-                                             ";\n", TYPE, CONTINUOUSVARIABLE,
-                                             ";\n", HASVALUESPECIFICATION, listAsTTL(levels))
+                                             ";\n", ont("TYPE"), ont("CONTINUOUSVARIABLE"),
+                                             ";\n", ont("HASVALUESPECIFICATION"), listAsTTL(levels))
                                      }
                                    )
 )}
@@ -447,8 +446,8 @@ CategoricalVariable <- {setRefClass("CategoricalVariable",
                                       },
                                       innerGetTTL = function() {
                                         paste(callSuper(),
-                                              ";\n", TYPE, CATEGORICALVARIABLE,
-                                              ";\n", HASVALUESPECIFICATION, listAsTTL(levels))
+                                              ";\n", ont("TYPE"), ont("CATEGORICALVARIABLE"),
+                                              ";\n", ont("HASVALUESPECIFICATION"), listAsTTL(levels))
                                       }
                                     )
 )}
@@ -471,9 +470,9 @@ CompoundVariable <- {setRefClass("CompoundVariable",
                                    },
                                    innerGetTTL = function() {
                                      paste(callSuper(),
-                                           ";\n", TYPE, CONTINUOUSVARIABLE,
-                                           ";\n", TYPE, COMPOUNDVARIABLE,
-                                           ";\n", HASPART, listAsTTL(levels))
+                                           ";\n", ont("TYPE"), ont("CONTINUOUSVARIABLE"),
+                                           ";\n", ont("TYPE"), ont("COMPOUNDVARIABLE"),
+                                           ";\n", ont("HASPART"), listAsTTL(levels))
                                    }
                                  )
 )}
@@ -488,7 +487,7 @@ CompoundVariable <- {setRefClass("CompoundVariable",
 #                                                 },
 #                                                 innerGetTTL = function() {
 #                                                   paste(callSuper(),
-#                                                         ";\n", TYPE, CATEGORICALINDEPENDENTVARIABLE
+#                                                         ";\n", ont("TYPE"), ont("CATEGORICALINDEPENDENTVARIABLE")
 #                                                   )
 #                                                 }
 #                                               )
@@ -519,13 +518,13 @@ ModelTerm <- {
                 },
                 innerGetTTL = function() {
                   paste(callSuper(),
-                        #";\n", TYPE, MODELTERM,
-                        ";\n", HASORDER, lit(order),
+                        #";\n", ont("TYPE"), ont("MODELTERM"),
+                        ";\n", ont("HASORDER"), lit(order),
                         if (length(variable) > 0) {
-                          paste(";\n", paste(ISABOUT, listAsTTL(variable), collapse = " ;\n "))
+                          paste(";\n", paste(ont("ISABOUT"), listAsTTL(variable), collapse = " ;\n "))
                         },
                         if (length(effect) > 0) {
-                          paste(";\n", paste(HASEFFECT, listAsTTL(effect), collapse = " ;\n "))
+                          paste(";\n", paste(ont("HASEFFECT"), listAsTTL(effect), collapse = " ;\n "))
                         }
                   )}
               )
@@ -540,8 +539,8 @@ RandomModelTerm <- {
               methods = list(
                 innerGetTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, RANDOMMODELTERM,
-                        ";\n", paste(HASPART, listAsTTL(covarianceStructure), collapse = " ;\n ")
+                        ";\n", ont("TYPE"), ont("RANDOMMODELTERM"),
+                        ";\n", paste(ont("HASPART"), listAsTTL(covarianceStructure), collapse = " ;\n ")
                   )
                 }
               )
@@ -553,7 +552,7 @@ ErrorModelTerm <- {
               methods = list(
                 innerGetTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, ERRORMODELTERM
+                        ";\n", ont("TYPE"), ont("ERRORMODELTERM")
                   )
                 }
               )
@@ -565,7 +564,7 @@ FixedModelTerm <- {
               methods = list(
                 innerGetTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, FIXEDMODELTERM
+                        ";\n", ont("TYPE"), ont("FIXEDMODELTERM")
                   )
                 }
               )
@@ -602,8 +601,8 @@ FixedModelTerm <- {
 #                 },
 #                 innerGetTTL = function() {
 #                   paste(callSuper(),
-#                         ";\n", TYPE, COVARIANCESTRUCTURE,
-#                         ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n ")
+#                         ";\n", ont("TYPE"), ont("COVARIANCESTRUCTURE"),
+#                         ";\n", paste(ont("HASPART"), listAsTTL(params), collapse = " ;\n ")
 #                         )
 #                 }
 #               )
@@ -641,11 +640,11 @@ CovarianceStructure <- {
                 },
                 innerGetTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, COVARIANCESTRUCTURE,
-                        ";\n", TYPE, get(toupper(covModel)),
-                        ";\n", paste(HASPART, listAsTTL(params), collapse = " ;\n "),
+                        ";\n", ont("TYPE"), ont("COVARIANCESTRUCTURE"),
+                        ";\n", ont("TYPE"), ont(covModel),
+                        ";\n", paste(ont("HASPART"), listAsTTL(params), collapse = " ;\n "),
                         if (length(vars) > 0) {
-                          paste(";\n", paste(ISABOUT, listAsTTL(vars), collapse = " ;\n "))
+                          paste(";\n", paste(ont("ISABOUT"), listAsTTL(vars), collapse = " ;\n "))
                         }
                   )
                 }
@@ -686,31 +685,31 @@ Parameter <- {
                 },
                 innerGetTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, MODELPARAMETER,
+                        ";\n", ont("TYPE"), ont("MODELPARAMETER"),
                         if (length(correspondingVarLevels) > 0) {
-                          paste(";\n", paste(ISABOUT, listAsTTL(correspondingVarLevels), collapse = " ;\n "))
+                          paste(";\n", paste(ont("ISABOUT"), listAsTTL(correspondingVarLevels), collapse = " ;\n "))
                         },
                         if (length(relativeTo) > 0) {
-                          paste(";\n", TYPE, RELATIVEEFFECT,
-                                ";\n", paste(ISRELATIVETO, listAsTTL(relativeTo), collapse = " ;\n "))
+                          paste(";\n", ont("TYPE"), ont("RELATIVEEFFECT"),
+                                ";\n", paste(ont("ISRELATIVETO"), listAsTTL(relativeTo), collapse = " ;\n "))
                         },
                         #if (length(estimate) > 0) {
                         #  paste(";\n", paste("xxx:TMP_EST", listAsTTL(estimate), collapse = " ;\n "))
                         #},
                         if (length(effectType) > 0) {
                           if (effectType == "fixed") {
-                            paste(";\n", TYPE, FIXEDEFFECT, #TODO: why doesn't print?!
+                            paste(";\n", ont("TYPE"), ont("FIXEDEFFECT"), #TODO: why doesn't print?!
                                   if (length(specifiesValueOf) > 0) {
-                                    paste(";\n", paste(HASFIXEDEFFECTON, listAsTTL(specifiesValueOf), collapse = " ;\n "))
+                                    paste(";\n", paste(ont("HASFIXEDEFFECTON"), listAsTTL(specifiesValueOf), collapse = " ;\n "))
                                   })
                           } else if (effectType == "random") {
-                            paste(";\n", TYPE, RANDOMEFFECT,
+                            paste(";\n", ont("TYPE"), ont("RANDOMEFFECT"),
                                   if (length(specifiesValueOf) > 0) {
-                                    paste(";\n", paste(HASRANDOMEFFECTON, listAsTTL(specifiesValueOf), collapse = " ;\n "))
+                                    paste(";\n", paste(ont("HASRANDOMEFFECTON"), listAsTTL(specifiesValueOf), collapse = " ;\n "))
                                   })
                           } else {
-                            paste(";\n", TYPE, EFFECT,
-                                  ";\n", paste(HASEFFECTON, listAsTTL(specifiesValueOf), collapse = " ;\n "))
+                            paste(";\n", ont("TYPE"), ont("EFFECT"),
+                                  ";\n", paste(ont("HASEFFECTON"), listAsTTL(specifiesValueOf), collapse = " ;\n "))
                           }
                         }
                   )
@@ -742,12 +741,12 @@ Parameter <- {
 #                 },
 #                 innerGetTTL = function() {
 #                   paste(callSuper(),
-#                         ";\n", TYPE, PARAMETRICFUNCTION,
-#                         #";\n", TYPE, EFFECT,
-#                         #";\n", TYPE, MODELPARAMETER,
-#                         ";\n", FORMULA, lit(formula),
+#                         ";\n", ont("TYPE"), ont("PARAMETRICFUNCTION"),
+#                         #";\n", ont("TYPE"), ont("EFFECT"),
+#                         #";\n", ont("TYPE"), ont("MODELPARAMETER"),
+#                         ";\n", ont("FORMULA"), lit(formula),
 #                         if (length(parameters) > 0) {
-#                           paste(";\n", paste(ISFUNCTIONOF, listAsTTL(parameters), collapse = " ;\n "))
+#                           paste(";\n", paste(ont("ISFUNCTIONOF"), listAsTTL(parameters), collapse = " ;\n "))
 #                         }
 #                   )
 #                 }
@@ -787,8 +786,8 @@ StudyDesign <- {
                 },
                 innerGetTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, STUDYDESIGN,
-                        ";\n", paste(DECLARES, listAsTTL(vars), collapse = " ;\n ")
+                        ";\n", ont("TYPE"), ont("STUDYDESIGN"),
+                        ";\n", paste(ont("DECLARES"), listAsTTL(vars), collapse = " ;\n ")
                   )
                 }
               )
@@ -807,9 +806,9 @@ DesignMatrix <- {
                 },
                 innerGetTTL = function() {
                   paste(callSuper(),
-                        ";\n", TYPE, DESIGNMATRIX,
-                        ";\n", DESCRIPTION, lit("binary"),
-                        ";\n", paste(DENOTES, listAsTTL(studyDesign), collapse = " ;\n ")
+                        ";\n", ont("TYPE"), ont("DESIGNMATRIX"),
+                        ";\n", ont("DESCRIPTION"), lit("binary"),
+                        ";\n", paste(ont("DENOTES"), listAsTTL(studyDesign), collapse = " ;\n ")
                   )
                 }
               )
@@ -870,13 +869,13 @@ Lmm <- {
                   }
                   formula <- ObjProperty(label="formula", type="formula", pred="denotes", obj=.self, value=formula)
                   paste(callSuper(),
-                        ";\n", TYPE, LMM,
-                        ";\n", ISDENOTEDBY, listAsTTL(list(formula)),
-                        ";\n", ISMODELFOR, listAsTTL(dependentVariable),
-                        ";\n", paste(HASTERM, listAsTTL(independentFixedTerm), collapse = " ;\n "),
-                        ";\n", paste(HASTERM, listAsTTL(independentRandomTerm), collapse = " ;\n "),
-                        ";\n", paste(HASTERM, listAsTTL(errorTerm), collapse = " ;\n "),
-                        ";\n", paste(ISDENOTEDBY, listAsTTL(designMatrix), collapse = " ;\n ")
+                        ";\n", ont("TYPE"), ont("LMM"),
+                        ";\n", ont("ISDENOTEDBY"), listAsTTL(list(formula)),
+                        ";\n", ont("ISMODELFOR"), listAsTTL(dependentVariable),
+                        ";\n", paste(ont("HASTERM"), listAsTTL(independentFixedTerm), collapse = " ;\n "),
+                        ";\n", paste(ont("HASTERM"), listAsTTL(independentRandomTerm), collapse = " ;\n "),
+                        ";\n", paste(ont("HASTERM"), listAsTTL(errorTerm), collapse = " ;\n "),
+                        ";\n", paste(ont("ISDENOTEDBY"), listAsTTL(designMatrix), collapse = " ;\n ")
                   )
 
                 }
@@ -905,15 +904,15 @@ Process <- {
                 innerGetTTL = function() {
                   gsub(pattern=" +", rep=" ",
                        paste(callSuper(),
-                             ";\n", TYPE, mapping(processType),
+                             ";\n", ont("TYPE"), ont(processType),
                              if (length(hasInput) > 0) {
-                               paste(";\n", paste(HASINPUT, listAsTTL(hasInput), collapse = " ;\n "))
+                               paste(";\n", paste(ont("HASINPUT"), listAsTTL(hasInput), collapse = " ;\n "))
                              },
                              if (length(hasOutput) > 0) {
-                               paste(";\n", paste(HASOUTPUT, listAsTTL(hasOutput), collapse = " ;\n "))
+                               paste(";\n", paste(ont("HASOUTPUT"), listAsTTL(hasOutput), collapse = " ;\n "))
                              },
                              if (length(hasPart) > 0) {
-                               paste(";\n", paste(HASPART, listAsTTL(hasPart), collapse = " ;\n "))
+                               paste(";\n", paste(ont("HASPART"), listAsTTL(hasPart), collapse = " ;\n "))
                              }
                        )
                   )}
