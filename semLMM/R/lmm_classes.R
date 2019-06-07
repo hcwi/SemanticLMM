@@ -10,7 +10,7 @@ setLogger <- function(logfile = "", level = "DEBUG") {
 }
 
 # whole graph - list of registered objects
-graph <- new.env(parent = emptyenv())
+graph <- new.env(parent = emptyenv(), hash = TRUE)
 newGraph <- function() {
   log4r::debug(lenv$logger, match.call())
   rm(list = ls(graph), envir = graph)
@@ -18,18 +18,17 @@ newGraph <- function() {
 }
 
 register <- function(o) {
-  assign(x = o$id, value = o, envir = graph)
+  key = o$label
+  assign(x = key, value = c(graph[[key]], o), envir = graph)
 }
 
 getEntity <- function(className, label) {
-  classMatch <- grepl(sapply(mget(ls(graph), envir = graph), class), pattern=className, ignore.case = T)
-  labelMatch <- sapply(mget(ls(graph), envir = graph), function(x) x$label) == label
-
-  matchingIndices <- classMatch & labelMatch
+  labelMatch <- graph[[label]]
+  classMatch <- grepl(lapply(labelMatch, class), pattern=className, ignore.case = T)
   matchingEntity <- NULL
-  if (sum(matchingIndices) == 1) {
-    matchingEntity <- get(ls(graph)[[which(matchingIndices)]], envir = graph)
-  } else if (sum(matchingIndices) > 1) {
+  if (sum(classMatch) == 1) {
+    matchingEntity <- labelMatch[classMatch]
+  } else if (sum(classMatch) > 1) {
     stop(paste("Error getting an entity. More than one matching entity found for ", className, label))
   }
   return(matchingEntity)
@@ -38,8 +37,9 @@ getEntity <- function(className, label) {
 
 listEntities <- function() {
   entities <- mget(ls(graph), envir = graph)
-  printableList <- sapply(mget(ls(graph), envir = graph), function(o) sprintf("%20s %20s\n", class(o), o$label))
-  cat(printableList)
+  printEntity <- function(x) (paste(x$label, class(x)))
+  printedEntities <- sapply(entities, function(x) sapply(x, printEntity))
+  unlist(printedEntities, use.names = F)
 
 }
 #getEntity("AnnotatedEntity", "eoLabel")
@@ -264,6 +264,7 @@ Hypothesis <- {setRefClass("Hypothesis",
 Dataset <- {setRefClass("Dataset",
                         contains = "AnnotatedEntity",
                         fields = list(
+                          #TODO change URL to description (as in termsEnv$DESCRIPTION == dc:description)
                           url = "character",
                           variables = "list"
                         ),
@@ -295,7 +296,9 @@ Statistic <- {setRefClass("Statistic",
                           methods = list(
                             initialize = function(... , value=numeric(0), isAbout = list(), hasPart = list()) {
                               callSuper(...)
-                              .self$value <- value
+                              if (!(length(value) == 0 || is.na(value))) {
+                                .self$value <- value
+                              }
                               .self$isAbout <- isAbout
                               .self$hasPart <- hasPart
                             },
@@ -671,13 +674,13 @@ Parameter <- {
                   .self$relativeTo <- reference
                   if (length(valueOf) == 0) {
                     #TODO add variable
-                    warning(paste("No isAbout variable declared for parameter:", label))
+                    #warning(paste("No isAbout variable declared for parameter:", label))
                   } else if (length(valueOf) == 1 && typeof(valueOf) != "list") {
                     valueOf <- list(valueOf)
                   }
                   .self$specifiesValueOf <- valueOf
                   if (length(effectType) == 0) {
-                    warning(paste("No fixed/random effect type declared for parameter:", label))
+                    #warning(paste("No fixed/random effect type declared for parameter:", label))
                   }
                   .self$effectType <- effectType
                 },
