@@ -19,7 +19,7 @@ newGraph <- function() {
 
 register <- function(o) {
   key = o$label
-  #print(paste("Adding", key, o$id))
+  log4r::info(lenv$logger, paste("Registering object", key, o$id))
   assign(x = key, value = c(graph[[key]], o), envir = graph)
 }
 
@@ -53,6 +53,7 @@ listOfStringsToObjects <- function(objClass = "Level", objNames) {
     for (objName in objNames) {
       obj <- getEntity(objClass, objName)
       if (is.null(obj)) {
+        log4r::error(lenv$logger, paste0("Haven't found '", objClass, "' for the name: ", objName))
         print(paste0("Haven't found '", objClass, "' for the name: ", objName))
       } else {
         objs <- append(objs, obj)
@@ -324,6 +325,7 @@ Estimate <- {setRefClass("Estimate",
                          fields = list(
                            value = "numeric",
                            se = "numeric",
+                           seObj = "list",
                            conflev = "numeric",
                            ucl = "numeric",
                            lcl = "numeric",
@@ -337,10 +339,12 @@ Estimate <- {setRefClass("Estimate",
                              if (!is.null(se)) {.self$se <- se}
                            },
                            innerGetTTL = function() {
-                             if(!is.na(se) && length(se) == 1 && se != "") {
-                               listAsTTL(list(
-                                 Statistic(paste0("se_", label), type=list("se"), value=se, isAbout = list(.self))
-                               ))
+                             if (is.null(.self$seObj) || length(.self$seObj) == 0 ) {
+                               if(!is.na(se) && length(se) == 1 && se != "") {
+                                 .self$seObj <- list(Statistic(paste0("se_", label), type=list("se"), value=se, isAbout = list(.self)))
+                               }}
+                             if (!is.null(.self$seObj) && length(.self$seObj) > 0) {
+                               listAsTTL(seObj)
                              }
                              paste(callSuper(),
                                    ";\n", ont("TYPE"), ont("ESTIMATE"),
@@ -819,7 +823,7 @@ Lmm <- {
   setRefClass("Lmm",
               contains = "AnnotatedEntity",
               fields = list(
-                formula = "character",
+                formula = "list",
                 dependentVariable = "list",
                 independentFixedTerm = "list", # of ModelTerm
                 independentRandomTerm = "list", # of ModelTerm
@@ -838,7 +842,11 @@ Lmm <- {
                   if (is.language(formula)) {
                     formula <- deparse(formula)
                   }
-                  .self$formula <- formula
+                  if (is.character(formula)) {
+                    .self$formula <- list(ObjProperty(label="formula", type="formula", pred="denotes", obj=.self, value=formula))
+                  } else {
+                    stop("Cannot generate 'formula' ObjProperty")
+                  }
                   #.self$residual <- resid
                   .self$variables <- vars
                 },
@@ -859,7 +867,9 @@ Lmm <- {
                   .self$quality
                 },
                 innerGetTTL = function() {
-                  .self$designMatrix <- list(DesignMatrix("dm", declares = append(variables, dependentVariable)))
+                  if (is.null(.self$designMatrix) || length(.self$designMatrix) == 0) {
+                    .self$designMatrix <- list(DesignMatrix("dm", declares = append(variables, dependentVariable)))
+                  }
                   props <- getQuality()
                   if (length(df)) {
                     props <- append(props, ObjProperty("DF", "df", pred="isAbout", value=df, obj=.self))
@@ -867,10 +877,10 @@ Lmm <- {
                   if (length(props) > 0) {
                     devNull <- listAsTTL(props) # puts properties in the queue for printing
                   }
-                  formula <- ObjProperty(label="formula", type="formula", pred="denotes", obj=.self, value=formula)
+                  #formula <- ObjProperty(label="formula", type="formula", pred="denotes", obj=.self, value=formula)
                   paste(callSuper(),
                         ";\n", ont("TYPE"), ont("LMM"),
-                        ";\n", ont("ISDENOTEDBY"), listAsTTL(list(formula)),
+                        ";\n", ont("ISDENOTEDBY"), listAsTTL(formula),
                         ";\n", ont("ISMODELFOR"), listAsTTL(dependentVariable),
                         ";\n", paste(ont("HASTERM"), listAsTTL(independentFixedTerm), collapse = " ;\n "),
                         ";\n", paste(ont("HASTERM"), listAsTTL(independentRandomTerm), collapse = " ;\n "),
