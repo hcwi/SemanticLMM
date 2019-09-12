@@ -1,0 +1,146 @@
+#This is an input file to ontology modularisation tool Ontofox (http://ontofox.hegroup.org)
+#Below the terms need for a semantic model of LMM are declared for importing from STATO and other upper ontologies
+#The output file named below is next imported into STATO-LMM ontology (STATO extension)
+
+
+[URI of the OWL(RDF/XML) output file]
+http://purl.org/obo/stato-lmm/external/stato_import.owl
+
+[Source ontology]
+#List of ontologies: BFO, IAO, OBI, STATO
+#All terms below (except for OBI_0001934) can be imported from STATO
+STATO
+
+[Low level source term URIs]
+#BFO terms
+http://purl.obolibrary.org/obo/BFO_0000050  #is part of
+http://purl.obolibrary.org/obo/BFO_0000051  #has part
+
+#IAO terms
+http://purl.obolibrary.org/obo/IAO_0000100  #dataset
+http://purl.obolibrary.org/obo/IAO_0000136  #is about
+http://purl.obolibrary.org/obo/IAO_0000219  #denotes
+
+#OBI terms
+http://purl.obolibrary.org/obo/OBI_0000175  #p-value
+http://purl.obolibrary.org/obo/OBI_0000293  #has specified input
+http://purl.obolibrary.org/obo/OBI_0000299  #has specified output
+http://purl.obolibrary.org/obo/OBI_0000338  #drawing conclusions
+http://purl.obolibrary.org/obo/OBI_0000673  #statistical hypothesis test
+http://purl.obolibrary.org/obo/OBI_0000739  #T test
+http://purl.obolibrary.org/obo/OBI_0000750  #study design dependent variable
+http://purl.obolibrary.org/obo/OBI_0000751  #study design dependent variable
+http://purl.obolibrary.org/obo/OBI_0001442  #q-value
+http://purl.obolibrary.org/obo/OBI_0001755  #selection citerion
+http://purl.obolibrary.org/obo/OBI_0001927  #specifies value of
+http://purl.obolibrary.org/obo/OBI_0001930  #categorical value specification
+http://purl.obolibrary.org/obo/OBI_0001933  #value specification
+http://purl.obolibrary.org/obo/OBI_0001934  #predictied value
+http://purl.obolibrary.org/obo/OBI_0001938  #has value specification
+http://purl.obolibrary.org/obo/OBI_0500000  #study design
+
+#STATO terms
+http://purl.obolibrary.org/obo/STATO_0000001  #declares
+http://purl.obolibrary.org/obo/STATO_0000034  #model parameter
+http://purl.obolibrary.org/obo/STATO_0000039  #statistic
+http://purl.obolibrary.org/obo/STATO_0000057  #null hypothesis
+http://purl.obolibrary.org/obo/STATO_0000065  #hypothesis
+http://purl.obolibrary.org/obo/STATO_0000069  #number of degrees of freedom
+http://purl.obolibrary.org/obo/STATO_0000086  #F test
+http://purl.obolibrary.org/obo/STATO_0000113  #variance
+http://purl.obolibrary.org/obo/STATO_0000119  #model parameter estimation
+http://purl.obolibrary.org/obo/STATO_0000142  #correlation coefficient
+http://purl.obolibrary.org/obo/STATO_0000144  #model parameter estimate
+http://purl.obolibrary.org/obo/STATO_0000175  #confidence interval calculation
+http://purl.obolibrary.org/obo/STATO_0000176  #T statistic
+http://purl.obolibrary.org/obo/STATO_0000196  #confidence interval
+http://purl.obolibrary.org/obo/STATO_0000205  #is denoted by
+http://purl.obolibrary.org/obo/STATO_0000218  #model fitting
+http://purl.obolibrary.org/obo/STATO_0000230  #expected value
+http://purl.obolibrary.org/obo/STATO_0000248  #blocking variable
+http://purl.obolibrary.org/obo/STATO_0000251  #continuous variable
+http://purl.obolibrary.org/obo/STATO_0000252  #categorical variable
+http://purl.obolibrary.org/obo/STATO_0000258  #variable
+http://purl.obolibrary.org/obo/STATO_0000265  #factor level
+http://purl.obolibrary.org/obo/STATO_0000266  #Bayes factor
+http://purl.obolibrary.org/obo/STATO_0000282  #F statistic
+http://purl.obolibrary.org/obo/STATO_0000289  #design matrix
+http://purl.obolibrary.org/obo/STATO_0000290  #contrast
+http://purl.obolibrary.org/obo/STATO_0000301  #covariance
+http://purl.obolibrary.org/obo/STATO_0000307  #treatment contrast
+http://purl.obolibrary.org/obo/STATO_0000314  #lower confidence limit
+http://purl.obolibrary.org/obo/STATO_0000325  #AIC
+http://purl.obolibrary.org/obo/STATO_0000327  #BIC
+http://purl.obolibrary.org/obo/STATO_0000336  #best linear unbiaised predictor 
+http://purl.obolibrary.org/obo/STATO_0000344  #has effect on
+http://purl.obolibrary.org/obo/STATO_0000345  #has fixed effect on
+http://purl.obolibrary.org/obo/STATO_0000346  #covariance structure
+http://purl.obolibrary.org/obo/STATO_0000362  #CS
+http://purl.obolibrary.org/obo/STATO_0000365  #AR(1)
+http://purl.obolibrary.org/obo/STATO_0000378  #DIC
+http://purl.obolibrary.org/obo/STATO_0000379  #FIC
+http://purl.obolibrary.org/obo/STATO_0000381  #has random effect on
+http://purl.obolibrary.org/obo/STATO_0000382  #has order
+http://purl.obolibrary.org/obo/STATO_0000383  #contrast estimation
+http://purl.obolibrary.org/obo/STATO_0000384  #contrast estimate
+http://purl.obolibrary.org/obo/STATO_0000403  #estimator of
+http://purl.obolibrary.org/obo/STATO_0000427  #REML
+http://purl.obolibrary.org/obo/STATO_0000464  #linear mixed model
+http://purl.obolibrary.org/obo/STATO_0000466  #model term
+http://purl.obolibrary.org/obo/STATO_0000467  #random model term
+http://purl.obolibrary.org/obo/STATO_0000468  #fixed model term
+http://purl.obolibrary.org/obo/STATO_0000470  #error model term
+http://purl.obolibrary.org/obo/STATO_0000472  #degree of freedom approximation
+http://purl.obolibrary.org/obo/STATO_0000473  #KenwardRoger df approximation
+http://purl.obolibrary.org/obo/STATO_0000474  #Satterthwaite df approximation
+http://purl.obolibrary.org/obo/STATO_0000498  #numerator df
+http://purl.obolibrary.org/obo/STATO_0000527  #denominator df
+http://purl.obolibrary.org/obo/STATO_0000550  #log likelihood
+http://purl.obolibrary.org/obo/STATO_0000558  #term testing
+http://purl.obolibrary.org/obo/STATO_0000559  #Wald test
+http://purl.obolibrary.org/obo/STATO_0000561  #confidence level
+http://purl.obolibrary.org/obo/STATO_0000562  #standard error
+http://purl.obolibrary.org/obo/STATO_0000582  #best linear unbiaised estimator
+http://purl.obolibrary.org/obo/STATO_0000584  #Wald statistic
+http://purl.obolibrary.org/obo/STATO_0000585  #df calculation
+http://purl.obolibrary.org/obo/STATO_0000588  #scaled identity
+http://purl.obolibrary.org/obo/stato.owl#is_model_for
+http://purl.obolibrary.org/obo/stato.owl#variance_component_estimate 
+
+
+[Top level source term URIs and target direct superclass URIs]
+http://purl.obolibrary.org/obo/BFO_0000001 #entity
+subClassOf
+
+[Source term retrieval setting]
+includeAllIntermediates
+
+[Branch extractions from source term URIs and target direct superclass URIs]
+
+[Source annotation URIs]
+#includeAllAxioms
+includeAllAxiomsRecursively
+
+
+
+[Source ontology]
+#List of ontologies: BFO, IAO, OBI, STATO
+OBI
+
+[Low level source term URIs]
+http://purl.obolibrary.org/obo/OBI_0001934  #predictied value
+
+
+[Top level source term URIs and target direct superclass URIs]
+http://purl.obolibrary.org/obo/BFO_0000001 #entity
+subClassOf
+
+[Source term retrieval setting]
+includeAllIntermediates
+
+[Branch extractions from source term URIs and target direct superclass URIs]
+
+[Source annotation URIs]
+#includeAllAxioms
+includeAllAxiomsRecursively
+

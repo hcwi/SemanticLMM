@@ -13,7 +13,9 @@
      xmlns:terms="http://purl.org/dc/terms/"
      xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
      xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#">
-    <owl:Ontology rdf:about="http://purl.org/stato-lmm"/>
+    <owl:Ontology rdf:about="http://purl.org/stato-lmm">
+        <owl:imports rdf:resource="http://purl.org/obo/stato-lmm/external/stato_import.owl"/>
+    </owl:Ontology>
     
 
 

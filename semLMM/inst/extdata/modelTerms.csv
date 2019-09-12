@@ -64,13 +64,14 @@ KenwardRogerApprox;Kenward-Roger df approximation process;stato:kenward-roger_de
 containment;containment df calculation;lmm:containment_calculation;lmm:containment_calculation;http://purl.org/stato-lmm#containment_calculation;
 testing;hypothesis testing process;stato:statistical_hypothesis_test;obo:OBI_0000673;http://purl.obolibrary.org/obo/OBI_0000673#statistical hypothesis test;
 Ftest;F testing process;stato:F_test;obo:STATO_0000086;http://purl.obolibrary.org/obo/STATO_0000086#Ftest;
+Ttest;T testing process;stato:T_test;obo:OBI_0000739;http://purl.obolibrary.org/obo/OBI_0000739#Ttest;
 WaldTest;Wald testing process;stato:Wald_test;obo:STATO_0000559;http://purl.obolibrary.org/obo/STATO_0000559#Wald_test;
 testingOfTerm;term testing process;stato:statistical_model_term_testing;obo:STATO_0000558;http://purl.obolibrary.org/obo/STATO_0000558#term_testing;
 hypothesis;hypothesis;stato:hypothesis;obo:STATO_0000065;http://purl.obolibrary.org/obo/STATO_0000065#hypothesis;
 nullHypothesis;null hypothesis;stato:null_hypothesis;obo:STATO_0000057;http://purl.obolibrary.org/obo/STATO_0000057#null hypothesis;
 Pvalue;p-value;stato:p-value;obo:OBI_0000175;http://purl.obolibrary.org/obo/OBI_0000175#p-value;
 Qvalue;q-value;stato:q-value;obo:OBI_0001442;http://purl.obolibrary.org/obo/OBI_0001442#q-value;
-drawingConclusions;drawing conclusions process;stato:drawing_conclusions;obo:STATO_0000673 ;http://purl.obolibrary.org/obo/STATO_0000673#drawing_conclusions;
+drawingConclusions;drawing conclusions process;stato:drawing_conclusions;obo:OBI_0000338;http://purl.obolibrary.org/obo/OBI_0000338#drawing_conclusions;
 hasInput;has input;stato:has_specified_input ;obo:OBI_0000293;http://purl.obolibrary.org/obo/OBI_0000293#has_specified_input;
 hasOutput;has output;stato:has_specified_output ;obo:OBI_0000299;http://purl.obolibrary.org/obo/OBI_0000299#has_specified_output;
 isFunctionOf;is function of;;;;https://github.com/ISA-tools/stato/issues/76

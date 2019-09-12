@@ -13,7 +13,9 @@
      xmlns:terms="http://purl.org/dc/terms/"
      xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
      xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#">
-    <owl:Ontology rdf:about="http://purl.org/stato-lmm"/>
+    <owl:Ontology rdf:about="http://purl.org/stato-lmm">
+        <owl:imports rdf:resource="http://purl.org/obo/stato-lmm/external/stato_import.owl"/>
+    </owl:Ontology>
     
 
 
@@ -164,6 +166,30 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/BFO_0000001 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/BFO_0000001">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#semantic_LMM_entity"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/IAO_0000005 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/IAO_0000005">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/IAO_0000007 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/IAO_0000007">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/IAO_0000027 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/IAO_0000027"/>
@@ -176,9 +202,73 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/IAO_0000032 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/IAO_0000032">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/IAO_0000064 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/IAO_0000064">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/IAO_0000078 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/IAO_0000078">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/IAO_0000104 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/IAO_0000104"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0000066 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000066">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0000181 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/OBI_0000181">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0000272 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/OBI_0000272">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0000668 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/OBI_0000668">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0000675 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000675">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
     
 
 
@@ -194,9 +284,49 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/OBI_0000938 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000938">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0001305 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0001305">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/OBI_0001755 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0001755"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0001834 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/OBI_0001834">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0001909 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0001909">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0001932 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0001932">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
     
 
 
@@ -226,15 +356,191 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/OBI_0200036 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/OBI_0200036">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0200049 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0200049">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0200166 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0200166">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0200201 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/OBI_0200201">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0500006 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0500006">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000019 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000019">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/STATO_0000034 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000034"/>
     
 
 
+    <!-- http://purl.obolibrary.org/obo/STATO_0000053 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000053">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000059 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000059">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000082 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000082">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000090 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000090">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000099 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000099">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000116 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000116">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000143 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000143">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000182 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000182">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000193 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000193">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000204 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000204">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000207 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000207">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000221 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000221">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000223 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000223">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000224 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000224">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000225 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000225">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/STATO_0000230 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000230"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000237 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000237">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
     
 
 
@@ -248,6 +554,14 @@
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000264 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000264">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
     
 
 
@@ -265,6 +579,30 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/STATO_0000315 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000315">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000322 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000322">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000323 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000323">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/STATO_0000325 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000325">
@@ -278,6 +616,30 @@
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000327">
         <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
         <obo:IAO_0000118 xml:lang="en">SBC</obo:IAO_0000118>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000328 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000328">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000342 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000342">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000343 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000343">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
     </owl:Class>
     
 
@@ -307,6 +669,22 @@
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000379">
         <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000385 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000385">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000390 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000390">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
     </owl:Class>
     
 
@@ -367,6 +745,102 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/STATO_0000469 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000469">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000480 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000480">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000482 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000482">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000483 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000483">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000484 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000484">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000485 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000485">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000492 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000492">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000525 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000525">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000533 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000533">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000534 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000534">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000540 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000540">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000546 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000546">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/STATO_0000550 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000550">
@@ -375,9 +849,53 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/STATO_0000573 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000573">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000574 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000574">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/STATO_0000585 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000585"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0200201#other_entities -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/OBI_0200201#semantic_LMM_entity -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0200201#semantic_LMM_entity"/>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/stato.owl#pedigree_data_set -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/stato.owl#pedigree_data_set">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/stato.owl#response_variable_explained_by_random_effect_hypothesis -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/stato.owl#response_variable_explained_by_random_effect_hypothesis">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/OBI_0200201#other_entities"/>
+    </rdf:Description>
     
 
 

@@ -1,84 +1,22 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://purl.org/stato-lmm#"
      xml:base="http://purl.org/stato-lmm"
-     xmlns:dc="http://purl.org/dc/elements/1.1/"
-     xmlns:obo="http://purl.obolibrary.org/obo/"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:doap="http://usefulinc.com/ns/doap#"
-     xmlns:foaf="http://xmlns.com/foaf/0.1/"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#"
      xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
-     xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#">
-    <owl:Ontology rdf:about="http://purl.org/stato-lmm"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Annotation properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000111 -->
-
-    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000111"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000114 -->
-
-    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000114"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000115 -->
-
-    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000115"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000117 -->
-
-    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000117"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000118 -->
-
-    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000118"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000119 -->
-
-    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000119"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000412 -->
-
-    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000412"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000404 -->
-
-    <owl:AnnotationProperty rdf:about="http://purl.obolibrary.org/obo/STATO_0000404"/>
-    
-
-
-    <!-- http://purl.org/dc/elements/1.1/description -->
-
-    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/description"/>
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:doap="http://usefulinc.com/ns/doap#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:obo="http://purl.obolibrary.org/obo/"
+     xmlns:foaf="http://xmlns.com/foaf/0.1/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://purl.org/stato-lmm">
+        <owl:imports rdf:resource="http://purl.obolibrary.org/obo/obi/2018-05-23/obi.owl"/>
+        <owl:imports rdf:resource="http://purl.obolibrary.org/obo/stato.owl"/>
+    </owl:Ontology>
     
 
 
@@ -90,60 +28,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/BFO_0000050 -->
-
-    <owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/BFO_0000050"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/BFO_0000051 -->
-
-    <owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/BFO_0000051"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000136 -->
-
-    <owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000136"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000219 -->
-
-    <owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/IAO_0000219"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/OBI_0001927 -->
-
-    <owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/OBI_0001927"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000001 -->
-
-    <owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/STATO_0000001"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000205 -->
-
-    <owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/STATO_0000205"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000345 -->
-
-    <owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/STATO_0000345"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000381 -->
-
-    <owl:ObjectProperty rdf:about="http://purl.obolibrary.org/obo/STATO_0000381"/>
     
 
 
@@ -161,223 +45,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000027 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/IAO_0000027"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000030 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/IAO_0000030"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/IAO_0000104 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/IAO_0000104"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/OBI_0000750 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000750"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/OBI_0000751 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0000751"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/OBI_0001755 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0001755"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/OBI_0001933 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0001933"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/OBI_0001934 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/OBI_0001934">
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/IAO_0000030"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/BFO_0000051"/>
-                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/OBI_0001933"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <obo:IAO_0000111>predicted value</obo:IAO_0000111>
-        <obo:IAO_0000114 rdf:resource="http://purl.obolibrary.org/obo/IAO_0000123"/>
-        <obo:IAO_0000115>an information content entity that has been generated by a prediction process in which an estimate of a value of an entity is made which can be measured but without performing such a measurement. The value specification is intended to be close to the value a measurement process would produce modulo a prediction error.</obo:IAO_0000115>
-        <obo:IAO_0000117>PERSON:Bjoern Peters</obo:IAO_0000117>
-        <obo:IAO_0000412 rdf:resource="http://purl.obolibrary.org/obo/obi.owl"/>
-        <rdfs:label>predicted value</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000034 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000034"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000230 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000230"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000258 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000258">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000381"/>
-                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/OBI_0000751"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000266 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000266">
-        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000289 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000289"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000325 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000325">
-        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000327 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000327">
-        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
-        <obo:IAO_0000118 xml:lang="en">SBC</obo:IAO_0000118>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000346 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000346">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/BFO_0000051"/>
-                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#variance_parameter"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000378 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000378">
-        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000379 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000379">
-        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000464 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000464"/>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000466 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000466">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000219"/>
-                <owl:someValuesFrom>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/BFO_0000050"/>
-                        <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/STATO_0000289"/>
-                    </owl:Restriction>
-                </owl:someValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000001"/>
-                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#effect"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000467 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000467">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000001"/>
-                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#random_effect"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000468 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000468">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000001"/>
-                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#fixed_effect"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000550 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000550">
-        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/STATO_0000585 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000585"/>
     
 
 
@@ -631,7 +298,7 @@ R Emmeans package: Estimated marginal means or EMMs (sometimes called  “least-
         <obo:IAO_0000119 xml:lang="en">Pinheiro, J.C., and Bates, D.M. (2000) &quot;Mixed-Effects Models in S and S-PLUS&quot;, Springer. p.8</obo:IAO_0000119>
         <rdfs:label xml:lang="en">relative effect</rdfs:label>
     </owl:Class>
-    
+        
 
 
     <!-- http://purl.org/stato-lmm#variance_parameter -->
@@ -646,9 +313,134 @@ R Emmeans package: Estimated marginal means or EMMs (sometimes called  “least-
         <obo:IAO_0000119>Adapted from http://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_mixed_sect019.htm#statug.mixed.mixedcovstruct</obo:IAO_0000119>
         <rdfs:label xml:lang="en">variance parameter</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000258 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000258">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000381"/>
+                <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/OBI_0000751"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000266 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000266">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000325 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000325">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000327 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000327">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+        <obo:IAO_0000118 xml:lang="en">SBC</obo:IAO_0000118>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000346 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000346">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/BFO_0000051"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#variance_parameter"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000378 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000378">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000379 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000379">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000466 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000466">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/IAO_0000219"/>
+                <owl:someValuesFrom>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/BFO_0000050"/>
+                        <owl:someValuesFrom rdf:resource="http://purl.obolibrary.org/obo/STATO_0000289"/>
+                    </owl:Restriction>
+                </owl:someValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000001"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#effect"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000467 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000467">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000001"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#random_effect"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000468 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000468">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://purl.obolibrary.org/obo/STATO_0000001"/>
+                <owl:someValuesFrom rdf:resource="http://purl.org/stato-lmm#fixed_effect"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/STATO_0000550 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/STATO_0000550">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#goodness_of_fit_measure"/>
+    </rdf:Description>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
 
