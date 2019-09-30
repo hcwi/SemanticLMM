@@ -13,7 +13,13 @@
      xmlns:terms="http://purl.org/dc/terms/"
      xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
      xmlns:oboInOwl="http://www.geneontology.org/formats/oboInOwl#">
-    <owl:Ontology rdf:about="http://purl.org/stato-lmm"/>
+    <owl:Ontology rdf:about="http://purl.org/stato-lmm">
+		#importing LMM-related entities from STATO:
+        <owl:imports rdf:resource="http://purl.org/obo/stato-lmm/external/stato_import.owl"/>
+		#or import full STATO and OBI:
+		#<owl:imports rdf:resource="http://purl.obolibrary.org/obo/obi/2018-05-23/obi.owl"/>
+		#<owl:imports rdf:resource="http://purl.obolibrary.org/obo/stato.owl"/>
+    </owl:Ontology>
     
 
 
@@ -161,6 +167,14 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/BFO_0000001 -->
+
+    <rdf:Description rdf:about="http://purl.obolibrary.org/obo/BFO_0000001">
+        <rdfs:subClassOf rdf:resource="http://purl.org/stato-lmm#LMM_entity"/>
+    </rdf:Description>
     
 
 
@@ -378,6 +392,15 @@
     <!-- http://purl.obolibrary.org/obo/STATO_0000585 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/STATO_0000585"/>
+    
+
+
+    <!-- http://purl.org/stato-lmm#LMM_entity -->
+
+    <owl:Class rdf:about="http://purl.org/stato-lmm#LMM_entity">
+        <rdfs:comment xml:lang="en">Selection of basic STATO entities to be used in the semantic modelling of data analysis by linear mixed model (LMM) methodology, as described in Ćwiek-Kupczyńska et al. (2019, submitted)</rdfs:comment>
+        <rdfs:label xml:lang="en">LMM entity</rdfs:label>
+    </owl:Class>
     
 
 
