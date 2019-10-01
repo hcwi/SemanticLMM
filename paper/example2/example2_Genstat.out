@@ -1,33 +1,29 @@
- 120  job
-
-********* End of job.
-
 Genstat 64-bit Release 19.1  (PC/Windows 7)       25 January 2019 13:47:38
 Copyright 2018, VSN International Ltd.
 Registered to: IPG PAS
 
- 121  "przyklad do papieru LMM dla przykladu 2"
- 122  import 'dane_wielo.xlsx';is=names
+ 121  "example2"
+ 122  import 'example2.xlsx';is=names
 
 Loading Spreadsheet File
 ------------------------
 
-Catalogue of file dane_wielo.xlsx
+Catalogue of file example2.xlsx
 
 Sheet Title: Arkusz1
-Description: Data read from dane_wielo.xlsx [Arkusz1]A2:F7
+Description: Data read from example2.xlsx [Arkusz1]A2:F7
 Sheet Type: vector
   Index            Type    Nval   Name
       1         variate       6   y[1]
       2         variate       6   y[2]
       3         variate       6   y[3]
       4         variate       6   y[4]
-      5          factor       6   Fact
+      5          factor       6   Treatment
       6          factor       6   Block
 
  123  print names[]
 
-        y[1]        y[2]        y[3]        y[4]        Fact       Block
+        y[1]        y[2]        y[3]        y[4]        Treatment       Block
        6.000       2.000       6.000       4.000           1           1
        4.000       3.000       4.000       6.000           1           2
        5.000       5.000       7.000       2.000           2           1
@@ -39,13 +35,13 @@ Sheet Type: vector
  125  FACTOR [LEVELS=6] %_units;!((1...6)4)
  126  FACTOR [LEVELS=4; LABELS=!t('y[1]','y[2]','y[3]','y[4]')] %_variable;!(6(1...4))
  127  APPEND [NEW=_Data] y[1],y[2],y[3],y[4]
- 128  APPEND [NEW=%_Fact] 4(Fact)
+ 128  APPEND [NEW=%_Treatment] 4(Treatment)
  129  APPEND [NEW=%_Block] 4(Block)
  130
  131  "vec(dane) czyli dane do lmm"
- 132  print _Data,%_variable,%_Fact,%_Block
+ 132  print _Data,%_variable,%_Treatment,%_Block
 
-       _Data  %_variable      %_Fact     %_Block
+       _Data  %_variable      %_Treatment     %_Block
        6.000        y[1]           1           1
        4.000        y[1]           1           2
        5.000        y[1]           2           1
@@ -73,13 +69,13 @@ Sheet Type: vector
 
  133
  134  "Fit Multivariate Linear Mixed Model"
- 135  VCOMPONENTS [FIXED=%_Fact.%_variable; CONSTANT=omit] \
+ 135  VCOMPONENTS [FIXED=%_Treatment.%_variable; CONSTANT=omit] \
  136    random = %_Block.%_variable + %_units.%_variable;CONSTRAINTS=positive
  137
- 138  "struktura dla bloków"
- 139  VSTRUCTURE [TERMS=%_Block.%_variable] FACTOR=%_variable; MODEL="diag"ar
+ 138  "block structure"
+ 139  VSTRUCTURE [TERMS=%_Block.%_variable] FACTOR=%_variable; MODEL=ar
  140
- 141  "dla b³êdu unstructured nie chodzi bo ma³o obserwacji, banded daje ujemny"
+ 141  "error structure"
  142  VSTRUCTURE [TERMS=%_units.%_variable] FACTOR=%_variable; MODEL=diag
  143
  144  REML [PRINT=model,components,waldTests,eff; MAXCYCLE=30; FMETHOD=automatic; \
@@ -93,7 +89,7 @@ REML variance components analysis
 =================================
 
 Response variate:  _Data
-Fixed model:       %_variable.%_Fact
+Fixed model:       %_variable.%_Treatment
 Random model:      %_Block.%_variable + %_variable.%_units
 Number of units:   24
 
@@ -160,21 +156,21 @@ Wald tests for fixed effects
 Sequentially adding terms to fixed model
 
 Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
-%_variable.%_Fact                  671.31      12         55.94  <0.001
+%_variable.%_Treatment                  671.31      12         55.94  <0.001
 
 Dropping individual terms from full fixed model
 
 Fixed term                 Wald statistic    d.f.     Wald/d.f.  chi pr
-%_variable.%_Fact                  671.31      12         55.94  <0.001
+%_variable.%_Treatment                  671.31      12         55.94  <0.001
 
 * MESSAGE: chi-square distribution for Wald tests is an asymptotic approximation (i.e. for large samples) and underestimates the probabilities in other cases.
 
 
-Table of effects for %_variable.%_Fact
+Table of effects for %_variable.%_Treatment
 --------------------------------------
 
 
-       %_Fact        1        2        3
+       %_Treatment        1        2        3
    %_variable
          y[1]    5.000    5.500    6.000
          y[2]    2.500    3.000    7.500
@@ -189,12 +185,12 @@ Maximum:           1.984
 Minimum:          0.8192
 
  147
- 148  "oceny efektów sta³ych"
- 149  vkeep %_Fact.%_variable;eff=eff;vareff=vareff
+ 148  "oceny efekt?w sta?ych"
+ 149  vkeep %_Treatment.%_variable;eff=eff;vareff=vareff
  150  print eff
 
                       eff
-       %_Fact           1           2           3
+       %_Treatment           1           2           3
    %_variable
          y[1]       5.000       5.500       6.000
          y[2]       2.500       3.000       7.500
@@ -216,20 +212,20 @@ The first argument of the SQRT function in unit  7 has the value -0.5843
 
                               vareff
 
-%_variable y[1].%_Fact 1      2.5809
-%_variable y[1].%_Fact 2      0.5873      2.5809
-%_variable y[1].%_Fact 3      0.5873      0.5873      2.5809
-%_variable y[2].%_Fact 1     -0.5843     -0.5843     -0.5843      3.9359
-%_variable y[2].%_Fact 2     -0.5843     -0.5843     -0.5843      0.5873      3.9359
-%_variable y[2].%_Fact 3     -0.5843     -0.5843     -0.5843      0.5873      0.5873      3.9359
-%_variable y[3].%_Fact 1      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      1.6601
-%_variable y[3].%_Fact 2      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      1.6601
-%_variable y[3].%_Fact 3      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      0.5873      1.6601
-%_variable y[4].%_Fact 1     -0.5785     -0.5785     -0.5785      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.6711
-%_variable y[4].%_Fact 2     -0.5785     -0.5785     -0.5785      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      0.6711
-%_variable y[4].%_Fact 3     -0.5785     -0.5785     -0.5785      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      0.5873      0.6711
-                        %_variable y[1].%_Fact 1 %_variable y[1].%_Fact 2 %_variable y[1].%_Fact 3 %_variable y[2].%_Fact 1 %_variable y[2].%_Fact 2 %_variable y[2].%_Fact 3 %_variable y[3].%_Fact 1
-%_variable y[3].%_Fact 2 %_variable y[3].%_Fact 3 %_variable y[4].%_Fact 1 %_variable y[4].%_Fact 2 %_variable y[4].%_Fact 3
+%_variable y[1].%_Treatment 1      2.5809
+%_variable y[1].%_Treatment 2      0.5873      2.5809
+%_variable y[1].%_Treatment 3      0.5873      0.5873      2.5809
+%_variable y[2].%_Treatment 1     -0.5843     -0.5843     -0.5843      3.9359
+%_variable y[2].%_Treatment 2     -0.5843     -0.5843     -0.5843      0.5873      3.9359
+%_variable y[2].%_Treatment 3     -0.5843     -0.5843     -0.5843      0.5873      0.5873      3.9359
+%_variable y[3].%_Treatment 1      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      1.6601
+%_variable y[3].%_Treatment 2      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      1.6601
+%_variable y[3].%_Treatment 3      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      0.5873      1.6601
+%_variable y[4].%_Treatment 1     -0.5785     -0.5785     -0.5785      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.6711
+%_variable y[4].%_Treatment 2     -0.5785     -0.5785     -0.5785      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      0.6711
+%_variable y[4].%_Treatment 3     -0.5785     -0.5785     -0.5785      0.5814      0.5814      0.5814     -0.5843     -0.5843     -0.5843      0.5873      0.5873      0.6711
+                        %_variable y[1].%_Treatment 1 %_variable y[1].%_Treatment 2 %_variable y[1].%_Treatment 3 %_variable y[2].%_Treatment 1 %_variable y[2].%_Treatment 2 %_variable y[2].%_Treatment 3 %_variable y[3].%_Treatment 1
+%_variable y[3].%_Treatment 2 %_variable y[3].%_Treatment 3 %_variable y[4].%_Treatment 1 %_variable y[4].%_Treatment 2 %_variable y[4].%_Treatment 3
 
  153  print se
 
@@ -249,7 +245,7 @@ The first argument of the SQRT function in unit  7 has the value -0.5843
                         1           2           3           4           5           6           7           8           9          10          11          12
 
  154
- 155  "BLUP efektów losowych bloków"
+ 155  "BLUP efekt?w losowych blok?w"
  156  vpred [pred=pred; se=sep] class=%_Block,%_variable
 
 156.....................................................................................................................................................................................................
@@ -257,13 +253,13 @@ The first argument of the SQRT function in unit  7 has the value -0.5843
 Predictions from REML analysis
 ------------------------------
 
-Model terms included for prediction: %_variable.%_Fact + %_Block.%_variable
+Model terms included for prediction: %_variable.%_Treatment + %_Block.%_variable
 
 Status of model variables in prediction:
 
   Variable           Type        Status
   %_variable         factor      Classifies predictions
-  %_Fact             factor      Averaged over - equal weights
+  %_Treatment             factor      Averaged over - equal weights
   %_Block            factor      Classifies predictions
 
 
