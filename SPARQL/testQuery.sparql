@@ -11,13 +11,11 @@ PREFIX iao: <http://purl.obolibrary.org/obo/iao.owl#>
 PREFIX bfo: <http://purl.obolibrary.org/obo/bfo.owl#>
 PREFIX ro: <http://purl.obolibrary.org/obo/ro.owl#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
-PREFIX xxx: <UNKNOWN_TO_BE_REPLACED#>
 PREFIX lmm: <http://igr.poznan.pl/lmm#>
 
 
 SELECT *
 WHERE {
-	?s ?p ?o .
-	?o rdf:type lmm:diagonal_covariance_structure .
+	?covarianceStructure rdf:type obo:STATO_0000346 #covariance_structure .
 }
-limit 3
+limit 5

@@ -2,7 +2,6 @@ PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX stato: <http://purl.obolibrary.org/obo/stato.owl#>
-PREFIX tmp: <http://igr.poznan.pl/lmm/UNKNOWN_TO_BE_REPLACED#>
 
 # Find most significant random effects
 # Returns variance parameters representing the biggest variability of a specified trait, plus the type of covariance model assumed. Ordered by descending variance.

@@ -3,7 +3,7 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX stato: <http://purl.obolibrary.org/obo/stato.owl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-# Which traits were explained by 'Variety' variable, and in which datasets?
+# Which traits were explained by 'Infraspecific' variable, and in which datasets?
 # Returns models with dependent variables that were significantly explained by a particular independent variable (single or in combination), a corresponding p-value, plus a dataset for which the analysis was done. Ordered by significance.
 
 SELECT DISTINCT 
@@ -13,7 +13,7 @@ SELECT DISTINCT
 	(GROUP_CONCAT(distinct ?IndepVar; SEPARATOR = ", ") AS ?Variables)
 WHERE { 
     
-    FILTER(regex(?Var, "Variety")). ### <-------------- HERE SPECIFY AN INDEPENDENT VARIABLE
+    FILTER(regex(?Var, "Infraspecific")). ### <-------------- HERE SPECIFY AN INDEPENDENT VARIABLE
     
     ?model rdf:type obo:STATO_0000464. # mixed model
     ?model stato:is_model_for/rdfs:label ?Trait.
