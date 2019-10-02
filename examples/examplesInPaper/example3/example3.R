@@ -104,7 +104,7 @@ example3_batchAllTraits_lme <-function() {
 
 
 run <- function() {
-  #example3_lmer()
+  example3_lme()
   example3_subset_lme()
   #example3_batchAllTraits_lme()
 }

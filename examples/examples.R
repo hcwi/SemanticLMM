@@ -1,11 +1,11 @@
 getExampleOats <- function() {
-  
+
   require(nlme)
+
   data("Oats")
-  
   df <- Oats
   levels(df$Variety) <- sub(" ", "", levels(df$Variety))
-  
+
   dataset <- list()
   dataset$data <- df
   dataset$label <- "Dataset_Oats"
@@ -15,18 +15,18 @@ Description: The yield of oats from a split-plot field trial using three varieti
 Source: Yates, F. (1935) Complex experiments, Journal of the Royal Statistical Society Suppl. 2, 181–247.
 References: Venables, W. N. and Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth edition. Springer.
                                   ",  "\""))
-  
   dataset
 }
 
 examplesOats_lmer<- function() {
-  
+
   ex <- getExampleOats()
-  
+
   require(lme4)
   mod <- lmer(yield ~ nitro*Variety + (1|Block), data = ex$data)
-  
   print(formula(mod))
+
+  require(semLMM)
   modelFitting <- exportModelToRDF(mod, ex)
   modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
 }
@@ -34,46 +34,39 @@ examplesOats_lmer<- function() {
 
 
 examplesOats_lme <- function() {
-  
+
   ex <- getExampleOats()
-  
+
   require(nlme)
-  
   mod <- lme(yield ~ nitro + Variety, random = ~1|Block, data = ex$data)
   print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ex)
+
+  require(semLMM)
+  modelFitting <- exportModelToRDF(mod, ex)
   modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
-  
+
+
   mod <- lme(yield ~ 0 + nitro * Variety, random = list(Block=pdIdent(~1)), data = ex$data)
   print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ex)
+  modelFitting <- exportModelToRDF(mod, ex) # !!!
   modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
-  mod3 <- mod
-  
-  #mod <- lme(yield ~ nitro + Variety, random = list(Block=pdDiag(~Block-1)), data = ex$data) # pdDiag not implemented
+
+  #mod <- lme(yield ~ nitro + Variety, random = list(Block=pdDiag(~Block-1)), data = ex$data) # pdDiag not implemented yet
   mod <- lme(yield ~ nitro, random = ~1|Variety/Block, data = ex$data)
   print(formula(mod))
-  modelFitting <- exportModelToRDF_2(mod, ex)
+  modelFitting <- exportModelToRDF(mod, ex)
   modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
-  mod4 <- mod
-
-  #mod <- lme(yield ~ ordered(nitro) + Variety, random = list(Block=pdIdent(~1)), data = ex$data)
-  #print(formula(mod))
-  #modelFitting <- exportModelToRDF_2(mod, ex)
-  #saveTriples(modelFitting)
-  #mod5 <- mod
 
 }
 
 
 
 getExampleNPK <- function() {
-  
+
   require(nlme)
   data("npk")
-  
   df <- npk
-  
+
   dataset <- list()
   dataset$data <- df
   dataset$label <- "Dataset_NPK"
@@ -84,24 +77,34 @@ The npk data has 24 rows and 5 columns: block (labelled 1 to 6), N, P, K (indica
 Source: Imperial College, London, M.Sc. exercise sheet.
 References: Venables, W. N. and Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth edition. Springer.
                                   ",  "\""))
-  
   dataset
 }
 
 
 examplesNPK_lmer<- function() {
-  
+
   ex <- getExampleNPK()
-  
+
   require(lme4)
   mod <- lmer(yield ~ N*P*K + (1|block), data = ex$data)
   print(formula(mod))
-  modelFitting <- exportModelToRDF(mod, ex)
+
+  modelFitting <- exportModelToRDF(mod, ex) #!!!
   modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
-  
+
+
   mod <- lmer(yield ~ 0 + N*K + (1|block), data = ex$data)
   print(formula(mod))
+
   modelFitting <- exportModelToRDF(mod, ex)
   modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
-  
+
 }
+
+run <- function() {
+  examplesOats_lmer()
+  #examplesOats_lme()
+  examplesNPK_lmer()
+}
+
+#run()
