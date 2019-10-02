@@ -1,64 +1,39 @@
-# run <- function() {
-#   m_lmer <- example1_lmer()
-#   m_lme <- example1_lme()
-#
-#   mod <- m_lme
-#   print(formula(mod))
-#   modelFitting <- exportModelToRDF_2(mod)
-#   saveTriples(modelFitting)
-#
-# }
-#run()
+exportModelToRDF.lme <- function(mod, ds=list()) {
 
-
-exportModelToRDF_2 <- function(mod, ds=list()) {
+  print(paste(match.call(), class(mod)))
 
   init()
-  lmm <- getModel_2(mod) # need to add random variables to lmm$variables
+  lmm <- getModel(mod) # need to add random variables to lmm$variables
   lmm$dependentVariable <- getDependentVariables(mod)
   lmm$independentFixedTerm <- getFixedTerms(mod)
-  lmm$errorTerm <- getErrorTerm_2(mod) #?
-  random_all <- getRandomTerms_2(mod)
+  lmm$errorTerm <- getErrorTerm(mod) # has to be called before getting Random Terms!
+  random_all <- getRandomTerms(mod) # refactor
   lmm$independentRandomTerm <- random_all[[1]]
+
 
   modelFitting <- Process("modelFitting", processType="ModelFitting", comments=list(paste0("rdfs:comment \"Results obtained by R nlme package, lme function\"")))
   modelFitting$hasInput <- append(modelFitting$hasInput, lmm)
-  modelFitting$hasInput <- append(modelFitting$hasInput, Dataset(label = ifelse(!is.null(ds[["label"]]), ds[["label"]], "Dataset"),
-                                                                 url = ifelse(!is.null(ds[["url"]]), ds[["url"]], "url unavailable"),
-                                                                 comments = {if (!is.null(ds[["comments"]])) ds[["comments"]] else list()},
-                                                                 variables = append(lmm$variables, lmm$dependentVariable)))
-  modelFitting$hasOutput <- lmm$getQuality()
+  modelFitting$hasInput <- append(modelFitting$hasInput, getDataset(lmm, ds))
+  modelFitting$hasOutput <- lmm$getQuality() #TODO solve differently
 
-  procs <- getFixedEstimation_2(mod, lmm) #? result manually guided: list(procEst, procTest)
+  procs <- getFixedEstimation(mod, lmm) #? result manually guided: list(procEst, procTest)
   modelFitting$hasPart <- append(modelFitting$hasPart, procs)
   procs <- random_all[[2]] #getVarCorrEstimation(mod)
   modelFitting$hasPart <- append(modelFitting$hasPart, procs)
   procs <- random_all[[3]] #getRandomPrediction(mod)
   modelFitting$hasPart <- append(modelFitting$hasPart, procs)
-  procs <- getEmmeans_2(mod) #?
+  procs <- getEmmeans(mod) #?
   modelFitting$hasPart <- append(modelFitting$hasPart, procs)
 
   modelFitting
 
 }
 
-# saveTriples <- function(modelFitting, graphName = NULL) {
-#   if(is.null(graphName)) {
-#     graphName <- modelFitting$hasInput[[1]]$id
-#   }
-#   capture.output(cat(prefixes),
-#                  cat("<graphs/graph_", graphName, ">", sep=""),
-#                  cat(" {\n"),
-#                  modelFitting,
-#                  cat("}"),
-#                  file = paste0("out", .Platform$file.sep, graphName, ".trig"))
-#   print(paste0("Exported to ", graphName, ".trig"))
-# }
+getModel.lme <- function(mod) {
 
+  print(paste(match.call(), class(mod)))
 
-getModel_2 <- function(mod) {
-
-  vars <- getVariables_2(mod)
+  vars <- getVariables.lme(mod)
   lab <- gsub(deparse(formula(mod)),pattern = " ", rep="")
   lab <- gsub(lab, pattern = "~", rep="-")
   lab <- gsub(lab, pattern = "*", rep="", fixed=T)
@@ -83,13 +58,15 @@ getModel_2 <- function(mod) {
   lmm
 }
 
-getVariables_2 <- function(mod) {
+getVariables.lme <- function(mod) {
 
-  vars <- getVariables(mod) # fixed vars from ref_grid
+  print(paste(match.call(), class(mod)))
+
+  vars <- getVariablesFromGrid(mod) # fixed vars from ref_grid
 
   rVarLabs <- names(mod$groups)
   for (rvl in rVarLabs) {
-    if (!any(lapply(vars, function(x) {x$label == rvl}))) {
+    if (!any(sapply(vars, function(x) {x$label == rvl}))) {
       var <- getEntity("Variable", rvl)
       if (is.null(var)) {
         rvLevels <- levels(mod$data[[rvl]])
@@ -110,9 +87,9 @@ getVariables_2 <- function(mod) {
   vars
 }
 
+getRandomTerms.lme <- function(mod) {
 
-
-getRandomTerms_2 <- function(mod) {
+  print(paste(match.call(), class(mod)))
 
   randomTerms <- list() # dla nlme bedzie tylko jeden, moze byc zagniezdzony -> wszystkie reStruct do tego samego randomTermu
   procEst <- Process("varCompEstimation", processType="ModelParameterEstimation", type="REML")
@@ -132,11 +109,11 @@ getRandomTerms_2 <- function(mod) {
     termSpecVars <- list()
     {
       for (tvn in unlist(strsplit(termName,":"))) {
-      var <- getEntity("Variable", tvn)
-      if (is.null(var)) {
-        var <- CategoricalVariable(label = tvn, type="IndependentVariable")
-      }
-      termSpecVars <- append(termSpecVars, var)
+        var <- getEntity("Variable", tvn)
+        if (is.null(var)) {
+          var <- CategoricalVariable(label = tvn, type="IndependentVariable")
+        }
+        termSpecVars <- append(termSpecVars, var)
       }
     }
 
@@ -298,10 +275,10 @@ getRandomTerms_2 <- function(mod) {
   # return list(procEst)
   list(randomTerms, list(procEst), list(procPred))
 }
-#rt <- getRandomTerms_2(adv5_nested)
 
+getErrorTerm.lme <- function(mod = NULL) {
 
-getErrorTerm_2 <- function(mod = NULL) {
+  print(paste(match.call(), class(mod)))
 
   label <- "Residual"
   errorTerm <- ErrorModelTerm(label = label)
@@ -319,7 +296,9 @@ getErrorTerm_2 <- function(mod = NULL) {
 
 # get fixed effects
 # this time from summary(m) rather then m itself
-getFixedEstimation_2 <- function(mod, lmm) {
+getFixedEstimation.lme <- function(mod, lmm) {
+
+  print(paste(match.call(), class(mod)))
 
   #declare processes
   procEst <- Process("paramEstimation", processType="ModelParameterEstimation", type="BLUE")
@@ -330,10 +309,20 @@ getFixedEstimation_2 <- function(mod, lmm) {
   #get fixed coefs to produce "effects"
   fixcoefs <- summary(mod)$tTable #mod$coefficients$fixed # get estimated effects
   feLabs <- row.names(fixcoefs)
+  feVarLabs <- row.names(fixcoefs)
   reLabs <- feLabs
   varLabs <- unique(unlist(strsplit(attr(terms(mod), "term.labels"),":"))) # get variable names
   for (varLab in varLabs) {
     feLabs <- sub(feLabs, pattern = varLab, rep="") # remove variable names from effect labels
+  }
+
+  for (i in 1:length(feVarLabs)) {
+    r <- unlist(ifelse(grepl(feVarLabs[i], pat=":"), strsplit(reLabs[i], ":"), list(reLabs[i])))
+    f <- unlist(ifelse(grepl(feVarLabs[i], pat=":"), strsplit(feLabs[i], ":"), list(feLabs[i])))
+    for (j in 1:length(r)){
+      r[j] <- sub(r[j], pattern = f[j], rep="")
+    }
+    feVarLabs[i] <- list(r)
   }
 
   # create 'termAssign' vector
@@ -362,7 +351,6 @@ getFixedEstimation_2 <- function(mod, lmm) {
   }
   termAssign
 
-
   #modmatrix <- model.matrix(mod)
   #termAssign <- attr(modmatrix, "assign")
   ref <- min(termAssign) # ass == ref -> EMM else Contrast
@@ -379,7 +367,7 @@ getFixedEstimation_2 <- function(mod, lmm) {
     refEff <- list()
 
     # effects
-    if (termAssign[i] == ref) {
+    if (termAssign[i] == ref) { # chech if a general reference level
       effType = c("fixedEffect", "directEffect") #, "emm")
       if (termAssign[i] == 0) { # for a general intercept add base levels/values of all variables
         for (v in varLabs) {
@@ -434,19 +422,24 @@ getFixedEstimation_2 <- function(mod, lmm) {
       effType = c("FixedEffect", "treatmentContrast", "relativeEffect")
       #here can add estType="contrastEstimate")
 
-      if (feLabs[i] != "") {
-        for (l in unlist(strsplit(feLabs[i], ":"))) {
+      labs <- unlist(strsplit(feLabs[i], ":"))
+      max <- max(length(labs),1)
+      for (j in 1:max) {
+          l = labs[j]
+          if (is.na(l) || length(l) == 0 || l == "") {
+            v <- feVarLabs[[i]][j]
+            var <- getEntity("Variable", v)
+            levLab <- paste0(var$label,"=1")
+            lvl <- getEntity("ValueSpecification", levLab)
+            if (is.null(lvl)) {
+              lvl <- ValueSpecification(levLab, value=1, variable=var) #Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
+              var$levels <- append(var$levels, lvl)
+            }
+          }
+        else if (l != "") {
           lvl <- getEntity("Level", l)
-          lvls <- append(lvls, lvl)
-        }
-      } else {
-        v <- reLabs[i]
-        var <- getEntity("Variable", v)
-        levLab <- paste0(var$label,"=1")
-        lvl <- getEntity("ValueSpecification", levLab)
-        if (is.null(lvl)) {
-          lvl <- ValueSpecification(levLab, value=1, variable=var) #Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
-          var$levels <- append(var$levels, lvl)
+        } else {
+          "Unexpected case"
         }
         lvls <- append(lvls, lvl)
       }
@@ -517,8 +510,9 @@ getFixedEstimation_2 <- function(mod, lmm) {
   list(procEst, procTest)
 }
 
+getEmmeans.lme <- function(mod) {
 
-getEmmeans_2 <- function(mod) {
+  print(paste(match.call(), class(mod)))
 
   procEmms <- Process("EmmCalculation", processType="ModelParameterEstimation")
   procDfAppr <- Process("EmmDfCalculation", processType="DfCalculation", type="containment")
