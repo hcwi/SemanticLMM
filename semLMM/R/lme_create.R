@@ -1,6 +1,6 @@
 exportModelToRDF.lme <- function(mod, ds=list()) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   init()
   lmm <- getModel(mod) # need to add random variables to lmm$variables
@@ -31,7 +31,7 @@ exportModelToRDF.lme <- function(mod, ds=list()) {
 
 getModel.lme <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   vars <- getVariables.lme(mod)
   lab <- gsub(deparse(formula(mod)),pattern = " ", rep="")
@@ -60,7 +60,7 @@ getModel.lme <- function(mod) {
 
 getVariables.lme <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   vars <- getVariablesFromGrid(mod) # fixed vars from ref_grid
 
@@ -89,7 +89,7 @@ getVariables.lme <- function(mod) {
 
 getRandomTerms.lme <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   randomTerms <- list() # dla nlme bedzie tylko jeden, moze byc zagniezdzony -> wszystkie reStruct do tego samego randomTermu
   procEst <- Process("varCompEstimation", processType="ModelParameterEstimation", type="REML")
@@ -278,7 +278,7 @@ getRandomTerms.lme <- function(mod) {
 
 getErrorTerm.lme <- function(mod = NULL) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   label <- "Residual"
   errorTerm <- ErrorModelTerm(label = label)
@@ -298,7 +298,7 @@ getErrorTerm.lme <- function(mod = NULL) {
 # this time from summary(m) rather then m itself
 getFixedEstimation.lme <- function(mod, lmm) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   #declare processes
   procEst <- Process("paramEstimation", processType="ModelParameterEstimation", type="BLUE")
@@ -512,7 +512,7 @@ getFixedEstimation.lme <- function(mod, lmm) {
 
 getEmmeans.lme <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   procEmms <- Process("EmmCalculation", processType="ModelParameterEstimation")
   procDfAppr <- Process("EmmDfCalculation", processType="DfCalculation", type="containment")

@@ -3,12 +3,11 @@ testClass <- function (x, ...) {
 }
 
 testClass.merMod <- function(x, ...) {
-  print("merMod, lmer (lme4) ")
+  log4r::debug(lenv$logger, "merMod, lmer (lme4) ")
 }
 
 testClass.lme <- function(x, ...) {
-  print("lme (nlme) ")
-  log4r::debug(lenv$logger, ">>>>>>>>. test")
+  log4r::debug(lenv$logger, "lme (nlme) ")
 }
 
 
@@ -44,9 +43,7 @@ getEmmeans <- function (x, ...) {
 
 getVariablesFromGrid <- function(mod) {
 
-  print(paste(match.call()))
-  log4r::debug(lenv$logger, ">>>>>>>>. test")
-
+  log4r::debug(lenv$logger, paste(match.call()))
 
   # terms <- terms(m5_3Fixed)
   # all.vars(delete.response(terms))
@@ -86,7 +83,7 @@ getDependentVariables <- function(mod) {
 # for each term, add variables and their levels
 getFixedTerms <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   #vars <- getVariables(mod) # commented!
 
@@ -159,7 +156,7 @@ getFixedTerms <- function(mod) {
 
 getDataset <- function(lmm, ds) { #TODO extract variables from the dataset, not the model
 
-  print(paste(match.call()))
+  log4r::debug(lenv$logger, match.call())
 
   dtset <- Dataset(label = ifelse(!is.null(ds[["label"]]), ds[["label"]], "Dataset"),
           url = ifelse(!is.null(ds[["url"]]), ds[["url"]], "url unavailable"),

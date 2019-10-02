@@ -1,6 +1,6 @@
 getVariables.merMod <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
   vars <- getVariablesFromGrid(mod) # fixed vars from ref_grid
   vars
 }
@@ -213,7 +213,7 @@ getFixedEstimation.merMod <- function(mod, lmm) {
 
 getEmmeans.merMod <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   procEmms <- Process("EmmCalculation", processType="ModelParameterEstimation")
   procDfAppr <- Process("EmmDfCalculation", processType="DfCalculation", type="KenwardRogerApprox")
@@ -288,7 +288,7 @@ getEmmeans.merMod <- function(mod) {
 
 getRandomTerms.merMod <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   randomTerms <- list()
   for (i in 1:length(mod@flist)) { # iterate over terms
@@ -444,7 +444,7 @@ getVarCorrEstimation.merMod <- function(mod) {
 # get error (residual)
 getErrorTerm.merMod <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   errorTerm <- ErrorModelTerm(label = "Residual")
 
@@ -477,7 +477,7 @@ getErrorTerm.merMod <- function(mod) {
 
 getModel.merMod <- function(mod) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   vars <- getVariablesFromGrid(mod)
   form <- paste(trimws(deparse(formula(mod)), which="left"), collapse = "")
@@ -503,7 +503,7 @@ getModel.merMod <- function(mod) {
 
 exportModelToRDF.merMod <- function(mod, ds=list()) {
 
-  print(paste(match.call(), class(mod)))
+  log4r::debug(lenv$logger, paste(match.call(), class(mod)))
 
   init()
   lmm <- getModel(mod)
@@ -557,33 +557,3 @@ exportModelToRDF.merMod <- function(mod, ds=list()) {
 #   }
 # }
 
-# TODO
-#summary(m)$vcov
-
-# run <- function() {
-#
-#   mod <- example1()
-#   init()
-#   print(formula(mod))
-#   modelFitting <- exportModelToRDF(mod)
-#   modelFitting$hasInput[[2]]$label <- "example1"
-#   modelFitting$hasInput[[2]]$url <- "
-#   y Treatment Block
-#   1 1.5        T1    B1
-#   2 1.7        T1    B2
-#   3 2.1        T2    B1
-#   4 2.1        T2    B2
-#   5 1.9        T3    B1
-#   6 2.2        T3    B2
-# "
-#   graphName <- modelFitting$hasInput[[1]]$id
-#   print(graphName)
-#   capture.output(cat(prefixes),
-#                  cat("<graphs/graph_", graphName, ">", sep=""),
-#                  cat(" {\n"),
-#                  modelFitting,
-#                  cat("}"),
-#                  file = paste0("out", .Platform$file.sep, graphName, ".trig"))
-#
-# }
-#

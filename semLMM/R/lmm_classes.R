@@ -4,8 +4,8 @@
 lenv <- new.env()
 
 # logging setup
-assign("logger", log4r::create.logger(logfile = "", level = "WARN"), envir = lenv)
-setLogger <- function(logfile = "", level = "DEBUG") {
+assign("logger", log4r::create.logger(logfile = "semLMM.log", level = "WARN"), envir = lenv)
+setLogger <- function(logfile = "semLMM.log", level = "DEBUG") {
   assign("logger", log4r::create.logger(logfile = logfile, level = level), envir = lenv)
 }
 
@@ -19,6 +19,7 @@ newGraph <- function() {
 
 register <- function(o) {
   key = o$label
+  assertthat::assert_that(is(o, "AnnotatedEntity"), msg = paste("Trying to register non Annotated Entity: ", o$label))
   log4r::info(lenv$logger, paste("Registering object", key, o$id))
   assign(x = key, value = c(graph[[key]], o), envir = graph)
 }
@@ -177,7 +178,7 @@ AnnotatedEntity <- {setRefClass("AnnotatedEntity",
                                     ids = "" # concatenated IDs from the 'oo' list
                                     for (o in oo) {
                                       assertthat::assert_that(is(o, "AnnotatedEntity"))
-                                      ids <- paste(ids, ident(o$id), sep=", ") # add ID to the string
+                                      ids <- paste(ids, ", ", ident(o$id)) # add ID to the string
                                       if (!exists("queue", envir = lenv) || is.null(lenv$queue)) {
                                         lenv$queue <- list()
                                       }
