@@ -4,3 +4,4 @@
 .Ruserdata
 catalog-v001.xml
 *.Rproj
+.log
