@@ -367,7 +367,7 @@ getFixedEstimation.lme <- function(mod, lmm) {
     refEff <- list()
 
     # effects
-    if (termAssign[i] == ref) { # chech if a general reference level
+    if (termAssign[i] == ref) { # check if a general reference level
       effType = c("fixedEffect", "directEffect") #, "emm")
       if (termAssign[i] == 0) { # for a general intercept add base levels/values of all variables
         for (v in varLabs) {
@@ -375,12 +375,9 @@ getFixedEstimation.lme <- function(mod, lmm) {
           if (is(var, "CategoricalVariable")) {
             lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
           } else {
-            # lvls <- append(lvls, Statistic("baseLevel", value=0, isAbout=list(var), type="ValueSpecification")
             val <- ValueSpecification(label=paste0(var$label, "=0"), value=0, variable=var)
             var$levels <- append(var$levels, val)
-            lvls <- append(lvls, val) # !!!
-            # baseLevel -> Mass_0
-            # Statistic -> ValueSpecification
+            lvls <- append(lvls, val)
           }
         }
       } else { #TODO CHECK & test # not considering use cases with interaction terms only (i.e. without single covariate to refer to!)
@@ -393,7 +390,7 @@ getFixedEstimation.lme <- function(mod, lmm) {
             levLab <- paste0(var$label,"=1")
             lvl <- getEntity("ValueSpecification", levLab)
             if (is.null(lvl)) {
-              lvl <- ValueSpecification(levLab, value=1, variable=var)#, type="ValueSpecification")
+              lvl <- ValueSpecification(levLab, value=1, variable=var)
               var$levels <- append(var$levels, lvl)
             }
             lvls <- append(lvls, lvl)
@@ -410,7 +407,7 @@ getFixedEstimation.lme <- function(mod, lmm) {
               levLab <- paste0(var$label,"=1")
               lvl <- getEntity("ValueSpecification", levLab)
               if (is.null(lvl)) {
-                lvl <- ValueSpecification(levLab, value=1, variable=var)#Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
+                lvl <- ValueSpecification(levLab, value=1, variable=var)
                 var$levels <- append(var$levels, lvl)
               }
               lvls <- append(lvls,lvl)
@@ -432,7 +429,7 @@ getFixedEstimation.lme <- function(mod, lmm) {
             levLab <- paste0(var$label,"=1")
             lvl <- getEntity("ValueSpecification", levLab)
             if (is.null(lvl)) {
-              lvl <- ValueSpecification(levLab, value=1, variable=var) #Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
+              lvl <- ValueSpecification(levLab, value=1, variable=var)
               var$levels <- append(var$levels, lvl)
             }
           }

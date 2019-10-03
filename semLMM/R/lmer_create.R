@@ -80,15 +80,17 @@ getFixedEstimation.merMod <- function(mod, lmm) {
     refEff <- list()
 
     # effects
-    if (termAssign[i] == ref) {
-      effType = c("emm", "effect")
+    if (termAssign[i] == ref) { # check if a general reference level
+      effType = c("fixedEffect", "directEffect") #c("emm", "effect")
       if (termAssign[i] == 0) { # for a general intercept add base levels/values of all variables
         for (v in vars) {
           var <- getEntity("Variable", v)
           if (is(var, "CategoricalVariable")) {
             lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
           } else if (is(var, "ContinuousVariable")) {
-            lvls <- append(lvls, Statistic("baseLevel", value=0, isAbout=list(var), type="ValueSpecification"))
+            val <- ValueSpecification(label=paste0(var$label, "=0"), value=0, variable=var)
+            var$levels <- append(var$levels, val)
+            lvls <- append(lvls, val)
           }
         }
       } else { #TODO CHECK & test # not considering use cases with interaction terms only (i.e. without single covariate to refer to!)
@@ -98,10 +100,14 @@ getFixedEstimation.merMod <- function(mod, lmm) {
             lvls <- append(lvls, var$levels[[i]])
           } else {
             isRegression <- TRUE
-            levLab <- paste0(var$label,"_unit")
-            lvl <- getEntity("Statistic", levLab)
+            levLab <- paste0(var$label,"=1")
+            # >>>>>>>>>
+            lvl <- getEntity("ValueSpecification", levLab, var$label)
+            #lvl <- getEntity("ValueSpecification", levLab)
+            # <<<<<<<<<
             if (is.null(lvl)) {
-              lvl <- Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
+              lvl <- ValueSpecification(levLab, value=1, variable=var)
+              var$levels <- append(var$levels, lvl)
             }
             lvls <- append(lvls, lvl)
           }
@@ -114,10 +120,14 @@ getFixedEstimation.merMod <- function(mod, lmm) {
             if (is(var, "CategoricalVariable")) {
               lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
             } else {
-              levLab <- paste0(var$label,"_unit")
-              lvl <- getEntity("Statistic", levLab)
+              levLab <- paste0(var$label,"=1")
+              # >>>>>>>>
+              lvl <- getEntity("ValueSpecification", levLab, var$label)
+              #lvl <- getEntity("ValueSpecification", levLab)
+              # <<<<<<<<
               if (is.null(lvl)) {
-                lvl <- Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
+                lvl <- ValueSpecification(levLab, value=1, variable=var)
+                var$levels <- append(var$levels, lvl)
               }
               lvls <- append(lvls,lvl)
             }
@@ -125,21 +135,23 @@ getFixedEstimation.merMod <- function(mod, lmm) {
         }
       }
     } else {
-      effType = c("treatmentContrast", "effect")
+      effType = c("FixedEffect", "treatmentContrast", "relativeEffect")
       #here can add estType="contrastEstimate")
 
       for (j in 1:length(feLabsSplit[[i]])){
         l = feLabsSplit[[i]][j]
-        #for (l in unlist(strsplit(feLabs[i], ":"))) {
         if (l != "") {
-          lvl <- getEntity("Level", l) #TODO handling interaction of continuous-categorical variables, resulting in empty string in splitting the ":level1"
+          # >>>>>>> 1
+          lvl <- getEntity("Level", l, reLabsSplit[[i]][j])
         } else {
           v <- reLabsSplit[[i]][j]
           var <- getEntity("Variable", v)
-          levLab <- paste0(var$label,"_unit")
-          lvl <- getEntity("Statistic", levLab)
+          # >>>>>> 2
+          levLab <- paste0(var$label,"=1")
+          lvl <- getEntity("ValueSpecification", levLab, v)
           if (is.null(lvl)) {
-            lvl <- Statistic(levLab, value=1, isAbout=list(var), type="ValueSpecification")
+            lvl <- ValueSpecification(levLab, value=1, variable=var)
+            var$levels <- append(var$levels, lvl)
           }
         }
         lvls <- append(lvls, lvl)
@@ -220,6 +232,7 @@ getEmmeans.merMod <- function(mod) {
   procConfIntCalc <- Process("confIntCalculation", processType="ConfidenceIntervalCalculation")
   procConfIntCalc$hasPart <- append(procConfIntCalc$hasPart, procDfAppr)
 
+  var <- strsplit(attr(terms(mod), "term.labels"),":")
   varLabs <- unique(unlist(strsplit(attr(terms(mod), "term.labels"),":"))) # get variable names
   for (i in 1:length(varLabs)) {
     com <- combn(varLabs, i)
@@ -251,13 +264,14 @@ getEmmeans.merMod <- function(mod) {
         for (l in 1:i) {
           levLab <- as.character(ems[e,l])
           effLab <- paste0(effLab, ".", levLab)
-          lev <- getEntity("Level", levLab)
+          lev <- getEntity("Level", levLab, names(ems)[l])
           if (is.null(lev)) {
             var <- getEntity("Variable", names(ems)[l])
             refLab <- paste0(var$label,"_",levLab)
-            lev <- getEntity("Statistic", refLab)
+            lev <- getEntity("ValueSpecification", refLab, names(ems)[l])
             if (is.null(lev)) {
-              lev <- Statistic(refLab, value = as.numeric(levLab), isAbout=list(var), type="ValueSpecification")
+              lev <- ValueSpecification(refLab, value = as.numeric(levLab), variable=var)
+              var$levels <- append(var$levels, lev)
             }
           }
           lvls <- append(lvls, lev)
@@ -315,7 +329,10 @@ getRandomTerms.merMod <- function(mod) {
       effLevels <- list()
       for (j in 1:length(termEffectLevelNames)) {
         tvn <- termEffectLevelNames[j]
-        tvar <- getEntity("Level", tvn)
+        # >>>>>>>>>>>
+        tvar <- getEntity(className = "Level", label = tvn, relatedClassLabel = termVarNames[j])
+        #tvar <- getEntity("Level", tvn)
+        # <<<<<<<<<<<
         if (is.null(tvar)) {
           #print(paste(tvn, "No variable level, adding"))
           var <- termVariables[[j]]

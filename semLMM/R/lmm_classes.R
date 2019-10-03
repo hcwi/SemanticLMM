@@ -13,7 +13,7 @@ setLogger <- function(logfile = "semLMM.log", level = "DEBUG") {
 graph <- new.env(parent = emptyenv(), hash = TRUE)
 newGraph <- function() {
   log4r::debug(lenv$logger, match.call())
-  rm(list = ls(graph), envir = graph)
+   rm(list = ls(graph), envir = graph)
   graph
 }
 
@@ -24,16 +24,42 @@ register <- function(o) {
   assign(x = key, value = c(graph[[key]], o), envir = graph)
 }
 
-getEntity <- function(className, label) {
+getEntities <- function(className, label) {
   labelMatch <- graph[[label]]
   classMatch <- grepl(lapply(labelMatch, class), pattern=className, ignore.case = T)
-  matchingEntity <- NULL
-  if (sum(classMatch) == 1) {
-    matchingEntity <- labelMatch[classMatch][[1]]
-  } else if (sum(classMatch) > 1) {
-    stop(paste("Error getting an entity. More than one matching entity found for ", className, label))
+  matchingEntities <- labelMatch[classMatch]
+  return(matchingEntities)
+}
+
+getEntity <- function(className, label, relatedClassLabel = NULL) {
+
+  matchingEntities <- getEntities(className, label)
+
+  if (length(matchingEntities) == 1) {
+    #"No need to select from many, returning the first and only one"
+    #print(paste("Ok, one matching entity found for ", className, label))
+    return(matchingEntities[[1]])
   }
-  return(matchingEntity)
+  else if (length(matchingEntities) > 1) {
+    log4r::debug(lenv$logger, paste("More than one matching entity found for ", className, label, ". Checking if further selection possible.."))
+    if (grepl(className, pattern = "level", ignore.case = T) && is.character(relatedClassLabel)) {
+      correctVariable = grepl(lapply(matchingEntities, function(x) x$variable$label), pattern = relatedClassLabel)
+      if (sum(correctVariable) == 1) {
+        log4r::debug(lenv$logger, paste("Yes, one entity selected for ", relatedClassLabel))
+        return(matchingEntities[correctVariable])
+      }
+      else {
+        log4r::debug(lenv$logger, paste("More than one matching entity found for ", className, label, " despite trying ", relatedClassLabel, " to specify the selection"))
+        return(NULL)
+      }
+    } else {
+      log4r::debug(lenv$logger, paste("More than one matching entity found for ", className, label, ". No relatedClassLabel to specify the selection is declared or no label given."))
+      stop(paste("More than one matching entity found for ", className, label, ". No relatedClassLabel to specify the selection is declared or no label given."))
+    }
+  } else {
+    log4r::debug(lenv$logger, paste("Nothing to return for", className, label, relatedClassLabel))
+  }
+
 }
 
 
