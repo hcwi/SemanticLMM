@@ -42,7 +42,7 @@ getEntity <- function(className, label, relatedClassLabel = NULL) {
   }
   else if (length(matchingEntities) > 1) {
     log4r::debug(lenv$logger, paste("More than one matching entity found for ", className, label, ". Checking if further selection possible.."))
-    if (grepl(className, pattern = "level", ignore.case = T) && is.character(relatedClassLabel)) {
+    if (grepl(className, pattern = "level|valueSpecification", ignore.case = T) && is.character(relatedClassLabel)) {
       correctVariable = grepl(lapply(matchingEntities, function(x) x$variable$label), pattern = relatedClassLabel)
       if (sum(correctVariable) == 1) {
         log4r::debug(lenv$logger, paste("Yes, one entity selected for ", relatedClassLabel))

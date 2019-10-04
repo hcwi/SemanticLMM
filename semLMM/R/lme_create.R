@@ -44,7 +44,7 @@ getModel.lme <- function(mod) {
   lmm <- Lmm(label=paste0("model_", lab),
              formula = formula(mod), vars = vars)
 
-  #TODO: czy potrzebne REML criterion? nie ma! czy logLik dodac wszedzie? czy nic?
+  #TODO: REML criterion needed? or logLik, or nothing?
   {#if(mod$method == "REML") {
   #  lmm$criterionREML <- mod$
   #}
@@ -228,9 +228,12 @@ getRandomTerms.lme <- function(mod) {
         termEffectLevelNames <- unlist(strsplit(termEffectName,"/"))
         effLevels <- list()
         for (teln in termEffectLevelNames) {
-          lvl <- getEntity("Level", teln)
+          lvl <- getEntity("Level", teln, termVarNames[[1]][j])
           if (is.null(lvl)) {
-            lvl <- VariableLevel(label=teln, variable = getEntity("Variable", termName))
+            var <- getEntity("Variable", termVarNames[[1]][j])
+            lvl <- VariableLevel(label=teln, variable = var)
+            var$levels <- append(var$levels, lvl)
+            # <<<<<
           }
           effLevels <- append(effLevels, lvl)
         }
@@ -380,7 +383,7 @@ getFixedEstimation.lme <- function(mod, lmm) {
             lvls <- append(lvls, val)
           }
         }
-      } else { #TODO CHECK & test # not considering use cases with interaction terms only (i.e. without single covariate to refer to!)
+      } else {
         isRegression <- FALSE
         for (var in term$variable) {
           if (is(var, "CategoricalVariable")) {
@@ -388,7 +391,7 @@ getFixedEstimation.lme <- function(mod, lmm) {
           } else {
             isRegression <- TRUE
             levLab <- paste0(var$label,"=1")
-            lvl <- getEntity("ValueSpecification", levLab)
+            lvl <- getEntity("ValueSpecification", levLab, var$label)
             if (is.null(lvl)) {
               lvl <- ValueSpecification(levLab, value=1, variable=var)
               var$levels <- append(var$levels, lvl)
@@ -405,7 +408,7 @@ getFixedEstimation.lme <- function(mod, lmm) {
               lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
             } else {
               levLab <- paste0(var$label,"=1")
-              lvl <- getEntity("ValueSpecification", levLab)
+              lvl <- getEntity("ValueSpecification", levLab, var$label)
               if (is.null(lvl)) {
                 lvl <- ValueSpecification(levLab, value=1, variable=var)
                 var$levels <- append(var$levels, lvl)
@@ -427,14 +430,14 @@ getFixedEstimation.lme <- function(mod, lmm) {
             v <- feVarLabs[[i]][j]
             var <- getEntity("Variable", v)
             levLab <- paste0(var$label,"=1")
-            lvl <- getEntity("ValueSpecification", levLab)
+            lvl <- getEntity("ValueSpecification", levLab, var$label)
             if (is.null(lvl)) {
               lvl <- ValueSpecification(levLab, value=1, variable=var)
               var$levels <- append(var$levels, lvl)
             }
           }
         else if (l != "") {
-          lvl <- getEntity("Level", l)
+          lvl <- getEntity("Level", l, feVarLabs[[i]][j])
         } else {
           "Unexpected case"
         }
@@ -557,13 +560,14 @@ getEmmeans.lme <- function(mod) {
         for (l in 1:i) {
           levLab <- as.character(ems[e,l])
           effLab <- paste0(effLab, ".", levLab)
-          lev <- getEntity("Level", levLab)
+          var <- getEntity("Variable", names(ems)[l])
+          lev <- getEntity("Level", levLab, var$label)
           if (is.null(lev)) {
-            var <- getEntity("Variable", names(ems)[l])
             refLab <- paste0(var$label,"=",levLab)
-            lev <- getEntity("ValueSpecification", refLab)
+            lev <- getEntity("ValueSpecification", refLab, var$label)
             if (is.null(lev)) {
               lev <- ValueSpecification(refLab, value = as.numeric(levLab), variable=var) #isAbout=list(var), type="EMM")
+              var$levels <- append(var$levels, lev)
             }
           }
           lvls <- append(lvls, lev)

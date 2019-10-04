@@ -98,10 +98,10 @@ examplesNPK_lmer<- function() {
   modelFitting <- exportModelToRDF(mod, ex)
   modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
 
-  #mod <- lme(yield ~ 0 + N*K, random = ~1|block, data = ex$data)
-  #print(formula(mod))
-  #modelFitting <- exportModelToRDF(mod, ex)
-  #modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
+  mod <- lme(yield ~ 0 + N*K, random = ~1|block, data = ex$data)
+  print(formula(mod))
+  modelFitting <- exportModelToRDF(mod, ex)
+  modelFitting$saveTriples(modelFitting$hasInput[[1]]$id)
 
   }
 

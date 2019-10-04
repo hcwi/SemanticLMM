@@ -6,31 +6,6 @@ getVariables.merMod <- function(mod) {
 }
 
 
-# getVariables <- function(mod) {
-#
-#   variables <- list()
-#
-#   for (i in 1:length(mod@frame)) {
-#     varName <- names(mod@frame[i])
-#     varLevels <- levels(mod@frame[[i]])
-#     variable <- getEntity("Variable", varName)
-#     if (is.null(variable)) {
-#       if (is.null(varLevels)) {
-#         variable <- Variable(varName)
-#       } else {
-#         variable <- CategoricalVariable(varName, levels = varLevels)
-#       }
-#     }
-#     #print(variable$asTTL())
-#     variables <- append(variables, variable)
-#   }
-#
-#   variables
-# }
-
-
-
-
 # calculating multiple contrasts (other then relevel, allowing only one reference level) :
 # http://mindingthebrain.blogspot.com/2013/04/multiple-pairwise-comparisons-for.html
 
@@ -101,10 +76,7 @@ getFixedEstimation.merMod <- function(mod, lmm) {
           } else {
             isRegression <- TRUE
             levLab <- paste0(var$label,"=1")
-            # >>>>>>>>>
             lvl <- getEntity("ValueSpecification", levLab, var$label)
-            #lvl <- getEntity("ValueSpecification", levLab)
-            # <<<<<<<<<
             if (is.null(lvl)) {
               lvl <- ValueSpecification(levLab, value=1, variable=var)
               var$levels <- append(var$levels, lvl)
@@ -121,10 +93,7 @@ getFixedEstimation.merMod <- function(mod, lmm) {
               lvls <- append(lvls, var$levels[[1]]) # adding default 1st level
             } else {
               levLab <- paste0(var$label,"=1")
-              # >>>>>>>>
               lvl <- getEntity("ValueSpecification", levLab, var$label)
-              #lvl <- getEntity("ValueSpecification", levLab)
-              # <<<<<<<<
               if (is.null(lvl)) {
                 lvl <- ValueSpecification(levLab, value=1, variable=var)
                 var$levels <- append(var$levels, lvl)
@@ -141,12 +110,10 @@ getFixedEstimation.merMod <- function(mod, lmm) {
       for (j in 1:length(feLabsSplit[[i]])){
         l = feLabsSplit[[i]][j]
         if (l != "") {
-          # >>>>>>> 1
           lvl <- getEntity("Level", l, reLabsSplit[[i]][j])
         } else {
           v <- reLabsSplit[[i]][j]
           var <- getEntity("Variable", v)
-          # >>>>>> 2
           levLab <- paste0(var$label,"=1")
           lvl <- getEntity("ValueSpecification", levLab, v)
           if (is.null(lvl)) {
@@ -329,10 +296,7 @@ getRandomTerms.merMod <- function(mod) {
       effLevels <- list()
       for (j in 1:length(termEffectLevelNames)) {
         tvn <- termEffectLevelNames[j]
-        # >>>>>>>>>>>
         tvar <- getEntity(className = "Level", label = tvn, relatedClassLabel = termVarNames[j])
-        #tvar <- getEntity("Level", tvn)
-        # <<<<<<<<<<<
         if (is.null(tvar)) {
           #print(paste(tvn, "No variable level, adding"))
           var <- termVariables[[j]]
